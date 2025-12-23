@@ -82,19 +82,6 @@ export default class ApiProvider {
 		if (accountTypesWithBackgroundSigner.includes(account.type)) {
 			return this.getBackgroundSignerInstance(account, backgroundClient);
 		}
-		if ('ledger' === account.type) {
-			// Ideally, Ledger transactions would be signed in the background
-			// and exist as an asynchronous keypair; however, this isn't possible
-			// because you can't connect to a Ledger device from the background
-			// script. Similarly, the signer instance can't be retrieved from
-			// here because ApiProvider is a global and results in very buggy
-			// behavior due to the reactive nature of managing Ledger connections
-			// and displaying relevant UI updates. Refactoring ApiProvider to
-			// not be a global instance would help out here, but that is also
-			// a non-trivial task because we need access to ApiProvider in the
-			// background script as well.
-			throw new Error("Signing with Ledger via ApiProvider isn't supported");
-		}
 		throw new Error('Encountered unknown account type');
 	}
 

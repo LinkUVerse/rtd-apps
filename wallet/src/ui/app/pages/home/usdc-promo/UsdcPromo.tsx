@@ -5,9 +5,11 @@ import { Heading } from '_app/shared/heading';
 import PageTitle from '_app/shared/PageTitle';
 import { Text } from '_app/shared/text';
 import { useUsdcPromo } from '_pages/home/usdc-promo/useUsdcPromo';
-import { USDC_TYPE_ARG } from '_pages/swap/utils';
 import { ampli } from '_shared/analytics/ampli';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+
+// USDC type - previously imported from swap/utils
+const USDC_TYPE_ARG = '0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN';
 
 export function UsdcPromo() {
 	const navigate = useNavigate();

@@ -13,7 +13,6 @@ import { useBackgroundClient } from './useBackgroundClient';
 import { useQredoAPI } from './useQredoAPI';
 
 export function useSigner(account: SerializedUIAccount | null): WalletSigner | null {
-	const { connectToLedger } = useRtdLedgerClient();
 	const api = useRtdClient();
 	const background = useBackgroundClient();
 	const [qredoAPI] = useQredoAPI(
@@ -24,9 +23,6 @@ export function useSigner(account: SerializedUIAccount | null): WalletSigner | n
 	const networkName = useAppSelector(({ app: { apiEnv } }) => apiEnv);
 	if (!account) {
 		return null;
-	}
-	if (isLedgerAccountSerializedUI(account)) {
-		return new LedgerSigner(connectToLedger, account.derivationPath, api);
 	}
 	if (isQredoAccountSerializedUI(account)) {
 		return qredoAPI ? new QredoSigner(api, account, qredoAPI, networkName) : null;

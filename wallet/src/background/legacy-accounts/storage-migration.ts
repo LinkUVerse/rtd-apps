@@ -13,7 +13,6 @@ import { QredoAccountSource } from '../account-sources/QredoAccountSource';
 import { type SerializedAccount } from '../accounts/Account';
 import { accountsEvents } from '../accounts/events';
 import { ImportedAccount } from '../accounts/ImportedAccount';
-import { LedgerAccount } from '../accounts/LedgerAccount';
 import { MnemonicAccount } from '../accounts/MnemonicAccount';
 import { type QredoSerializedAccount } from '../accounts/QredoAccount';
 import { backupDB, getDB } from '../db';
@@ -92,12 +91,8 @@ async function getSavedLedgerAccounts() {
 }
 
 async function makeLedgerAccounts(password: string) {
-	const ledgerAccounts = await getSavedLedgerAccounts();
-	return Promise.all(
-		ledgerAccounts.map(({ address, derivationPath, publicKey }) =>
-			LedgerAccount.createNew({ address, derivationPath, password, publicKey }),
-		),
-	);
+	// Ledger accounts removed - return empty array
+	return [];
 }
 
 async function getAllLegacyStoredQredoConnections() {

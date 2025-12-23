@@ -9,7 +9,6 @@ import {
 	type ZkLoginProvider,
 } from '_src/background/accounts/zklogin/providers';
 import { ampli } from '_src/shared/analytics/ampli';
-import { LedgerLogo17 as LedgerLogo } from 'rtd-apps-icons';
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import toast from 'react-hot-toast';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -17,8 +16,6 @@ import Browser from 'webextension-polyfill';
 
 import { useAccountsFormContext } from '../../components/accounts/AccountsFormContext';
 import { ZkLoginButtons } from '../../components/accounts/ZkLoginButtons';
-import { ConnectLedgerModal } from '../../components/ledger/ConnectLedgerModal';
-import { getLedgerConnectionErrorMessage } from '../../helpers/errorMessages';
 import { useAppSelector } from '../../hooks';
 import { useCountAccountsByType } from '../../hooks/useCountAccountByType';
 import { useCreateAccountsMutation } from '../../hooks/useCreateAccountMutation';
@@ -41,11 +38,8 @@ export function AddAccountPage() {
 	const navigate = useNavigate();
 	const sourceFlow = searchParams.get('sourceFlow') || 'Unknown';
 	const showSocialSignInOptions = sourceFlow !== 'Onboarding';
-	const forceShowLedger =
-		searchParams.has('showLedger') && searchParams.get('showLedger') !== 'false';
 	const [, setAccountsFormValues] = useAccountsFormContext();
 	const isPopup = useAppSelector((state) => state.app.appType === AppType.popup);
-	const [isConnectLedgerModalOpen, setConnectLedgerModalOpen] = useState(forceShowLedger);
 	const createAccountsMutation = useCreateAccountsMutation();
 	const createZkLoginAccount = useCallback(
 		async (provider: ZkLoginProvider) => {
@@ -118,22 +112,6 @@ export function AddAccountPage() {
 							}}
 						/>
 					)}
-					<Button
-						variant="outline"
-						size="tall"
-						text="Set up Ledger"
-						before={<LedgerLogo className="text-gray-90 w-4 h-4" />}
-						onClick={async () => {
-							ampli.openedConnectLedgerFlow({ sourceFlow });
-							if (isPopup) {
-								await openTabWithSearchParam('showLedger', 'true');
-								window.close();
-							} else {
-								setConnectLedgerModalOpen(true);
-							}
-						}}
-						disabled={createAccountsMutation.isPending}
-					/>
 				</div>
 				<Section title="Create New">
 					<Button
@@ -171,21 +149,6 @@ export function AddAccountPage() {
 					/>
 				</Section>
 			</div>
-			{isConnectLedgerModalOpen && (
-				<ConnectLedgerModal
-					onClose={() => {
-						setConnectLedgerModalOpen(false);
-					}}
-					onError={(error) => {
-						setConnectLedgerModalOpen(false);
-						toast.error(getLedgerConnectionErrorMessage(error) || 'Something went wrong.');
-					}}
-					onConfirm={() => {
-						ampli.connectedHardwareWallet({ hardwareWalletType: 'Ledger' });
-						navigate('/accounts/import-ledger-accounts');
-					}}
-				/>
-			)}
 		</Overlay>
 	);
 }

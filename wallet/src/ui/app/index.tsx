@@ -4,9 +4,7 @@
 import { useAppDispatch, useAppSelector } from '_hooks';
 import { UsdcPromo } from '_pages/home/usdc-promo/UsdcPromo';
 import { setNavVisibility } from '_redux/slices/app';
-import { isLedgerAccountSerializedUI } from '_src/background/accounts/LedgerAccount';
 import { persistableStorage } from '_src/shared/analytics/amplitude';
-import { type LedgerAccountsPublicKeys } from '_src/shared/messaging/messages/payloads/MethodPayload';
 import { toBase64 } from 'rtd-typescript/utils';
 import { useEffect, useMemo } from 'react';
 import { Navigate, Outlet, Route, Routes, useLocation } from 'react-router-dom';
@@ -81,12 +79,7 @@ const App = () => {
 
 	useInitialPageView();
 	const { data: accounts } = useAccounts();
-	const allLedgerWithoutPublicKey = useMemo(
-		() => accounts?.filter(isLedgerAccountSerializedUI).filter(({ publicKey }) => !publicKey) || [],
-		[accounts],
-	);
 	const backgroundClient = useBackgroundClient();
-	const { connectToLedger, rtdLedgerClient } = useRtdLedgerClient();
 	useEffect(() => {
 		if (accounts?.length) {
 			// The user has accepted our terms of service after their primary
@@ -96,38 +89,6 @@ const App = () => {
 			persistableStorage.persist();
 		}
 	}, [accounts]);
-	useEffect(() => {
-		// update ledger accounts without the public key
-		(async () => {
-			if (allLedgerWithoutPublicKey.length) {
-				try {
-					if (!rtdLedgerClient) {
-						await connectToLedger();
-						return;
-					}
-					const publicKeysToStore: LedgerAccountsPublicKeys = [];
-					for (const { derivationPath, id } of allLedgerWithoutPublicKey) {
-						if (derivationPath) {
-							try {
-								const { publicKey } = await rtdLedgerClient.getPublicKey(derivationPath);
-								publicKeysToStore.push({
-									accountID: id,
-									publicKey: toBase64(publicKey),
-								});
-							} catch (e) {
-								// do nothing
-							}
-						}
-					}
-					if (publicKeysToStore.length) {
-						await backgroundClient.storeLedgerAccountsPublicKeys({ publicKeysToStore });
-					}
-				} catch (e) {
-					// do nothing
-				}
-			}
-		})();
-	}, [allLedgerWithoutPublicKey, rtdLedgerClient, backgroundClient, connectToLedger]);
 	const { data } = useAutoLockMinutes();
 	const autoLockEnabled = !!data;
 	// use mouse move and key down events to detect user activity
@@ -173,14 +134,14 @@ const App = () => {
 				<Route path="send" element={<TransferCoinPage />} />
 				<Route path="send/select" element={<CoinsSelectorPage />} />
 				<Route path="stake/*" element={<Staking />} />
-												<Route path="tokens/*" element={<TokenDetailsPage />} />
+				<Route path="tokens/*" element={<TokenDetailsPage />} />
 				<Route path="transactions/:status?" element={<TransactionBlocksPage />} />
 				<Route path="*" element={<Navigate to="/tokens" replace={true} />} />
 			</Route>
 			<Route path="accounts/*" element={<AccountsPage />}>
 				<Route path="welcome" element={<WelcomePage />} />
 				<Route path="add-account" element={<AddAccountPage />} />
-								<Route path="import-passphrase" element={<ImportPassphrasePage />} />
+				<Route path="import-passphrase" element={<ImportPassphrasePage />} />
 				<Route path="import-private-key" element={<ImportPrivateKeyPage />} />
 				<Route path="manage" element={<ManageAccountsPage />} />
 				<Route path="protect-account" element={<ProtectAccountPage />} />

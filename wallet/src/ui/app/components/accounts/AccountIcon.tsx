@@ -4,7 +4,6 @@
 import { type SerializedUIAccount } from '_src/background/accounts/Account';
 import { isZkLoginAccountSerializedUI } from '_src/background/accounts/zklogin/ZkLoginAccount';
 import {
-	LedgerLogo17,
 	LogoGoogle,
 	LogoQredo,
 	LogoTwitch,
@@ -42,9 +41,6 @@ export function AccountIcon({ account }: { account: SerializedUIAccount }) {
 	}
 	if (account.type === 'qredo') {
 		return <LogoQredo className="h-4 w-4" />;
-	}
-	if (account.type === 'ledger') {
-		return <LedgerLogo17 className="h-4 w-4" />;
 	}
 	return <RtdIcon />;
 }

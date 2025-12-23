@@ -14,7 +14,6 @@ export const defaultSortOrder: AccountType[] = [
 	'zkLogin',
 	'mnemonic-derived',
 	'imported',
-	'ledger',
 	'qredo',
 ];
 

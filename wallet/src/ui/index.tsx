@@ -27,7 +27,6 @@ import { walletApiProvider } from './app/ApiProvider';
 import { AccountsFormProvider } from './app/components/accounts/AccountsFormContext';
 import { UnlockAccountProvider } from './app/components/accounts/UnlockAccountContext';
 import { ZkLoginAccountWarningModal } from './app/components/accounts/ZkLoginAccountWaringModal';
-import { RtdLedgerClientProvider } from './app/components/ledger/RtdLedgerClientProvider';
 import { growthbook } from './app/experimentation/feature-gating';
 import { persister, queryClient } from './app/helpers/queryClient';
 import { useAppSelector } from './app/hooks';
@@ -66,48 +65,46 @@ function AppWrapper() {
 	return (
 		<GrowthBookProvider growthbook={growthbook}>
 			<HashRouter>
-				<RtdLedgerClientProvider>
-					{/*
-					 * NOTE: We set a key here to force the entire react tree to be re-created when the network changes so that
-					 * the RPC client instance (api.instance.fullNode) is updated correctly. In the future, we should look into
-					 * making the API provider instance a reactive value and moving it out of the redux-thunk middleware
-					 */}
-					<Fragment key={network}>
-						<PersistQueryClientProvider
-							client={queryClient}
-							persistOptions={{
-								persister,
-								dehydrateOptions: {
-									shouldDehydrateQuery: ({ meta }) => !meta?.skipPersistedCache,
-								},
-							}}
+				{/*
+				 * NOTE: We set a key here to force the entire react tree to be re-created when the network changes so that
+				 * the RPC client instance (api.instance.fullNode) is updated correctly. In the future, we should look into
+				 * making the API provider instance a reactive value and moving it out of the redux-thunk middleware
+				 */}
+				<Fragment key={network}>
+					<PersistQueryClientProvider
+						client={queryClient}
+						persistOptions={{
+							persister,
+							dehydrateOptions: {
+								shouldDehydrateQuery: ({ meta }) => !meta?.skipPersistedCache,
+							},
+						}}
+					>
+						<RtdClientProvider
+							networks={{ [walletApiProvider.apiEnv]: walletApiProvider.instance.fullNode }}
 						>
-							<RtdClientProvider
-								networks={{ [walletApiProvider.apiEnv]: walletApiProvider.instance.fullNode }}
-							>
-								<KioskClientProvider>
-									<AccountsFormProvider>
-										<UnlockAccountProvider>
-											<div
-												className={cn(
-													'relative flex flex-col flex-nowrap items-center justify-center w-popup-width min-h-popup-minimum max-h-popup-height h-screen overflow-hidden',
-													isFullscreen && 'shadow-lg rounded-xl',
-												)}
-											>
-												<ErrorBoundary>
-													<App />
-													<ZkLoginAccountWarningModal />
-												</ErrorBoundary>
-												<div id="overlay-portal-container"></div>
-												<div id="toaster-portal-container"></div>
-											</div>
-										</UnlockAccountProvider>
-									</AccountsFormProvider>
-								</KioskClientProvider>
-							</RtdClientProvider>
-						</PersistQueryClientProvider>
-					</Fragment>
-				</RtdLedgerClientProvider>
+							<KioskClientProvider>
+								<AccountsFormProvider>
+									<UnlockAccountProvider>
+										<div
+											className={cn(
+												'relative flex flex-col flex-nowrap items-center justify-center w-popup-width min-h-popup-minimum max-h-popup-height h-screen overflow-hidden',
+												isFullscreen && 'shadow-lg rounded-xl',
+											)}
+										>
+											<ErrorBoundary>
+												<App />
+												<ZkLoginAccountWarningModal />
+											</ErrorBoundary>
+											<div id="overlay-portal-container"></div>
+											<div id="toaster-portal-container"></div>
+										</div>
+									</UnlockAccountProvider>
+								</AccountsFormProvider>
+							</KioskClientProvider>
+						</RtdClientProvider>
+					</PersistQueryClientProvider>
+				</Fragment>
 			</HashRouter>
 		</GrowthBookProvider>
 	);

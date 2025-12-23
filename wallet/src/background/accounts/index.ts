@@ -36,9 +36,6 @@ function toAccount(account: SerializedAccount) {
 	if (ImportedAccount.isOfType(account)) {
 		return new ImportedAccount({ id: account.id, cachedData: account });
 	}
-	if (.isOfType(account)) {
-		return new({ id: account.id, cachedData: account });
-	}
 	if (QredoAccount.isOfType(account)) {
 		return new QredoAccount({ id: account.id, cachedData: account });
 	}
@@ -257,11 +254,6 @@ export async function accountsHandleUIMessage(msg: Message, uiConnection: UiConn
 			newSerializedAccounts.push(await accountSource.deriveAccount());
 		} else if (type === 'imported') {
 			newSerializedAccounts.push(await ImportedAccount.createNew(payload.args));
-		} else if (type === 'ledger') {
-			const { password, accounts } = payload.args;
-			for (const a of accounts) {
-				newSerializedAccounts.push(await.createNew({ ...a, password }));
-			}
 		} else if (type === 'zkLogin') {
 			newSerializedAccounts.push(...(await ZkLoginAccount.createNew(payload.args)));
 		} else {
@@ -306,17 +298,6 @@ export async function accountsHandleUIMessage(msg: Message, uiConnection: UiConn
 			}
 		}
 		throw new Error('No password protected account found');
-	}
-	if (isMethodPayload(payload, 'storesPublicKeys')) {
-		const { publicKeysToStore } = payload.args;
-		const db = await getDB();
-		// TODO: seems bulkUpdate is supported from v4.0.1-alpha.6 change to it when available
-		await db.transaction('rw', db.accounts, async () => {
-			for (const { accountID, publicKey } of publicKeysToStore) {
-				await db.accounts.update(accountID, { publicKey });
-			}
-		});
-		return true;
 	}
 	if (isMethodPayload(payload, 'getAccountKeyPair')) {
 		const { password, accountID } = payload.args;
