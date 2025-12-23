@@ -1,0 +1,6 @@
+packages:
+  - './**'
+  - '../rtd-ts-sdk/packages/**'
+  - '!**/node_modules/**'
+  - '!**/dist/**'
+  - '!**/.next/**'

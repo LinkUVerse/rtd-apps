@@ -1,0 +1,66 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+build/
+*.tsbuildinfo
+.tsbuildinfo
+
+# Turbo
+.turbo/
+
+# Storybook
+storybook-static/
+
+# Web extension
+web-ext-artifacts/
+
+# Test artifacts
+coverage/
+test-results/
+playwright-report/
+playwright/.cache/
+.coverage_map.mvcov
+lcov.info
+
+# Environment files
+.env
+.env.local
+.env.*.local
+configs/environment/.env
+
+# IDE
+.vscode/
+.idea/
+.history/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+._*
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.vercel
+
+# Secrets
+*.key
+*.pem
+
+# Cache
+.cache/
+.eslintcache
+.stylelintcache
+
+# Misc
+*.local
+.trace
