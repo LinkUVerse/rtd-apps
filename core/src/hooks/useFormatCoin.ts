@@ -1,13 +1,13 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { useFeatureValue } from '@growthbook/growthbook-react';
+import { GrowthBookContext } from '@growthbook/growthbook-react';
 import { useRtdClient } from 'rtd-dapp-kit';
 import { CoinMetadata } from 'rtd-typescript/client';
 import { RTD_TYPE_ARG } from 'rtd-typescript/utils';
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 import BigNumber from 'bignumber.js';
-import { useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 
 import { formatAmount } from '../utils/formatAmount';
 
@@ -53,9 +53,18 @@ type CoinMetadataOverrides = {
 	};
 };
 
+// Safe hook to get feature value without throwing when GrowthBook is not configured
+function useSafeFeatureValue<T>(featureId: string, defaultValue: T): T {
+	const context = useContext(GrowthBookContext);
+	if (!context?.growthbook) {
+		return defaultValue;
+	}
+	return context.growthbook.getFeatureValue(featureId, defaultValue);
+}
+
 export function useCoinMetadata(coinType?: string | null) {
 	const client = useRtdClient();
-	const tokenMetadataOverrides = useFeatureValue<CoinMetadataOverrides>(
+	const tokenMetadataOverrides = useSafeFeatureValue<CoinMetadataOverrides>(
 		'token-metadata-overrides',
 		{},
 	);

@@ -3,4 +3,4 @@ packages:
   - '!**/node_modules/**'
   - '!**/dist/**'
   - '!**/.next/**'
-  - '!./rtd-explorer/**'
+  - '!./rtd-explorer/src/core/**'
