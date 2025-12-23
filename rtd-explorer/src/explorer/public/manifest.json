@@ -1,0 +1,26 @@
+{
+	"name": "Polymedia Explorer",
+	"short_name": "Explorer",
+	"description": "Explore Rtd transactions, objects, etc.",
+
+	"start_url": "/",
+	"scope": "/",
+	"display": "fullscreen",
+	"background_color": "#d2ecfb",
+	"theme_color": "#d2ecfb",
+
+	"icons": [
+		{
+			"src": "https://assets.polymedia.app/img/all/logo-maskable-bg-dark-512x512.webp",
+			"type": "image/webp",
+			"sizes": "512x512",
+			"purpose": "any"
+		},
+		{
+			"src": "https://assets.polymedia.app/img/all/logo-maskable-bg-dark-512x512.webp",
+			"type": "image/webp",
+			"sizes": "512x512",
+			"purpose": "maskable"
+		}
+	]
+}

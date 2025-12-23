@@ -1,0 +1,38 @@
+{
+    "private": true,
+    "name": "rtd-apps-core-deprecated",
+    "deprecated": "This package is deprecated. Use rtd-apps-core from /rtd-apps/core/ instead.",
+    "main": "src/index.ts",
+    "scripts": {
+        "clean": "rm -rf dist/ node_modules/ .turbo/ .wrangler/",
+        "lint": "eslint src/ *.ts --report-unused-disable-directives --max-warnings 0",
+        "test": "vitest run",
+        "test:watch": "vitest"
+    },
+    "dependencies": {
+        "@hookform/resolvers": "^3.10.0",
+        "rtd-dapp-kit": "file:../../../../rtd-ts-sdk/packages/dapp-kit",
+        "rtd-kiosk": "file:../../../../rtd-ts-sdk/packages/kiosk",
+        "rtd-typescript": "file:../../../../rtd-ts-sdk/packages/typescript",
+        "@tanstack/react-query": "^5.66.0",
+        "bignumber.js": "^9.1.2",
+        "react": "^18.3.1",
+        "react-dom": "^18.3.1",
+        "react-hook-form": "^7.54.2",
+        "zod": "^3.24.1"
+    },
+    "devDependencies": {
+        "@headlessui/tailwindcss": "^0.2.1",
+        "@tailwindcss/aspect-ratio": "^0.4.2",
+        "@tailwindcss/forms": "^0.5.10",
+        "@types/react": "^18.3.18",
+        "@vanilla-extract/vite-plugin": "^4.0.20",
+        "postcss": "^8.5.1",
+        "tailwindcss": "^3.4.17",
+        "typescript": "^5.7.3",
+        "vite": "^5.4.14",
+        "vitest": "^2.1.9"
+    },
+    "type": "module",
+    "sideEffects": false
+}

@@ -33,6 +33,7 @@ configs/environment/.env
 
 # IDE
 .vscode/
+.VSCodeCounter/
 .idea/
 .history/
 *.swp
