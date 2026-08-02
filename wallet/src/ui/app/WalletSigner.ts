@@ -13,6 +13,8 @@ import { messageWithIntent } from 'rtd-typescript/cryptography';
 import { isTransaction, type Transaction } from 'rtd-typescript/transactions';
 import { fromBase64, toBase64 } from 'rtd-typescript/utils';
 
+const SIGNER_DEBUG_PREFIX = '[RTD Wallet Signer Debug]';
+
 export type SignedTransaction = {
 	transactionBlockBytes: string;
 	signature: string;
@@ -53,9 +55,13 @@ export abstract class WalletSigner {
 			// If the sender has not yet been set on the transaction, then set it.
 			// NOTE: This allows for signing transactions with mis-matched senders, which is important for sponsored transactions.
 			transactionBlock.setSenderIfNotSet(await this.getAddress());
-			return await transactionBlock.build({
+			console.info(`${SIGNER_DEBUG_PREFIX} data before build`, transactionBlock.getData());
+			const bytes = await transactionBlock.build({
 				client: this.client,
 			});
+			console.info(`${SIGNER_DEBUG_PREFIX} data after build`, transactionBlock.getData());
+			console.info(`${SIGNER_DEBUG_PREFIX} gas payment after build`, transactionBlock.getData().gasData.payment);
+			return bytes;
 		}
 
 		if (typeof transactionBlock === 'string') {
@@ -92,16 +98,31 @@ export abstract class WalletSigner {
 		clientIdentifier?: string,
 	): Promise<RtdTransactionBlockResponse> {
 		const bytes = await this.prepareTransactionBlock(input.transactionBlock);
+		console.info(`${SIGNER_DEBUG_PREFIX} prepared transaction bytes`, {
+			byteLength: bytes.length,
+			requestType: input.requestType,
+			options: input.options,
+		});
 		const signed = await this.signTransactionBlock({
 			transactionBlock: bytes,
 		});
+		console.info(`${SIGNER_DEBUG_PREFIX} signature received`, {
+			transactionBlockByteLength: bytes.length,
+			signatureCount: signed.signature ? 1 : 0,
+		});
 
-		return this.client.executeTransactionBlock({
+		console.info(`${SIGNER_DEBUG_PREFIX} executing transaction block`, {
+			requestType: input.requestType,
+			options: input.options,
+		});
+		const response = await this.client.executeTransactionBlock({
 			transactionBlock: bytes,
 			signature: signed.signature,
 			options: input.options,
 			requestType: input.requestType,
 		});
+		console.info(`${SIGNER_DEBUG_PREFIX} execute transaction response`, response);
+		return response;
 	}
 
 	async dryRunTransactionBlock(input: {

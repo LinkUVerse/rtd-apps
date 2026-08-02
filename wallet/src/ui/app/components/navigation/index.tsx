@@ -13,6 +13,16 @@ import * as styles from './Navigation.module.scss';
 // Type assertion to access CSS module classes
 const st = styles as any;
 
+function logNavigationDebug(tab: string, activeAccount?: ReturnType<typeof useActiveAccount>) {
+	console.info('[RTD Wallet Navigation Debug] bottom tab clicked', {
+		tab,
+		isLocked: activeAccount?.isLocked,
+		accountAddress: activeAccount?.address,
+		href: window.location.href,
+		timestamp: new Date().toISOString(),
+	});
+}
+
 export function Navigation() {
 	const isVisible = useAppSelector(getNavIsVisible);
 	const activeAccount = useActiveAccount();
@@ -33,6 +43,7 @@ export function Navigation() {
 					to="/tokens"
 					className={makeLinkClsNoDisabled}
 					title="Home"
+					onClick={() => logNavigationDebug('Home', activeAccount)}
 				>
 					<Tokens32 className="w-8 h-8" />
 					<span className={st.title}>Home</span>
@@ -42,6 +53,7 @@ export function Navigation() {
 					className={makeLinkCls}
 					title="Assets"
 					onClick={(e) => {
+						logNavigationDebug('Assets', activeAccount);
 						if (activeAccount?.isLocked) {
 							e.preventDefault();
 						}
@@ -55,6 +67,7 @@ export function Navigation() {
 					className={makeLinkCls}
 					title="Apps"
 					onClick={(e) => {
+						logNavigationDebug('Apps', activeAccount);
 						if (activeAccount?.isLocked) {
 							e.preventDefault();
 						}
@@ -69,6 +82,7 @@ export function Navigation() {
 					className={makeLinkCls}
 					title="Transactions"
 					onClick={(e) => {
+						logNavigationDebug('Activity', activeAccount);
 						if (activeAccount?.isLocked) {
 							e.preventDefault();
 						}

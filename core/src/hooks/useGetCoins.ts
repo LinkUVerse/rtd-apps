@@ -25,5 +25,8 @@ export function useGetCoins(
 				limit: maxCoinsPerRequest,
 			}),
 		enabled: !!address,
+		staleTime: 0,
+		gcTime: 0,
+		meta: { skipPersistedCache: true },
 	});
 }

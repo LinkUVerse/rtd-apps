@@ -15,6 +15,14 @@ interface Options {
 	coins: CoinStruct[];
 }
 
+function getCoinObjectRefs(coins: CoinStruct[]) {
+	return coins.map((coin) => ({
+		objectId: coin.coinObjectId,
+		digest: coin.digest,
+		version: coin.version,
+	}));
+}
+
 export function createTokenTransferTransaction({
 	to,
 	amount,
@@ -27,15 +35,7 @@ export function createTokenTransferTransaction({
 
 	if (isPayAllRtd && coinType === RTD_TYPE_ARG) {
 		tx.transferObjects([tx.gas], to);
-		tx.setGasPayment(
-			coins
-				.filter((coin) => coin.coinType === coinType)
-				.map((coin) => ({
-					objectId: coin.coinObjectId,
-					digest: coin.digest,
-					version: coin.version,
-				})),
-		);
+		tx.setGasPayment(getCoinObjectRefs(coins.filter((coin) => coin.coinType === coinType)));
 
 		return tx;
 	}
@@ -44,6 +44,7 @@ export function createTokenTransferTransaction({
 	const [primaryCoin, ...mergeCoins] = coins.filter((coin) => coin.coinType === coinType);
 
 	if (coinType === RTD_TYPE_ARG) {
+		tx.setGasPayment(getCoinObjectRefs(coins.filter((coin) => coin.coinType === coinType)));
 		const coin = tx.splitCoins(tx.gas, [bigIntAmount]);
 		tx.transferObjects([coin], to);
 	} else {

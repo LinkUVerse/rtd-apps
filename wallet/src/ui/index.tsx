@@ -44,7 +44,21 @@ async function init() {
 	setAttributes({ apiEnv, customRPC });
 }
 
+function logPopupDebug(label: string) {
+	console.info('[RTD Wallet UI Debug]', label, {
+		href: window.location.href,
+		timestamp: new Date().toISOString(),
+		nodeEnv: process.env.NODE_ENV,
+		visibilityState: document.visibilityState,
+	});
+}
+
 function renderApp() {
+	logPopupDebug('popup page renderApp');
+	for (const delayMs of [1000, 3000, 6000]) {
+		window.setTimeout(() => logPopupDebug(`popup page still alive after ${delayMs}ms`), delayMs);
+	}
+	window.addEventListener('click', () => logPopupDebug('popup page clicked'));
 	const rootDom = document.getElementById('root');
 	if (!rootDom) {
 		throw new Error('Root element not found');
@@ -76,7 +90,8 @@ function AppWrapper() {
 						persistOptions={{
 							persister,
 							dehydrateOptions: {
-								shouldDehydrateQuery: ({ meta }) => !meta?.skipPersistedCache,
+								shouldDehydrateQuery: ({ meta, state }) =>
+									state.status === 'success' && !meta?.skipPersistedCache,
 							},
 						}}
 					>

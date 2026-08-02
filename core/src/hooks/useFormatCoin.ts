@@ -59,7 +59,7 @@ function useSafeFeatureValue<T>(featureId: string, defaultValue: T): T {
 	if (!context?.growthbook) {
 		return defaultValue;
 	}
-	return context.growthbook.getFeatureValue(featureId, defaultValue);
+	return context.growthbook.getFeatureValue(featureId, defaultValue) as T;
 }
 
 export function useCoinMetadata(coinType?: string | null) {

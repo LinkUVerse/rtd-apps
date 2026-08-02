@@ -9,11 +9,16 @@ import Overlay from '_components/overlay';
 import { ampli } from '_src/shared/analytics/ampli';
 import { getSignerOperationErrorMessage } from '_src/ui/app/helpers/errorMessages';
 import { useActiveAccount } from '_src/ui/app/hooks/useActiveAccount';
+import {
+	fetchAllCoins,
+	getAllCoinsQueryKey,
+} from '_src/ui/app/hooks/useGetAllCoins';
 import { useQredoTransaction } from '_src/ui/app/hooks/useQredoTransaction';
 import { useSigner } from '_src/ui/app/hooks/useSigner';
 import { useUnlockedGuard } from '_src/ui/app/hooks/useUnlockedGuard';
 import { QredoActionIgnoredByUser } from '_src/ui/app/QredoSigner';
 import { useCoinMetadata } from 'rtd-apps-core';
+import { useRtdClient } from 'rtd-dapp-kit';
 import { ArrowLeft16, ArrowRight16 } from 'rtd-apps-icons';
 import * as Sentry from '@sentry/react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -25,6 +30,20 @@ import { PreviewTransfer } from './PreviewTransfer';
 import { SendTokenForm } from './SendTokenForm';
 import type { SubmitProps } from './SendTokenForm';
 import { createTokenTransferTransaction } from './utils/transaction';
+
+const TRANSFER_DEBUG_PREFIX = '[RTD Wallet Transfer Debug]';
+
+function isObjectVersionUnavailableError(error: unknown) {
+	const message = getSignerOperationErrorMessage(error);
+	return (
+		message.includes('ObjectVersionUnavailableForConsumption') ||
+		message.includes('is not available for consumption, current version')
+	);
+}
+
+function logTransferDebug(label: string, details: unknown) {
+	console.info(`${TRANSFER_DEBUG_PREFIX} ${label}`, details);
+}
 
 function TransferCoinPage() {
 	const [searchParams] = useSearchParams();
@@ -38,6 +57,14 @@ function TransferCoinPage() {
 	const address = activeAccount?.address;
 	const queryClient = useQueryClient();
 	const { clientIdentifier, notificationModal } = useQredoTransaction();
+	const client = useRtdClient();
+
+	const resetCoinQueries = () => {
+		queryClient.removeQueries({ queryKey: ['get-coins'] });
+		queryClient.removeQueries({ queryKey: ['get-all-coins'] });
+		queryClient.invalidateQueries({ queryKey: ['getAllBalances'] });
+		queryClient.invalidateQueries({ queryKey: ['coin-balance'] });
+	};
 
 	const transaction = useMemo(() => {
 		if (!coinType || !signer || !formData || !address) return null;
@@ -51,36 +78,76 @@ function TransferCoinPage() {
 
 	const executeTransfer = useMutation({
 		mutationFn: async () => {
-			if (!transaction || !signer) {
+			if (!transaction || !signer || !formData || !coinType || !address) {
 				throw new Error('Missing data');
 			}
 
-			return await Sentry.startSpan({
-				name: 'send-tokens',
-			}, async (span) => {
-				try {
-					return signer.signAndExecuteTransactionBlock(
-						{
-							transactionBlock: transaction,
-							options: {
-								showInput: true,
-								showEffects: true,
-								showEvents: true,
+			return await Sentry.startSpan(
+				{
+					name: 'send-tokens',
+				},
+				async (span) => {
+					const executeWithFreshCoins = async () => {
+						const latestCoins = await fetchAllCoins(client, coinType, address);
+						logTransferDebug('fresh coins fetched before signing', {
+							address,
+							coinType,
+							coinCount: latestCoins.length,
+							coins: latestCoins.map((coin) => ({
+								coinObjectId: coin.coinObjectId,
+								version: coin.version,
+								digest: coin.digest,
+								balance: coin.balance,
+								coinType: coin.coinType,
+							})),
+						});
+						queryClient.setQueryData(
+							getAllCoinsQueryKey(coinType, address),
+							latestCoins,
+						);
+						const freshTransaction = createTokenTransferTransaction({
+							coinType,
+							coinDecimals: coinMetadata?.decimals ?? 0,
+							...formData,
+							coins: latestCoins,
+						});
+						logTransferDebug('transaction data before sdk build', freshTransaction.getData());
+						return signer.signAndExecuteTransactionBlock(
+							{
+								transactionBlock: freshTransaction,
+								options: {
+									showInput: true,
+								},
 							},
-						},
-						clientIdentifier,
-					);
-				} catch (error) {
-					if (!(error instanceof QredoActionIgnoredByUser)) {
-						span.setAttributes({ failure: true });
+							clientIdentifier,
+						);
+					};
+
+					try {
+						return await executeWithFreshCoins();
+					} catch (error) {
+						logTransferDebug('transfer failed', {
+							errorMessage: getSignerOperationErrorMessage(error),
+							error,
+						});
+						if (isObjectVersionUnavailableError(error)) {
+							resetCoinQueries();
+							logTransferDebug('retrying after clearing coin queries', {
+								address,
+								coinType,
+							});
+							return await executeWithFreshCoins();
+						}
+						if (!(error instanceof QredoActionIgnoredByUser)) {
+							span.setAttributes({ failure: true });
+						}
+						throw error;
 					}
-					throw error;
-				}
-			});
+				},
+			);
 		},
 		onSuccess: (response) => {
-			queryClient.invalidateQueries({ queryKey: ['get-coins'] });
-			queryClient.invalidateQueries({ queryKey: ['coin-balance'] });
+			resetCoinQueries();
 
 			ampli.sentCoins({
 				coinType: coinType!,
@@ -95,6 +162,7 @@ function TransferCoinPage() {
 			if (error instanceof QredoActionIgnoredByUser) {
 				navigate('/');
 			} else {
+				resetCoinQueries();
 				toast.error(
 					<div className="max-w-xs overflow-hidden flex flex-col">
 						<small className="text-ellipsis overflow-hidden">

@@ -109,6 +109,7 @@ function GasBudgetEstimation({
 			await tx.build({ client });
 			return tx.blockData.gasConfig.budget;
 		},
+		meta: { skipPersistedCache: true },
 	});
 
 	const [formattedGas] = useFormatCoin(gasBudget, RTD_TYPE_ARG);
