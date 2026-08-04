@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Heading } from '_app/shared/heading';
+import { useI18n } from '_app/i18n';
 import { Text } from '_app/shared/text';
 import { useAppSelector } from '_hooks';
 import { FEATURES } from '_src/shared/experimentation/features';
@@ -18,6 +19,7 @@ import { RtdAppEmpty } from './RtdAppEmpty';
 const emptyArray: DAppEntry[] = [];
 
 function ConnectedDapps() {
+	const { t } = useI18n();
 	const backgroundClient = useBackgroundClient();
 	useEffect(() => {
 		backgroundClient.sendGetPermissionRequests();
@@ -63,12 +65,12 @@ function ConnectedDapps() {
 		<Loading loading={loading}>
 			<div className="flex justify-center">
 				<Heading variant="heading6" color="gray-90" weight="semibold">
-					Active Connections
+					{t('apps.activeConnections')}
 				</Heading>
 			</div>
 			<div className="my-4">
 				<Text variant="pBodySmall" color="gray-80" weight="normal">
-					Apps you have connected to through the Rtd Wallet in this browser.
+					{t('apps.connectedDescription')}
 				</Text>
 			</div>
 

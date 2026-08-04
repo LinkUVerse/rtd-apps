@@ -3,6 +3,7 @@
 
 import { useResolveRtdNSName } from '_app/hooks/useAppResolveRtdnsName';
 import { useIsWalletDefiEnabled } from '_app/hooks/useIsWalletDefiEnabled';
+import { useI18n } from '_app/i18n';
 import { LargeButton } from '_app/shared/LargeButton';
 import { Text } from '_app/shared/text';
 import { ButtonOrLink } from '_app/shared/utils/ButtonOrLink';
@@ -56,11 +57,12 @@ type TokenDetailsProps = {
 };
 
 function PinButton({ unpin, onClick }: { unpin?: boolean; onClick: () => void }) {
+	const { t } = useI18n();
 	return (
 		<button
 			type="button"
 			className="border-none bg-transparent text-transparent group-hover/coin:text-steel hover:!text-hero cursor-pointer"
-			aria-label={unpin ? 'Unpin Coin' : 'Pin Coin'}
+			aria-label={unpin ? t('tokens.unpin') : t('tokens.pin')}
 			onClick={(e) => {
 				e.preventDefault();
 				e.stopPropagation();
@@ -104,6 +106,7 @@ export function TokenRow({
 	renderActions?: boolean;
 	onClick?: () => void;
 }) {
+	const { locale, t } = useI18n();
 	const coinType = coinBalance.coinType;
 	const balance = BigInt(coinBalance.totalBalance);
 	const [formatted, symbol, { data: coinMeta }] = useFormatCoin(balance, coinType);
@@ -151,7 +154,7 @@ export function TokenRow({
 									})
 								}
 							>
-								Send
+								{t('tokens.send')}
 							</TokenRowButton>
 							<TokenRowButton
 								coinBalance={coinBalance}
@@ -164,7 +167,7 @@ export function TokenRow({
 									});
 								}}
 							>
-								Swap
+								{t('tokens.swap')}
 							</TokenRowButton>
 						</div>
 					) : (
@@ -189,7 +192,7 @@ export function TokenRow({
 
 				{balanceInUsd && balanceInUsd > 0 ? (
 					<Text variant="subtitle" color="steel-dark" weight="medium">
-						{Number(balanceInUsd).toLocaleString('en', {
+						{Number(balanceInUsd).toLocaleString(locale, {
 							style: 'currency',
 							currency: 'USD',
 						})}
@@ -209,6 +212,7 @@ export function MyTokens({
 	isLoading: boolean;
 	isFetched: boolean;
 }) {
+	const { t } = useI18n();
 	const isDefiWalletEnabled = useIsWalletDefiEnabled();
 	const apiEnv = useAppSelector(({ app }) => app.apiEnv);
 
@@ -222,7 +226,7 @@ export function MyTokens({
 	return (
 		<Loading loading={isFirstTimeLoading}>
 			{recognized.length > 0 && (
-				<TokenList title="My Coins" defaultOpen>
+				<TokenList title={t('tokens.myCoins')} defaultOpen>
 					{recognized.map((coinBalance) =>
 						isDefiWalletEnabled ? (
 							<TokenRow renderActions key={coinBalance.coinType} coinBalance={coinBalance} />
@@ -234,7 +238,7 @@ export function MyTokens({
 			)}
 
 			{pinned.length > 0 && (
-				<TokenList title="Pinned Coins" defaultOpen>
+				<TokenList title={t('tokens.pinnedCoins')} defaultOpen>
 					{pinned.map((coinBalance) => (
 						<TokenLink
 							key={coinBalance.coinType}
@@ -257,8 +261,8 @@ export function MyTokens({
 				<TokenList
 					title={
 						unrecognized.length === 1
-							? `${unrecognized.length} Unrecognized Coin`
-							: `${unrecognized.length} Unrecognized Coins`
+							? t('tokens.unrecognizedCoin', { count: unrecognized.length })
+							: t('tokens.unrecognizedCoins', { count: unrecognized.length })
 					}
 					defaultOpen={apiEnv !== API_ENV.mainnet}
 				>
@@ -266,7 +270,7 @@ export function MyTokens({
 						<TokenLink
 							key={coinBalance.coinType}
 							coinBalance={coinBalance}
-							subtitle="Send"
+							subtitle={t('tokens.send')}
 							centerAction={
 								<PinButton
 									onClick={() => {
@@ -301,6 +305,7 @@ function getFallbackSymbol(coinType: string) {
 }
 
 function TokenDetails({ coinType }: TokenDetailsProps) {
+	const { t } = useI18n();
 	const isDefiWalletEnabled = useIsWalletDefiEnabled();
 	const [interstitialDismissed, setInterstitialDismissed] = useState<boolean>(false);
 	const activeCoinType = coinType || RTD_TYPE_ARG;
@@ -404,8 +409,7 @@ function TokenDetails({ coinType }: TokenDetailsProps) {
 					<Info12 className="shrink-0" />
 					<div className="ml-2">
 						<Text variant="pBodySmall" weight="medium">
-							We're sorry that the app is running slower than usual. We're working to fix the issue
-							and appreciate your patience.
+							{t('tokens.degraded')}
 						</Text>
 					</div>
 				</div>
@@ -443,9 +447,7 @@ function TokenDetails({ coinType }: TokenDetailsProps) {
 										<div className="flex flex-col gap-5">
 											<div className="flex flex-col flex-nowrap justify-center items-center text-center px-2.5">
 												<Text variant="pBodySmall" color="gray-80" weight="normal">
-													{isMainnet
-														? 'Buy RTD to get started'
-														: 'To send transactions on the Rtd network, you need RTD in your wallet.'}
+													{isMainnet ? t('tokens.buyRtd') : t('tokens.needRtd')}
 												</Text>
 											</div>
 											<FaucetRequestButton />
@@ -454,7 +456,7 @@ function TokenDetails({ coinType }: TokenDetailsProps) {
 									{isError ? (
 										<Alert>
 											<div>
-												<strong>Error updating balance</strong>
+												<strong>{t('tokens.balanceError')}</strong>
 											</div>
 										</Alert>
 									) : null}
@@ -463,16 +465,14 @@ function TokenDetails({ coinType }: TokenDetailsProps) {
 											<LargeButton
 												spacing="sm"
 												className={
-													!accountHasRtd && isMainnet
-														? 'col-span-3 !bg-rtd-primaryBlue2023 !text-white'
-														: ''
+													!accountHasRtd && isMainnet ? 'col-span-3 !bg-hero-dark !text-white' : ''
 												}
 												primary={!accountHasRtd}
 												center
 												to="/onramp"
 												disabled={(coinType && coinType !== RTD_TYPE_ARG) || !providers?.length}
 											>
-												Buy
+												{t('tokens.buy')}
 											</LargeButton>
 										) : null}
 
@@ -488,7 +488,7 @@ function TokenDetails({ coinType }: TokenDetailsProps) {
 											}`}
 											disabled={!tokenBalance}
 										>
-											Send
+											{t('tokens.send')}
 										</LargeButton>
 
 										<LargeButton
@@ -513,11 +513,11 @@ function TokenDetails({ coinType }: TokenDetailsProps) {
 												});
 											}}
 										>
-											Swap
+											{t('tokens.swap')}
 										</LargeButton>
 										{!accountHasRtd && (
 											<LargeButton disabled to="/stake" center>
-												Stake
+												{t('tokens.stake')}
 											</LargeButton>
 										)}
 									</div>

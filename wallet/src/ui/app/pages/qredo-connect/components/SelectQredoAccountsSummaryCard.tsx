@@ -7,6 +7,7 @@ import { SummaryCard } from '_components/SummaryCard';
 import { isQredoAccountSerializedUI } from '_src/background/accounts/QredoAccount';
 import { type Wallet } from '_src/shared/qredo-api';
 import { useAccounts } from '_src/ui/app/hooks/useAccounts';
+import { useI18n } from '_src/ui/app/i18n';
 import { Link } from '_src/ui/app/shared/Link';
 import { useEffect, useMemo, useRef } from 'react';
 
@@ -26,6 +27,7 @@ export function SelectQredoAccountsSummaryCard({
 	selectedAccounts,
 	onChange,
 }: SelectQredoAccountsSummaryCardProps) {
+	const { t } = useI18n();
 	const { data, isPending, error } = useFetchQredoAccounts(qredoID, fetchAccountsEnabled);
 	const { data: allAccounts } = useAccounts();
 	const qredoConnectedAccounts = useMemo(
@@ -62,11 +64,11 @@ export function SelectQredoAccountsSummaryCard({
 	}, [qredoConnectedAccounts, data, onChange]);
 	return (
 		<SummaryCard
-			header="Select Qredo accounts"
+			header={t('qredo.selectAccounts')}
 			body={
 				<Loading loading={isPending}>
 					{error ? (
-						<Alert>Failed to fetch accounts. Please try again later.</Alert>
+						<Alert>{t('qredo.fetchFailed')}</Alert>
 					) : data?.length ? (
 						<QredoAccountsSelector
 							accounts={data}
@@ -74,14 +76,14 @@ export function SelectQredoAccountsSummaryCard({
 							onChange={onChange}
 						/>
 					) : (
-						<Alert>No accounts found</Alert>
+						<Alert>{t('qredo.noAccounts')}</Alert>
 					)}
 				</Loading>
 			}
 			footer={
 				<div className="flex items-center justify-center">
 					<Link
-						text="Select All Accounts"
+						text={t('qredo.selectAll')}
 						color="heroDark"
 						weight="medium"
 						size="bodySmall"

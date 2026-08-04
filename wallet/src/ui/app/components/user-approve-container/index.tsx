@@ -3,6 +3,7 @@
 
 import { ampli } from '_src/shared/analytics/ampli';
 import { type PermissionType } from '_src/shared/messaging/messages/payloads/permissions';
+import { useI18n } from '_src/ui/app/i18n';
 import { Transaction } from 'rtd-typescript/transactions';
 import cn from 'clsx';
 import { useMemo, useState } from 'react';
@@ -53,6 +54,7 @@ export function UserApproveContainer({
 	permissions,
 	checkAccountLock,
 }: UserApproveContainerProps) {
+	const { t } = useI18n();
 	const [submitting, setSubmitting] = useState(false);
 	const [scamOverlayDismissed, setScamOverlayDismissed] = useState(false);
 
@@ -154,7 +156,7 @@ export function UserApproveContainer({
 								/>
 							</>
 						) : (
-							<UnlockAccountButton account={selectedAccount} title="Unlock to Approve" />
+							<UnlockAccountButton account={selectedAccount} title={t('dapp.unlockToApprove')} />
 						)}
 					</div>
 				</div>

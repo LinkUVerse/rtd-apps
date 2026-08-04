@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { NUM_OF_EPOCH_BEFORE_STAKING_REWARDS_REDEEMABLE } from '_src/shared/constants';
+import { useI18n, type MessageKey } from '_src/ui/app/i18n';
 import { CountDownTimer } from '_src/ui/app/shared/countdown-timer';
 import { Text } from '_src/ui/app/shared/text';
 import { IconTooltip } from '_src/ui/app/shared/tooltip';
@@ -23,12 +24,12 @@ export enum StakeState {
 	IN_ACTIVE = 'IN_ACTIVE',
 }
 
-const STATUS_COPY = {
-	[StakeState.WARM_UP]: 'Starts Earning',
-	[StakeState.EARNING]: 'Staking Rewards',
-	[StakeState.COOL_DOWN]: 'Available to withdraw',
-	[StakeState.WITHDRAW]: 'Withdraw',
-	[StakeState.IN_ACTIVE]: 'Inactive',
+const STATUS_COPY: Record<StakeState, MessageKey> = {
+	[StakeState.WARM_UP]: 'staking.startsEarning',
+	[StakeState.EARNING]: 'staking.rewards',
+	[StakeState.COOL_DOWN]: 'staking.availableWithdraw',
+	[StakeState.WITHDRAW]: 'staking.withdraw',
+	[StakeState.IN_ACTIVE]: 'staking.inactive',
 };
 
 const STATUS_VARIANT = {
@@ -51,9 +52,9 @@ const cardStyle = cva(
 		variants: {
 			variant: {
 				warmUp:
-					'bg-white border border-gray-45 text-steel-dark hover:bg-rtd/10 hover:border-rtd/30',
+					'theme-surface border border-gray-45 text-steel-dark hover:bg-rtd/10 hover:border-rtd/30',
 				earning:
-					'bg-white border border-gray-45 text-steel-dark hover:bg-rtd/10 hover:border-rtd/30',
+					'theme-surface border border-gray-45 text-steel-dark hover:bg-rtd/10 hover:border-rtd/30',
 				coolDown: 'bg-warning-light border-transparent text-steel-darker hover:border-warning',
 				withDraw: 'bg-success-light border-transparent text-success-dark hover:border-success',
 				inActive: 'bg-issue-light border-transparent text-issue hover:border-issue',
@@ -78,6 +79,7 @@ function StakeCardContent({
 	earnColor,
 	earningRewardEpoch,
 }: StakeCardContentProps) {
+	const { t } = useI18n();
 	const { data: rewardEpochTime } = useGetTimeBeforeEpochNumber(earningRewardEpoch || 0);
 	return (
 		<div className={cardStyle({ variant })}>
@@ -86,7 +88,11 @@ function StakeCardContent({
 				<div className="text-subtitle font-medium">{statusLabel}</div>
 				<div className={cx('text-bodySmall font-semibold', earnColor ? 'text-success-dark' : '')}>
 					{earningRewardEpoch && rewardEpochTime > 0 ? (
-						<CountDownTimer timestamp={rewardEpochTime} variant="bodySmall" label="in" />
+						<CountDownTimer
+							timestamp={rewardEpochTime}
+							variant="bodySmall"
+							label={t('staking.in')}
+						/>
 					) : (
 						statusText
 					)}
@@ -109,6 +115,7 @@ export function StakeCard({
 	currentEpoch,
 	inactiveValidator = false,
 }: StakeCardProps) {
+	const { t } = useI18n();
 	const { stakedRtdId, principal, stakeRequestEpoch, estimatedReward, validatorAddress } =
 		delegationObject;
 
@@ -139,12 +146,12 @@ export function StakeCard({
 
 	const statusText = {
 		// Epoch time before earning
-		[StakeState.WARM_UP]: `Epoch #${earningRewardsEpoch}`,
+		[StakeState.WARM_UP]: t('staking.epochNumber', { count: earningRewardsEpoch }),
 		[StakeState.EARNING]: `${rewardsStaked} ${symbol}`,
 		// Epoch time before redrawing
-		[StakeState.COOL_DOWN]: `Epoch #`,
-		[StakeState.WITHDRAW]: 'Now',
-		[StakeState.IN_ACTIVE]: 'Not earning rewards',
+		[StakeState.COOL_DOWN]: t('staking.availableWithdraw'),
+		[StakeState.WITHDRAW]: t('staking.now'),
+		[StakeState.IN_ACTIVE]: t('staking.notEarning'),
 	};
 
 	return (
@@ -158,7 +165,7 @@ export function StakeCard({
 		>
 			<StakeCardContent
 				variant={STATUS_VARIANT[delegationState]}
-				statusLabel={STATUS_COPY[delegationState]}
+				statusLabel={t(STATUS_COPY[delegationState])}
 				statusText={statusText[delegationState]}
 				earnColor={isEarning}
 				earningRewardEpoch={Number(epochBeforeRewards)}
@@ -173,10 +180,7 @@ export function StakeCard({
 					/>
 
 					<div className="text-steel text-pBody opacity-0 group-hover:opacity-100">
-						<IconTooltip
-							tip="Object containing the delegated staked RTD tokens, owned by each delegator"
-							placement="top"
-						/>
+						<IconTooltip tip={t('staking.objectDescription')} placement="top" />
 					</div>
 				</div>
 				<div className="flex-1">

@@ -10,6 +10,7 @@ import {
 } from '_src/shared/constants';
 import { Text } from '_src/ui/app/shared/text';
 import { IconTooltip } from '_src/ui/app/shared/tooltip';
+import { useI18n } from '_src/ui/app/i18n';
 import {
 	calculateStakeShare,
 	formatPercentageDisplay,
@@ -32,6 +33,7 @@ type ValidatorFormDetailProps = {
 };
 
 export function ValidatorFormDetail({ validatorAddress, unstake }: ValidatorFormDetailProps) {
+	const { t } = useI18n();
 	const accountAddress = useActiveAddress();
 
 	const [searchParams] = useSearchParams();
@@ -104,7 +106,7 @@ export function ValidatorFormDetail({ validatorAddress, unstake }: ValidatorForm
 			<div className="p-2">
 				<Alert>
 					<div className="mb-1 font-semibold">
-						{error?.message ?? 'Error loading validator data'}
+						{error?.message ?? t('staking.validatorLoadError')}
 					</div>
 				</Alert>
 			</div>
@@ -125,7 +127,7 @@ export function ValidatorFormDetail({ validatorAddress, unstake }: ValidatorForm
 						!unstake && (
 							<>
 								<Text variant="body" weight="medium" color="steel-darker">
-									Your Staked RTD
+									{t('staking.yourStakedRtd')}
 								</Text>
 
 								<StakeAmount balance={totalStake} variant="body" />
@@ -137,12 +139,9 @@ export function ValidatorFormDetail({ validatorAddress, unstake }: ValidatorForm
 						<div className="flex gap-2 items-center justify-between">
 							<div className="flex gap-1 items-center text-steel">
 								<Text variant="body" weight="medium" color="steel-darker">
-									Staking APY
+									{t('staking.apy')}
 								</Text>
-								<IconTooltip
-									noFullWidth
-									tip="This is the Annualized Percentage Yield of the a specific validator’s past operations. Note there is no guarantee this APY will be true in the future."
-								/>
+								<IconTooltip noFullWidth tip={t('staking.apyDescription')} />
 							</div>
 
 							<Text variant="body" weight="semibold" color="gray-90">
@@ -152,12 +151,9 @@ export function ValidatorFormDetail({ validatorAddress, unstake }: ValidatorForm
 						<div className="flex gap-2 items-center justify-between">
 							<div className="flex gap-1 items-center text-steel">
 								<Text variant="body" weight="medium" color="steel-darker">
-									Stake Share
+									{t('staking.stakeShare')}
 								</Text>
-								<IconTooltip
-									noFullWidth
-									tip="The percentage of total stake managed by this validator"
-								/>
+								<IconTooltip noFullWidth tip={t('staking.stakeShareDescription')} />
 							</div>
 
 							<Text variant="body" weight="semibold" color="gray-90">
@@ -169,12 +165,9 @@ export function ValidatorFormDetail({ validatorAddress, unstake }: ValidatorForm
 							<div className="flex gap-2 items-center justify-between mb-3.5">
 								<div className="flex gap-1 items-center text-steel">
 									<Text variant="body" weight="medium" color="steel-darker">
-										Total Staked
+										{t('staking.totalStaked')}
 									</Text>
-									<IconTooltip
-										noFullWidth
-										tip="The total RTD staked on the network by this validator and its delegators, to validate the network and earn rewards."
-									/>
+									<IconTooltip noFullWidth tip={t('staking.totalStakedDescription')} />
 								</div>
 								<StakeAmount balance={totalValidatorStake} variant="body" />
 							</div>

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { DateCard } from '_app/shared/date-card';
+import { useI18n } from '_app/i18n';
 import { Text } from '_app/shared/text';
 import { useGetTxnRecipientAddress } from '_hooks';
 import { useRecognizedPackages } from '_src/ui/app/hooks/useRecognizedPackages';
@@ -19,6 +20,7 @@ export function TransactionCard({
 	txn: RtdTransactionBlockResponse;
 	address: string;
 }) {
+	const { t } = useI18n();
 	const executionStatus = txn.effects?.status.status;
 	const recognizedPackagesList = useRecognizedPackages();
 
@@ -68,7 +70,7 @@ export function TransactionCard({
 						<div className="flex w-full justify-between">
 							<div className="flex flex-col w-full gap-1.5">
 								<Text color="gray-90" weight="medium">
-									Transaction Failed
+									{t('receipt.failed')}
 								</Text>
 
 								<div className="flex break-all">

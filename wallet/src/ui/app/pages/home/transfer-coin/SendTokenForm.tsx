@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { useActiveAddress } from '_app/hooks/useActiveAddress';
+import { useI18n } from '_app/i18n';
 import BottomMenuLayout, { Content, Menu } from '_app/shared/bottom-menu-layout';
 import { Button } from '_app/shared/ButtonUI';
 import { Text } from '_app/shared/text';
@@ -63,6 +64,7 @@ function GasBudgetEstimation({
 	coinDecimals: number;
 	coins: CoinStruct[];
 }) {
+	const { t } = useI18n();
 	const activeAddress = useActiveAddress();
 	const { values, setFieldValue } = useFormikContext<FormValues>();
 	const rtdNSEnabled = useRtdNSEnabled();
@@ -123,7 +125,7 @@ function GasBudgetEstimation({
 		<div className="px-2 my-2 flex w-full gap-2 justify-between">
 			<div className="flex gap-1">
 				<Text variant="body" color="gray-80" weight="medium">
-					Estimated Gas Fees
+					{t('transfer.estimatedGas')}
 				</Text>
 			</div>
 			<Text variant="body" color="gray-90" weight="medium">
@@ -142,6 +144,7 @@ export function SendTokenForm({
 	initialAmount = '',
 	initialTo = '',
 }: SendTokenFormProps) {
+	const { t } = useI18n();
 	const client = useRtdClient();
 	const activeAddress = useActiveAddress();
 	// Get all coins of the type
@@ -237,7 +240,7 @@ export function SendTokenForm({
 									<div className="w-full flex flex-col flex-grow">
 										<div className="px-2 mb-2.5">
 											<Text variant="caption" color="steel" weight="semibold">
-												Select Coin Amount to Send
+												{t('transfer.selectAmount')}
 											</Text>
 										</div>
 
@@ -247,7 +250,7 @@ export function SendTokenForm({
 											name="amount"
 											placeholder="0.00"
 											prefix={values.isPayAllRtd ? '~ ' : ''}
-											actionText="Max"
+											actionText={t('common.max')}
 											suffix={` ${symbol}`}
 											actionType="button"
 											allowNegative={false}
@@ -268,7 +271,7 @@ export function SendTokenForm({
 									</div>
 									{!hasEnoughBalance && isValid ? (
 										<div className="mt-3">
-											<Alert>Insufficient RTD to cover transaction</Alert>
+											<Alert>{t('transfer.insufficientGas')}</Alert>
 										</div>
 									) : null}
 
@@ -277,11 +280,15 @@ export function SendTokenForm({
 									<div className="w-full flex gap-2.5 flex-col mt-7.5">
 										<div className="px-2 tracking-wider">
 											<Text variant="caption" color="steel" weight="semibold">
-												Enter Recipient Address
+												{t('transfer.recipient')}
 											</Text>
 										</div>
 										<div className="w-full flex relative items-center flex-col">
-											<Field component={AddressInput} name="to" placeholder="Enter Address" />
+											<Field
+												component={AddressInput}
+												name="to"
+												placeholder={t('transfer.addressPlaceholder')}
+											/>
 										</div>
 									</div>
 								</Form>
@@ -296,7 +303,7 @@ export function SendTokenForm({
 										!isValid || isSubmitting || !hasEnoughBalance || values.gasBudgetEst === ''
 									}
 									size="tall"
-									text="Review"
+									text={t('common.review')}
 									after={<ArrowRight16 />}
 								/>
 							</Menu>

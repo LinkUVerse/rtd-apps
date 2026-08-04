@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ampli } from '_src/shared/analytics/ampli';
+import { useI18n } from '_app/i18n';
 import { Collapsible } from '_src/ui/app/shared/collapse';
 import { Filter16, Plus12 } from 'rtd-apps-icons';
 import * as ToggleGroup from '@radix-ui/react-toggle-group';
@@ -17,6 +18,7 @@ import { AccountListItem } from './AccountListItem';
 import { FooterLink } from './FooterLink';
 
 export function AccountsList() {
+	const { t } = useI18n();
 	const accountGroups = useAccountGroups();
 	const accounts = accountGroups.list();
 	const activeAccount = useActiveAccount();
@@ -49,7 +51,7 @@ export function AccountsList() {
 			)}
 		>
 			<Heading variant="heading5" weight="semibold" color="steel-darker">
-				Accounts
+				{t('accounts.accounts')}
 			</Heading>
 
 			<ToggleGroup.Root
@@ -59,7 +61,7 @@ export function AccountsList() {
 				onValueChange={handleSelectAccount}
 			>
 				<>
-					<Collapsible defaultOpen title="Current" shade="darker">
+					<Collapsible defaultOpen title={t('accounts.current')} shade="darker">
 						<ToggleGroup.Item asChild value={activeAccount.id}>
 							<div>
 								<AccountListItem account={activeAccount} editable showLock />
@@ -71,7 +73,7 @@ export function AccountsList() {
 						<Collapsible
 							isOpen={isSwitchToAccountOpen}
 							onOpenChange={setIsSwitchToAccountOpen}
-							title="Switch To"
+							title={t('accounts.switchTo')}
 							shade="darker"
 						>
 							<div className="flex flex-col gap-3">
@@ -91,8 +93,18 @@ export function AccountsList() {
 			</ToggleGroup.Root>
 
 			<div className="flex justify-between">
-				<FooterLink color="steelDarker" icon={<Filter16 />} to="/accounts/manage" text="Manage" />
-				<FooterLink color="steelDarker" icon={<Plus12 />} to="/accounts/add-account" text="Add" />
+				<FooterLink
+					color="steelDarker"
+					icon={<Filter16 />}
+					to="/accounts/manage"
+					text={t('accounts.manage')}
+				/>
+				<FooterLink
+					color="steelDarker"
+					icon={<Plus12 />}
+					to="/accounts/add-account"
+					text={t('accounts.add')}
+				/>
 			</div>
 		</div>
 	);

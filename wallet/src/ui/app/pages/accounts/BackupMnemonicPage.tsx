@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Button } from '_app/shared/ButtonUI';
+import { useI18n } from '_app/i18n';
 import { CardLayout } from '_app/shared/card-layout';
 import { Text } from '_app/shared/text';
 import Alert from '_components/alert';
@@ -16,6 +17,7 @@ import { useAccountSources } from '../../hooks/useAccountSources';
 import { useExportPassphraseMutation } from '../../hooks/useExportPassphraseMutation';
 
 export function BackupMnemonicPage() {
+	const { t } = useI18n();
 	const [passwordCopied, setPasswordCopied] = useState(false);
 	const { state } = useLocation();
 	const { accountSourceID } = useParams();
@@ -72,18 +74,18 @@ export function BackupMnemonicPage() {
 			) : (
 				<CardLayout
 					icon={isOnboardingFlow ? 'success' : undefined}
-					title={isOnboardingFlow ? 'Wallet Created Successfully!' : 'Backup Recovery Phrase'}
+					title={isOnboardingFlow ? t('accounts.walletCreated') : t('accounts.backupRecovery')}
 				>
 					<div className="flex flex-col flex-nowrap flex-grow h-full w-full">
 						<div className="flex flex-col flex-nowrap flex-grow mb-5">
 							<div className="mb-1 mt-7.5 text-center">
 								<Text variant="caption" color="steel-darker" weight="bold">
-									Recovery phrase
+									{t('accounts.recoveryPhrase')}
 								</Text>
 							</div>
 							<div className="mb-3.5 mt-2 text-center">
 								<Text variant="pBodySmall" color="steel-dark" weight="normal">
-									Your recovery phrase makes it easy to back up and restore your account.
+									{t('accounts.recoveryDescription')}
 								</Text>
 							</div>
 							<Loading loading={passphraseMutation.isPending}>
@@ -91,19 +93,18 @@ export function BackupMnemonicPage() {
 									<HideShowDisplayBox value={passphraseMutation.data} hideCopy />
 								) : (
 									<Alert>
-										{(passphraseMutation.error as Error)?.message || 'Something went wrong'}
+										{(passphraseMutation.error as Error)?.message || t('common.somethingWrong')}
 									</Alert>
 								)}
 							</Loading>
 							<div className="mt-3.75 mb-1 text-center">
 								<Text variant="caption" color="steel-dark" weight="semibold">
-									Warning
+									{t('accounts.warning')}
 								</Text>
 							</div>
 							<div className="mb-1 text-center">
 								<Text variant="pBodySmall" color="steel-dark" weight="normal">
-									Never disclose your secret recovery phrase. Anyone can take over your account with
-									it.
+									{t('accounts.recoveryWarning')}
 								</Text>
 							</div>
 							<div className="flex-1" />
@@ -122,7 +123,7 @@ export function BackupMnemonicPage() {
 										</span>
 
 										<Text variant="bodySmall" color="steel-dark" weight="normal">
-											I saved my recovery phrase
+											{t('accounts.recoverySaved')}
 										</Text>
 									</label>
 								</div>
@@ -134,7 +135,7 @@ export function BackupMnemonicPage() {
 							variant="primary"
 							disabled={!passwordCopied && isOnboardingFlow}
 							to="/"
-							text="Open Rtd Wallet"
+							text={t('accounts.openWallet')}
 							after={<ArrowLeft16 className="text-pBodySmall font-normal rotate-135" />}
 						/>
 					</div>

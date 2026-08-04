@@ -42,7 +42,7 @@ const TS_CONFIGS_ROOT = resolve(CONFIGS_ROOT, 'ts');
 const IS_DEV = process.env.NODE_ENV === 'development';
 const IS_PROD = process.env.NODE_ENV === 'production';
 const TS_CONFIG_FILE = resolve(TS_CONFIGS_ROOT, `tsconfig.${IS_DEV ? 'dev' : 'prod'}.json`);
-const APP_NAME = WALLET_BETA ? 'Rtd Wallet (BETA)' : IS_DEV ? 'Rtd Wallet (DEV)' : 'Rtd Wallet';
+const APP_NAME = WALLET_BETA ? 'RTD Wallet (BETA)' : IS_DEV ? 'RTD Wallet (DEV)' : 'RTD Wallet';
 
 function loadTsConfig(tsConfigFilePath: string) {
 	return new Promise<string>((res, rej) => {

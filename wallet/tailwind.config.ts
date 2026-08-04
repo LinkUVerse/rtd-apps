@@ -20,8 +20,25 @@ export default {
 		extend: {
 			colors: {
 				black: '#000000',
-				'gradient-blue-start': '#589AEA',
-				'gradient-blue-end': '#4C75A6',
+				'gradient-blue-start': 'rgb(var(--rtd-primary-light-rgb) / <alpha-value>)',
+				'gradient-blue-end': 'rgb(var(--rtd-primary-dark-rgb) / <alpha-value>)',
+				rtd: {
+					DEFAULT: 'rgb(var(--rtd-primary-rgb) / <alpha-value>)',
+					bright: 'rgb(var(--rtd-secondary-rgb) / <alpha-value>)',
+					light: 'rgb(var(--rtd-primary-soft-rgb) / <alpha-value>)',
+					lightest: 'rgb(var(--rtd-primary-subtle-rgb) / <alpha-value>)',
+					dark: 'rgb(var(--rtd-primary-dark-rgb) / <alpha-value>)',
+				},
+				steel: {
+					DEFAULT: 'rgb(var(--rtd-steel-rgb) / <alpha-value>)',
+					dark: 'rgb(var(--rtd-steel-dark-rgb) / <alpha-value>)',
+					darker: 'rgb(var(--rtd-steel-darker-rgb) / <alpha-value>)',
+				},
+				hero: {
+					DEFAULT: 'rgb(var(--rtd-primary-light-rgb) / <alpha-value>)',
+					dark: 'rgb(var(--rtd-primary-rgb) / <alpha-value>)',
+					darkest: 'rgb(var(--rtd-primary-dark-rgb) / <alpha-value>)',
+				},
 				facebook: '#1877F2',
 				twitch: '#6441A5',
 				kakao: '#FEE500',
@@ -40,7 +57,7 @@ export default {
 				'nav-height': '80px',
 			},
 			boxShadow: {
-				'wallet-content': '0px -5px 20px 5px rgba(160, 182, 195, 0.15)',
+				'wallet-content': 'var(--rtd-elevated-shadow)',
 				button: '0px 1px 2px rgba(16, 24, 40, 0.05)',
 				notification: '0px 0px 20px rgba(29, 55, 87, 0.11)',
 				'wallet-modal': '0px 0px 44px 0px rgba(0, 0, 0, 0.15)',
@@ -72,6 +89,8 @@ export default {
 			backgroundImage: {
 				google: 'url(_assets/images/google-background.png)',
 				'twitch-image': 'linear-gradient(165deg, #ECE5FA 5.6%, #C8BAE2 89.58%);',
+				'gradients-graph-cards': 'var(--rtd-shell-background)',
+				objectCard: 'var(--rtd-card-background)',
 			},
 		},
 	},

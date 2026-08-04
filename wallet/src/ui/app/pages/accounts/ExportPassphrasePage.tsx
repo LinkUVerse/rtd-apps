@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import Alert from '_components/alert';
+import { useI18n } from '_app/i18n';
 import { HideShowDisplayBox } from '_components/HideShowDisplayBox';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 
@@ -12,6 +13,7 @@ import { useAccountSources } from '../../hooks/useAccountSources';
 import { useExportPassphraseMutation } from '../../hooks/useExportPassphraseMutation';
 
 export function ExportPassphrasePage() {
+	const { t } = useI18n();
 	const { accountSourceID } = useParams();
 	const { data: allAccountSources, isPending } = useAccountSources();
 	const accountSource = allAccountSources?.find(({ id }) => id === accountSourceID) || null;
@@ -21,17 +23,18 @@ export function ExportPassphrasePage() {
 		return <Navigate to="/accounts/manage" />;
 	}
 	return (
-		<Overlay title="Export Passphrase" closeOverlay={() => navigate(-1)} showModal>
+		<Overlay title={t('accounts.exportPassphrase')} closeOverlay={() => navigate(-1)} showModal>
 			<Loading loading={isPending}>
 				{exportMutation.data ? (
 					<div className="flex flex-col gap-3 min-w-0">
 						<Alert>
-							<div className="break-normal">Do not share your Passphrase!</div>
-							<div className="break-normal">
-								It provides full control of all accounts derived from it.
-							</div>
+							<div className="break-normal">{t('accounts.passphraseWarning')}</div>
+							<div className="break-normal">{t('accounts.passphraseControl')}</div>
 						</Alert>
-						<HideShowDisplayBox value={exportMutation.data} copiedMessage="Passphrase copied" />
+						<HideShowDisplayBox
+							value={exportMutation.data}
+							copiedMessage={t('accounts.passphraseCopied')}
+						/>
 					</div>
 				) : (
 					<VerifyPasswordModal

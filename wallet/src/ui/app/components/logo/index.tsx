@@ -1,25 +1,37 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
+import { useI18n, type MessageKey } from '_app/i18n';
 import { API_ENV } from '_src/shared/api-env';
-import { RtdCustomRpc, RtdDevnet, RtdLocal, RtdMainnet, RtdTestnet } from 'rtd-apps-icons';
 
 type LogoProps = {
 	networkName?: API_ENV;
 };
 
-const networkLogos = {
-	[API_ENV.mainnet]: RtdMainnet,
-	[API_ENV.devNet]: RtdDevnet,
-	[API_ENV.testNet]: RtdTestnet,
-	[API_ENV.local]: RtdLocal,
-	[API_ENV.customRPC]: RtdCustomRpc,
+const networkLabelKeys: Record<API_ENV, MessageKey> = {
+	[API_ENV.mainnet]: 'network.mainnet',
+	[API_ENV.devNet]: 'network.devNet',
+	[API_ENV.testNet]: 'network.testNet',
+	[API_ENV.local]: 'network.local',
+	[API_ENV.customRPC]: 'network.customRPC',
 };
 
 const Logo = ({ networkName }: LogoProps) => {
-	const LogoComponent = networkName ? networkLogos[networkName] : networkLogos[API_ENV.mainnet];
+	const { t } = useI18n();
+	const activeNetwork = networkName || API_ENV.mainnet;
+	const networkLabel = t(networkLabelKeys[activeNetwork]);
 
-	return <LogoComponent className="h-7 w-walletLogo text-gray-90" />;
+	return (
+		<span className="rtd-wordmark" aria-label={`${t('brand.wallet')} · ${networkLabel}`}>
+			<span className="rtd-wordmark__mark" aria-hidden="true">
+				R
+			</span>
+			<span className="rtd-wordmark__name">{t('brand.name')}</span>
+			{activeNetwork !== API_ENV.mainnet ? (
+				<span className="rtd-wordmark__network">{networkLabel}</span>
+			) : null}
+		</span>
+	);
 };
 
 export default Logo;

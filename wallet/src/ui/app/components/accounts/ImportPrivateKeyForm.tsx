@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Button } from '_app/shared/ButtonUI';
+import { useI18n } from '_app/i18n';
 import { useZodForm } from 'rtd-apps-core';
 import { type SubmitHandler } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
@@ -22,6 +23,7 @@ type ImportPrivateKeyFormProps = {
 };
 
 export function ImportPrivateKeyForm({ onSubmit }: ImportPrivateKeyFormProps) {
+	const { t } = useI18n();
 	const form = useZodForm({
 		mode: 'onTouched',
 		schema: formSchema,
@@ -33,16 +35,21 @@ export function ImportPrivateKeyForm({ onSubmit }: ImportPrivateKeyFormProps) {
 	const navigate = useNavigate();
 	return (
 		<Form className="flex flex-col h-full gap-2" form={form} onSubmit={onSubmit}>
-			<TextAreaField label="Enter Private Key" rows={4} {...register('privateKey')} />
+			<TextAreaField label={t('accounts.enterPrivateKey')} rows={4} {...register('privateKey')} />
 			<div className="flex gap-2.5 mt-auto">
-				<Button variant="outline" size="tall" text="Cancel" onClick={() => navigate(-1)} />
+				<Button
+					variant="outline"
+					size="tall"
+					text={t('common.cancel')}
+					onClick={() => navigate(-1)}
+				/>
 				<Button
 					type="submit"
 					disabled={isSubmitting || !isValid}
 					variant="primary"
 					size="tall"
 					loading={isSubmitting}
-					text="Add Account"
+					text={t('accounts.addAccount')}
 				/>
 			</div>
 		</Form>

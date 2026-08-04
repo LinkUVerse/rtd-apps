@@ -36,6 +36,7 @@ import { useActiveAccount } from '../../hooks/useActiveAccount';
 import { useQredoTransaction } from '../../hooks/useQredoTransaction';
 import { useSigner } from '../../hooks/useSigner';
 import { QredoActionIgnoredByUser } from '../../QredoSigner';
+import { useI18n } from '../../i18n';
 import { getDelegationDataByStakeId } from '../getDelegationByStakeId';
 import { getStakeRtdByRtdId } from '../getStakeRtdByRtdId';
 import StakeForm from './StakeForm';
@@ -51,6 +52,7 @@ const initialValues = {
 export type FormValues = typeof initialValues;
 
 function StakingCard() {
+	const { t } = useI18n();
 	const coinType = RTD_TYPE_ARG;
 	const activeAccount = useActiveAccount();
 	const accountAddress = activeAccount?.address;
@@ -128,25 +130,28 @@ function StakingCard() {
 				throw new Error('Failed, missing required field');
 			}
 
-			return await Sentry.startSpan({
-				name: 'stake',
-			}, async () => {
-				const transactionBlock = createStakeTransaction(amount, validatorAddress);
-				return await signer.signAndExecuteTransactionBlock(
-					{
-						transactionBlock,
-						requestType: effectsOnlySharedTransactions
-							? 'WaitForEffectsCert'
-							: 'WaitForLocalExecution',
-						options: {
-							showInput: true,
-							showEffects: true,
-							showEvents: true,
+			return await Sentry.startSpan(
+				{
+					name: 'stake',
+				},
+				async () => {
+					const transactionBlock = createStakeTransaction(amount, validatorAddress);
+					return await signer.signAndExecuteTransactionBlock(
+						{
+							transactionBlock,
+							requestType: effectsOnlySharedTransactions
+								? 'WaitForEffectsCert'
+								: 'WaitForLocalExecution',
+							options: {
+								showInput: true,
+								showEffects: true,
+								showEvents: true,
+							},
 						},
-					},
-					clientIdentifier,
-				);
-			});
+						clientIdentifier,
+					);
+				},
+			);
 		},
 		onSuccess: (_, { amount, validatorAddress }) => {
 			ampli.stakedRtd({
@@ -162,25 +167,28 @@ function StakingCard() {
 				throw new Error('Failed, missing required field.');
 			}
 
-			return await Sentry.startSpan({
-				name: 'unstake',
-			}, async () => {
-				const transactionBlock = createUnstakeTransaction(stakedRtdId);
-				return await signer.signAndExecuteTransactionBlock(
-					{
-						transactionBlock,
-						requestType: effectsOnlySharedTransactions
-							? 'WaitForEffectsCert'
-							: 'WaitForLocalExecution',
-						options: {
-							showInput: true,
-							showEffects: true,
-							showEvents: true,
+			return await Sentry.startSpan(
+				{
+					name: 'unstake',
+				},
+				async () => {
+					const transactionBlock = createUnstakeTransaction(stakedRtdId);
+					return await signer.signAndExecuteTransactionBlock(
+						{
+							transactionBlock,
+							requestType: effectsOnlySharedTransactions
+								? 'WaitForEffectsCert'
+								: 'WaitForLocalExecution',
+							options: {
+								showInput: true,
+								showEffects: true,
+								showEvents: true,
+							},
 						},
-					},
-					clientIdentifier,
-				);
-			});
+						clientIdentifier,
+					);
+				},
+			);
 		},
 		onSuccess: () => {
 			ampli.unstakedRtd({
@@ -247,7 +255,9 @@ function StakingCard() {
 				} else {
 					toast.error(
 						<div className="max-w-xs overflow-hidden flex flex-col">
-							<strong>{unstake ? 'Unstake' : 'Stake'} failed</strong>
+							<strong>
+								{unstake ? t('staking.unstakeRtd') : t('staking.stakeRtd')} {t('common.failed')}
+							</strong>
 							<small className="text-ellipsis overflow-hidden">
 								{getSignerOperationErrorMessage(error)}
 							</small>
@@ -267,6 +277,7 @@ function StakingCard() {
 			stakeRtdIdParams,
 			unStakeToken,
 			stakeToken,
+			t,
 		],
 	);
 
@@ -314,11 +325,9 @@ function StakingCard() {
 
 								{!unstake && (
 									<div className="flex-1 mt-7.5">
-										<Collapsible title="Staking Rewards" defaultOpen>
+										<Collapsible title={t('staking.rewards')} defaultOpen>
 											<Text variant="pSubtitle" color="steel-dark" weight="normal">
-												Staked RTD starts counting as validator’s stake at the end of the Epoch in
-												which it was staked. Rewards are earned separately for each Epoch and become
-												available at the end of each Epoch.
+												{t('staking.rewardsDescription')}
 											</Text>
 										</Collapsible>
 									</div>
@@ -332,7 +341,7 @@ function StakingCard() {
 									to="/stake"
 									disabled={isSubmitting}
 									before={<ArrowLeft16 />}
-									text="Back"
+									text={t('common.back')}
 								/>
 								<Button
 									size="tall"
@@ -340,7 +349,7 @@ function StakingCard() {
 									onClick={submitForm}
 									disabled={!isValid || isSubmitting || (unstake && !delegationId)}
 									loading={isSubmitting}
-									text={unstake ? 'Unstake Now' : 'Stake Now'}
+									text={unstake ? t('staking.unstakeNow') : t('staking.stakeNow')}
 								/>
 							</Menu>
 						</BottomMenuLayout>

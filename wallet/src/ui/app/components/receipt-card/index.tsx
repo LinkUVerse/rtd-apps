@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { useRecognizedPackages } from '_src/ui/app/hooks/useRecognizedPackages';
+import { useI18n } from '_src/ui/app/i18n';
 import { useTransactionSummary } from 'rtd-apps-core';
 import { type RtdTransactionBlockResponse } from 'rtd-typescript/client';
 
@@ -19,11 +20,13 @@ type ReceiptCardProps = {
 };
 
 function TransactionStatus({ success, timestamp }: { success: boolean; timestamp?: string }) {
+	const { t } = useI18n();
+
 	return (
 		<div className="flex flex-col gap-3 items-center justify-center mb-4">
 			<StatusIcon status={success} />
 			<span data-testid="transaction-status" className="sr-only">
-				{success ? 'Transaction Success' : 'Transaction Failed'}
+				{success ? t('receipt.success') : t('receipt.failed')}
 			</span>
 			{timestamp && <DateCard timestamp={Number(timestamp)} size="md" />}
 		</div>

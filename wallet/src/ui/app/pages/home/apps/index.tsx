@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Content } from '_app/shared/bottom-menu-layout';
+import { useI18n } from '_app/i18n';
 import FiltersPortal from '_components/filters-tags';
 import AppsPlayGround, { ConnectedAppsCard } from '_components/rtd-apps';
 import { getFromSessionStorage, setToSessionStorage } from '_src/background/storage-utils';
@@ -25,15 +26,16 @@ type FilterTag = {
 };
 
 function AppsPage() {
+	const { t } = useI18n();
 	const navigate = useNavigate();
 
 	const defaultFilterTags: FilterTag[] = [
 		{
-			name: 'Connections',
+			name: t('apps.connections'),
 			link: 'apps/connected',
 		},
 		{
-			name: 'All',
+			name: t('apps.all'),
 			link: 'apps',
 		},
 	];

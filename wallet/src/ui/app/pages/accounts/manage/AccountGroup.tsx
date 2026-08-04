@@ -1,6 +1,7 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 import { type AccountType, type SerializedUIAccount } from '_src/background/accounts/Account';
+import { useI18n, type MessageKey } from '_app/i18n';
 import { type ZkLoginProvider } from '_src/background/accounts/zklogin/providers';
 import { isZkLoginAccountSerializedUI } from '_src/background/accounts/zklogin/ZkLoginAccount';
 import { AccountIcon } from '_src/ui/app/components/accounts/AccountIcon';
@@ -44,11 +45,21 @@ const providerToLabel: Record<ZkLoginProvider, string> = {
 	kakao: 'Kakao',
 };
 
-export function getGroupTitle(aGroupAccount: SerializedUIAccount) {
+export function getGroupTitle(
+	aGroupAccount: SerializedUIAccount,
+	translate?: (key: MessageKey) => string,
+) {
 	// TODO: revisit this logic for determining account provider
-	return isZkLoginAccountSerializedUI(aGroupAccount)
-		? providerToLabel[aGroupAccount?.provider] ?? 'zkLogin'
-		: accountTypeToLabel[aGroupAccount?.type] || '';
+	if (isZkLoginAccountSerializedUI(aGroupAccount)) {
+		return providerToLabel[aGroupAccount?.provider] ?? 'zkLogin';
+	}
+	if (translate && aGroupAccount.type === 'mnemonic-derived') {
+		return translate('accounts.typeMnemonic');
+	}
+	if (translate && aGroupAccount.type === 'imported') {
+		return translate('accounts.typeImported');
+	}
+	return accountTypeToLabel[aGroupAccount?.type] || '';
 }
 
 // todo: we probably have some duplication here with the various FooterLink / ButtonOrLink
@@ -72,6 +83,7 @@ const FooterLink = forwardRef<HTMLAnchorElement | HTMLButtonElement, ButtonOrLin
 
 // todo: this is slightly different than the account footer in the AccountsList - look to consolidate :(
 function AccountFooter({ accountID, showExport }: { accountID: string; showExport?: boolean }) {
+	const { t } = useI18n();
 	const allAccounts = useAccounts();
 	const totalAccounts = allAccounts?.data?.length || 0;
 	const backgroundClient = useBackgroundClient();
@@ -87,16 +99,21 @@ function AccountFooter({ accountID, showExport }: { accountID: string; showExpor
 		<>
 			<div className="flex flex-shrink-0 w-full">
 				<div className="flex gap-0.5 items-center whitespace-nowrap">
-					<NicknameDialog accountID={accountID} trigger={<FooterLink>Edit Nickname</FooterLink>} />
+					<NicknameDialog
+						accountID={accountID}
+						trigger={<FooterLink>{t('accounts.editNickname')}</FooterLink>}
+					/>
 					{showExport ? (
-						<FooterLink to={`/accounts/export/${accountID}`}>Export Private Key</FooterLink>
+						<FooterLink to={`/accounts/export/${accountID}`}>
+							{t('accounts.exportPrivateKey')}
+						</FooterLink>
 					) : null}
 					{allAccounts.isPending ? null : (
 						<FooterLink
 							onClick={() => setIsConfirmationVisible(true)}
 							disabled={isConfirmationVisible}
 						>
-							Remove
+							{t('accounts.remove')}
 						</FooterLink>
 					)}
 				</div>
@@ -104,13 +121,11 @@ function AccountFooter({ accountID, showExport }: { accountID: string; showExpor
 			<Dialog open={isConfirmationVisible}>
 				<DialogContent onPointerDownOutside={(e) => e.preventDefault()}>
 					<DialogHeader>
-						<DialogTitle>Are you sure you want to remove this account?</DialogTitle>
+						<DialogTitle>{t('accounts.removeTitle')}</DialogTitle>
 					</DialogHeader>
 					{totalAccounts === 1 ? (
 						<div className="text-center">
-							<DialogDescription>
-								Removing this account will require you to set up your Rtd wallet again.
-							</DialogDescription>
+							<DialogDescription>{t('accounts.removeOnlyWarning')}</DialogDescription>
 						</div>
 					) : null}
 					<DialogFooter>
@@ -118,18 +133,19 @@ function AccountFooter({ accountID, showExport }: { accountID: string; showExpor
 							<Button
 								variant="outline"
 								size="tall"
-								text="Cancel"
+								text={t('common.cancel')}
 								onClick={() => setIsConfirmationVisible(false)}
 							/>
 							<Button
 								variant="warning"
 								size="tall"
-								text="Remove"
+								text={t('accounts.remove')}
 								loading={removeAccountMutation.isPending}
 								onClick={() => {
 									removeAccountMutation.mutate(undefined, {
-										onSuccess: () => toast.success('Account removed'),
-										onError: (e) => toast.error((e as Error)?.message || 'Something went wrong'),
+										onSuccess: () => toast.success(t('accounts.removed')),
+										onError: (e) =>
+											toast.error((e as Error)?.message || t('common.somethingWrong')),
 									});
 								}}
 							/>
@@ -150,6 +166,7 @@ export function AccountGroup({
 	type: AccountType;
 	accountSourceID?: string;
 }) {
+	const { t } = useI18n();
 	const createAccountMutation = useCreateAccountsMutation();
 	const isMnemonicDerivedGroup = type === 'mnemonic-derived';
 	const [accountsFormValues, setAccountsFormValues] = useAccountsFormContext();
@@ -164,7 +181,7 @@ export function AccountGroup({
 						<div className="flex gap-2 w-full items-center justify-center cursor-pointer flex-shrink-0 group [&>*]:select-none">
 							<ArrowBgFill16 className="h-4 w-4 group-data-[state=open]:rotate-90 text-hero-darkest/20" />
 							<Heading variant="heading5" weight="semibold" color="steel-darker">
-								{getGroupTitle(accounts[0])}
+								{getGroupTitle(accounts[0], t)}
 							</Heading>
 							<div className="h-px bg-gray-45 flex flex-1 flex-shrink-0" />
 							{isMnemonicDerivedGroup && accountSource ? (
@@ -187,7 +204,7 @@ export function AccountGroup({
 								>
 									<Plus12 />
 									<Text variant="bodySmall" weight="semibold">
-										New
+										{t('accounts.new')}
 									</Text>
 								</ButtonOrLink>
 							) : null}
@@ -215,7 +232,7 @@ export function AccountGroup({
 								<Button
 									variant="secondary"
 									size="tall"
-									text="Export Passphrase"
+									text={t('accounts.exportPassphrase')}
 									to={`../export/passphrase/${accountSource.id}`}
 								/>
 							) : null}

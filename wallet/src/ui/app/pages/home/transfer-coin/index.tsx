@@ -3,16 +3,14 @@
 
 import BottomMenuLayout, { Content, Menu } from '_app/shared/bottom-menu-layout';
 import { Button } from '_app/shared/ButtonUI';
+import { useI18n } from '_app/i18n';
 import { Text } from '_app/shared/text';
 import { ActiveCoinsCard } from '_components/active-coins-card';
 import Overlay from '_components/overlay';
 import { ampli } from '_src/shared/analytics/ampli';
 import { getSignerOperationErrorMessage } from '_src/ui/app/helpers/errorMessages';
 import { useActiveAccount } from '_src/ui/app/hooks/useActiveAccount';
-import {
-	fetchAllCoins,
-	getAllCoinsQueryKey,
-} from '_src/ui/app/hooks/useGetAllCoins';
+import { fetchAllCoins, getAllCoinsQueryKey } from '_src/ui/app/hooks/useGetAllCoins';
 import { useQredoTransaction } from '_src/ui/app/hooks/useQredoTransaction';
 import { useSigner } from '_src/ui/app/hooks/useSigner';
 import { useUnlockedGuard } from '_src/ui/app/hooks/useUnlockedGuard';
@@ -46,6 +44,7 @@ function logTransferDebug(label: string, details: unknown) {
 }
 
 function TransferCoinPage() {
+	const { t } = useI18n();
 	const [searchParams] = useSearchParams();
 	const coinType = searchParams.get('type');
 	const [showTransactionPreview, setShowTransactionPreview] = useState<boolean>(false);
@@ -101,10 +100,7 @@ function TransferCoinPage() {
 								coinType: coin.coinType,
 							})),
 						});
-						queryClient.setQueryData(
-							getAllCoinsQueryKey(coinType, address),
-							latestCoins,
-						);
+						queryClient.setQueryData(getAllCoinsQueryKey(coinType, address), latestCoins);
 						const freshTransaction = createTokenTransferTransaction({
 							coinType,
 							coinDecimals: coinMetadata?.decimals ?? 0,
@@ -185,7 +181,7 @@ function TransferCoinPage() {
 	return (
 		<Overlay
 			showModal={true}
-			title={showTransactionPreview ? 'Review & Send' : 'Send Coins'}
+			title={showTransactionPreview ? t('transfer.reviewAndSend') : t('transfer.sendCoins')}
 			closeOverlay={() => navigate('/')}
 		>
 			<div className="flex flex-col w-full h-full">
@@ -205,7 +201,7 @@ function TransferCoinPage() {
 								type="button"
 								variant="secondary"
 								onClick={() => setShowTransactionPreview(false)}
-								text="Back"
+								text={t('common.back')}
 								before={<ArrowLeft16 />}
 							/>
 
@@ -213,7 +209,7 @@ function TransferCoinPage() {
 								type="button"
 								variant="primary"
 								onClick={() => executeTransfer.mutateAsync()}
-								text="Send Now"
+								text={t('transfer.sendNow')}
 								disabled={coinType === null}
 								after={<ArrowRight16 />}
 								loading={executeTransfer.isPending}
@@ -225,7 +221,7 @@ function TransferCoinPage() {
 						<div className="mb-7 flex flex-col gap-2.5">
 							<div className="pl-1.5">
 								<Text variant="caption" color="steel" weight="semibold">
-									Select all Coins
+									{t('transfer.selectAllCoins')}
 								</Text>
 							</div>
 							<ActiveCoinsCard activeCoinType={coinType} />

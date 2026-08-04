@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { useState } from 'react';
+import { useI18n } from '_app/i18n';
 
 import { Button, type ButtonProps } from './ButtonUI';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from './Dialog';
@@ -20,14 +21,18 @@ export type ConfirmationModalProps = {
 
 export function ConfirmationModal({
 	isOpen,
-	title = 'Are you sure?',
+	title,
 	hint,
-	confirmText = 'Confirm',
+	confirmText,
 	confirmStyle = 'primary',
-	cancelText = 'Cancel',
+	cancelText,
 	cancelStyle = 'outline',
 	onResponse,
 }: ConfirmationModalProps) {
+	const { t } = useI18n();
+	const resolvedTitle = title || t('common.areYouSure');
+	const resolvedConfirmText = confirmText || t('common.confirm');
+	const resolvedCancelText = cancelText || t('common.cancel');
 	const [isConfirmLoading, setIsConfirmLoading] = useState(false);
 	const [isCancelLoading, setIsCancelLoading] = useState(false);
 	return (
@@ -44,7 +49,7 @@ export function ConfirmationModal({
 		>
 			<DialogContent>
 				<DialogHeader>
-					<DialogTitle>{title}</DialogTitle>
+					<DialogTitle>{resolvedTitle}</DialogTitle>
 				</DialogHeader>
 				{hint ? (
 					<div className="break-words text-center">
@@ -58,7 +63,7 @@ export function ConfirmationModal({
 						<Button
 							variant={cancelStyle}
 							size="tall"
-							text={cancelText}
+							text={resolvedCancelText}
 							loading={isCancelLoading}
 							disabled={isConfirmLoading}
 							onClick={async () => {
@@ -70,7 +75,7 @@ export function ConfirmationModal({
 						<Button
 							variant={confirmStyle}
 							size="tall"
-							text={confirmText}
+							text={resolvedConfirmText}
 							loading={isConfirmLoading}
 							disabled={isCancelLoading}
 							onClick={async () => {

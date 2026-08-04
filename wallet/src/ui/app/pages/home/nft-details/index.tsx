@@ -14,6 +14,7 @@ import { useGetNFTMeta, useNFTBasicData, useOwnedNFT } from '_hooks';
 import { useBuyNLargeAssets } from '_src/ui/app/components/buynlarge/useBuyNLargeAssets';
 import { useExplorerLink } from '_src/ui/app/hooks/useExplorerLink';
 import { useUnlockedGuard } from '_src/ui/app/hooks/useUnlockedGuard';
+import { useI18n } from '_src/ui/app/i18n';
 import PageTitle from '_src/ui/app/shared/PageTitle';
 import { Text } from '_src/ui/app/shared/text';
 import { useGetKioskContents } from 'rtd-apps-core';
@@ -27,6 +28,7 @@ type NftFields = {
 };
 
 function NFTDetailsPage() {
+	const { t } = useI18n();
 	const [searchParams] = useSearchParams();
 	const nftId = searchParams.get('objectId');
 	const accountAddress = useActiveAddress();
@@ -107,7 +109,7 @@ function NFTDetailsPage() {
 										weight="semibold"
 										size="captionSmall"
 										href={objectExplorerLink || ''}
-										text="VIEW ON EXPLORER"
+										text={t('nft.viewExplorer')}
 										after={<ArrowUpRight12 />}
 									/>
 								) : null}
@@ -117,7 +119,7 @@ function NFTDetailsPage() {
 									<LabelValuesContainer>
 										{ownerExplorerLink ? (
 											<LabelValueItem
-												label="Owner"
+												label={t('nft.owner')}
 												value={
 													<Link
 														color="rtdDark"
@@ -126,13 +128,13 @@ function NFTDetailsPage() {
 														mono
 														href={ownerExplorerLink}
 														text={formatAddress(ownerAddress)}
-														title="View on Rtd Explorer"
+														title={t('nft.viewExplorer')}
 													/>
 												}
 											/>
 										) : null}
 										<LabelValueItem
-											label="Object Id"
+											label={t('nft.objectId')}
 											value={
 												nftId ? (
 													<Link
@@ -142,13 +144,13 @@ function NFTDetailsPage() {
 														mono
 														href={objectExplorerLink || ''}
 														text={formatAddress(nftId)}
-														title="View on Rtd Explorer"
+														title={t('nft.viewExplorer')}
 													/>
 												) : null
 											}
 										/>
 										<LabelValueItem
-											label="Media Type"
+											label={t('nft.mediaType')}
 											value={
 												filePath && fileExtensionType.name && fileExtensionType.type
 													? `${fileExtensionType.name} ${fileExtensionType.type}`
@@ -156,21 +158,21 @@ function NFTDetailsPage() {
 											}
 										/>
 									</LabelValuesContainer>
-									<Collapsible defaultOpen title="Details">
+									<Collapsible defaultOpen title={t('nft.details')}>
 										<LabelValuesContainer>
-											<LabelValueItem label="Name" value={nftDisplayData?.name} />
+											<LabelValueItem label={t('nft.name')} value={nftDisplayData?.name} />
 											<LabelValueItem
-												label="Description"
+												label={t('nft.description')}
 												value={nftDisplayData?.description}
 												multiline
 											/>
-											<LabelValueItem label="Creator" value={nftDisplayData?.creator} />
-											<LabelValueItem label="Link" value={nftDisplayData?.link} />
-											<LabelValueItem label="Website" value={nftDisplayData?.projectUrl} />
+											<LabelValueItem label={t('nft.creator')} value={nftDisplayData?.creator} />
+											<LabelValueItem label={t('nft.link')} value={nftDisplayData?.link} />
+											<LabelValueItem label={t('nft.website')} value={nftDisplayData?.projectUrl} />
 										</LabelValuesContainer>
 									</Collapsible>
 									{metaKeys.length ? (
-										<Collapsible title="Attributes" defaultOpen>
+										<Collapsible title={t('nft.attributes')} defaultOpen>
 											<LabelValuesContainer>
 												{metaKeys.map((aKey, idx) => (
 													<LabelValueItem
@@ -193,13 +195,13 @@ function NFTDetailsPage() {
 												after={<ArrowUpRight12 />}
 												variant="outline"
 												href="https://docs.rtd.io/build/rtd-kiosk"
-												text="Learn more about Kiosks"
+												text={t('nft.learnKiosks')}
 											/>
 											<Button
 												after={<ArrowUpRight12 />}
 												variant="outline"
 												href={`https://rtd.hyperspace.xyz/wallet/rtd/${accountAddress}?tokenAddress=${nftId}`}
-												text="Marketplace"
+												text={t('nft.marketplace')}
 											/>
 										</div>
 									) : (
@@ -209,19 +211,15 @@ function NFTDetailsPage() {
 												size="tall"
 												disabled={!isTransferable}
 												to={`/nft-transfer/${nftId}`}
-												title={
-													isTransferable
-														? undefined
-														: "Unable to send. NFT doesn't have public transfer method"
-												}
-												text="Send NFT"
+												title={isTransferable ? undefined : t('nft.transferUnavailable')}
+												text={t('nft.send')}
 												after={<ArrowRight16 />}
 											/>
 										</div>
 									)}
 								</>
 							) : (
-								<Button variant="secondary" onClick={() => navigate(-1)} text="Okay" />
+								<Button variant="secondary" onClick={() => navigate(-1)} text={t('common.okay')} />
 							)}
 						</div>
 					</>

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Button } from '_src/ui/app/shared/ButtonUI';
+import { useI18n } from '_app/i18n';
 import {
 	Dialog,
 	DialogContent,
@@ -50,6 +51,7 @@ export function PasswordModalDialog({
 	confirmText,
 	cancelText,
 }: PasswordModalDialogProps) {
+	const { t } = useI18n();
 	const form = useZodForm({
 		mode: 'all',
 		schema: formSchema,
@@ -89,19 +91,19 @@ export function PasswordModalDialog({
 								await onSubmit(password);
 								reset();
 							} catch (e) {
-								toast.error((e as Error).message || 'Something went wrong');
+								toast.error((e as Error).message || t('common.somethingWrong'));
 							}
 						} catch (e) {
 							setError(
 								'password',
-								{ message: (e as Error).message || 'Wrong password' },
+								{ message: (e as Error).message || t('common.wrongPassword') },
 								{ shouldFocus: true },
 							);
 						}
 					}}
 				>
 					<label className="sr-only" htmlFor="password">
-						Password
+						{t('common.password')}
 					</label>
 					<FormField name="password">
 						<PasswordInput {...register('password')} />
@@ -126,7 +128,7 @@ export function PasswordModalDialog({
 								color="steelDark"
 								weight="medium"
 								size="bodySmall"
-								text="Forgot Password?"
+								text={t('accounts.forgotPassword')}
 								to="/accounts/forgot-password"
 								onClick={onClose}
 							/>

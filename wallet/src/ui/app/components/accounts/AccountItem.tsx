@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { useResolveRtdNSName } from '_app/hooks/useAppResolveRtdnsName';
+import { useI18n } from '_app/i18n';
 import { Text } from '_src/ui/app/shared/text';
 import { ArrowUpRight12, Copy12 } from 'rtd-apps-icons';
 import { formatAddress } from 'rtd-typescript/utils';
@@ -49,12 +50,13 @@ export const AccountItem = forwardRef<HTMLDivElement, AccountItemProps>(
 		},
 		ref,
 	) => {
+		const { t } = useI18n();
 		const { data: accounts } = useAccounts();
 		const account = accounts?.find((account) => account.id === accountID);
 		const domainName = useResolveRtdNSName(account?.address);
 		const accountName = account?.nickname ?? domainName ?? formatAddress(account?.address || '');
 		const copyAddress = useCopyToClipboard(account?.address || '', {
-			copySuccessMessage: 'Address copied',
+			copySuccessMessage: t('common.addressCopied'),
 		});
 		const explorerHref = useExplorerLink({
 			type: ExplorerLinkType.address,
@@ -102,7 +104,7 @@ export const AccountItem = forwardRef<HTMLDivElement, AccountItemProps>(
 								{hideExplorerLink || !explorerHref ? null : (
 									<IconButton
 										variant="transparent"
-										title="View on Explorer"
+										title={t('common.viewOnExplorer')}
 										href={explorerHref}
 										icon={<ArrowUpRight12 className="w-2.5 h-2.5" />}
 										onClick={(e) => e.stopPropagation()}

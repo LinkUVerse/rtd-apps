@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Text } from '_app/shared/text';
+import { useI18n } from '_app/i18n';
 import { IconTooltip } from '_app/shared/tooltip';
 import LoadingIndicator from '_components/loading/LoadingIndicator';
 import { roundFloat, useGetValidatorsApy } from 'rtd-apps-core';
@@ -15,6 +16,7 @@ type DelegatedAPYProps = {
 };
 
 export function DelegatedAPY({ stakedValidators }: DelegatedAPYProps) {
+	const { t } = useI18n();
 	const { data, isPending } = useRtdClientQuery('getLatestRtdSystemState');
 	const { data: rollingAverageApys } = useGetValidatorsApy();
 
@@ -50,13 +52,10 @@ export function DelegatedAPY({ stakedValidators }: DelegatedAPYProps) {
 						{averageNetworkAPY}
 					</Text>
 					<Text variant="subtitle" weight="medium" color="steel-darker">
-						% APY
+						% {t('staking.apy')}
 					</Text>
 					<div className="text-steel items-baseline text-body flex">
-						<IconTooltip
-							tip="The average APY of all validators you are currently staking your RTD on."
-							placement="top"
-						/>
+						<IconTooltip tip={t('staking.averageApyDescription')} placement="top" />
 					</div>
 				</>
 			) : (

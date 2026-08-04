@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Button } from '_app/shared/ButtonUI';
+import { useI18n } from '_app/i18n';
 import { ToS_LINK } from '_src/shared/constants';
 import { useZodForm } from 'rtd-apps-core';
 import { useEffect } from 'react';
@@ -72,6 +73,7 @@ export function ProtectAccountForm({
 	onSubmit,
 	displayToS,
 }: ProtectAccountFormProps) {
+	const { t } = useI18n();
 	const autoLock = useAutoLockMinutes();
 	const form = useZodForm({
 		mode: 'all',
@@ -103,12 +105,12 @@ export function ProtectAccountForm({
 			<TextField
 				autoFocus
 				type="password"
-				label="Create Account Password"
+				label={t('accounts.createPassword')}
 				{...register('password.input')}
 			/>
 			<TextField
 				type="password"
-				label="Confirm Account Password"
+				label={t('accounts.confirmPassword')}
 				{...register('password.confirmation')}
 			/>
 			<AutoLockSelector />
@@ -119,13 +121,13 @@ export function ProtectAccountForm({
 						name="acceptedTos"
 						label={
 							<div className="text-bodySmall whitespace-nowrap">
-								I read and agreed to the{' '}
+								{t('accounts.termsAgreement')}{' '}
 								<span className="inline-block">
 									<Link
 										href={ToS_LINK}
 										beforeColor="steelDarker"
 										color="rtdDark"
-										text="Terms of Services"
+										text={t('accounts.terms')}
 									/>
 								</span>
 							</div>

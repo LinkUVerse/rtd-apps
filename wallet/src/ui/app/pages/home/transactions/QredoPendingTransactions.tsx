@@ -5,6 +5,7 @@ import { ErrorBoundary } from '_components/error-boundary';
 import Loading from '_components/loading';
 import { NoActivityCard } from '_components/transactions-card/NoActivityCard';
 import { isQredoAccountSerializedUI } from '_src/background/accounts/QredoAccount';
+import { useI18n } from '_app/i18n';
 import { type TransactionStatus } from '_src/shared/qredo-api';
 import Alert from '_src/ui/app/components/alert';
 import { useActiveAccount } from '_src/ui/app/hooks/useActiveAccount';
@@ -23,6 +24,7 @@ const PENDING_QREDO_TRANSACTION_STATUSES: TransactionStatus[] = [
 ];
 
 export function QredoPendingTransactions() {
+	const { t } = useI18n();
 	const activeAccount = useActiveAccount();
 	const activeAddress = activeAccount?.address;
 	const isQredoAccount = !!(activeAccount && isQredoAccountSerializedUI(activeAccount));
@@ -47,7 +49,7 @@ export function QredoPendingTransactions() {
 					</ErrorBoundary>
 				))
 			) : (
-				<NoActivityCard message="When available, pending Qredo transactions will show up here." />
+				<NoActivityCard message={t('activity.pendingEmpty')} />
 			)}
 		</Loading>
 	);

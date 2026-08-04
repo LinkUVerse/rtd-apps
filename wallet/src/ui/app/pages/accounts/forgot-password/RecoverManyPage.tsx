@@ -5,6 +5,7 @@ import { entropyToSerialized, mnemonicToEntropy } from '_src/shared/utils/bip39'
 import { ImportRecoveryPhraseForm } from '_src/ui/app/components/accounts/ImportRecoveryPhraseForm';
 import Overlay from '_src/ui/app/components/overlay';
 import { useRecoveryDataMutation } from '_src/ui/app/hooks/useRecoveryDataMutation';
+import { useI18n } from '_src/ui/app/i18n';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
@@ -18,6 +19,7 @@ import { Text } from '../../../shared/text';
 import { useForgotPasswordContext } from './ForgotPasswordPage';
 
 export function RecoverManyPage() {
+	const { t } = useI18n();
 	const allAccountSources = useAccountSources();
 	const accountGroups = useAccountGroups();
 	const navigate = useNavigate();
@@ -39,16 +41,16 @@ export function RecoverManyPage() {
 			<div className="flex flex-col items-center h-full gap-6">
 				<div className="flex flex-col items-center gap-2 text-center">
 					<Heading variant="heading1" color="gray-90" as="h1" weight="bold">
-						Forgot Password?
+						{t('accounts.forgotTitle')}
 					</Heading>
 					<Text variant="pBody" color="gray-90">
-						Please complete the recovery process for the accounts below
+						{t('accounts.recoveryManyDescription')}
 					</Text>
 				</div>
 				<div className="flex flex-col grow self-stretch overflow-x-hidden overflow-y-auto gap-8 px-4 py-6 rounded-lg bg-hero-darkest/5">
 					{Object.entries(accountGroups['mnemonic-derived']).map(([sourceID, accounts], index) => {
 						const recoveryData = value.find(({ accountSourceID }) => accountSourceID === sourceID);
-						const title = `Passphrase ${index + 1}`;
+						const title = t('accounts.passphraseNumber', { count: index + 1 });
 						return (
 							<RecoverAccountsGroup
 								key={sourceID}
@@ -64,11 +66,11 @@ export function RecoverManyPage() {
 					})}
 				</div>
 				<div className="flex flex-nowrap gap-2.5 w-full">
-					<Button variant="outline" size="tall" text="Cancel" to="/" />
+					<Button variant="outline" size="tall" text={t('common.cancel')} to="/" />
 					<Button
 						variant="primary"
 						size="tall"
-						text="Next"
+						text={t('common.next')}
 						disabled={!value.length}
 						to="../warning"
 					/>
@@ -87,10 +89,10 @@ export function RecoverManyPage() {
 			>
 				<div className="flex flex-col flex-nowrap w-full h-full gap-4 text-center">
 					<Text variant="pBody" color="gray-90">
-						Enter your 12-word Recovery Phrase
+						{t('accounts.enterRecovery')}
 					</Text>
 					<ImportRecoveryPhraseForm
-						submitButtonText="Recover"
+						submitButtonText={t('accounts.recover')}
 						onSubmit={async ({ recoveryPhrase }) => {
 							if (!recoverInfo) {
 								return;
@@ -103,7 +105,7 @@ export function RecoverManyPage() {
 								});
 								setRecoverInfo(null);
 							} catch (e) {
-								toast.error((e as Error)?.message || 'Something went wrong');
+								toast.error((e as Error)?.message || t('common.somethingWrong'));
 							}
 						}}
 					/>

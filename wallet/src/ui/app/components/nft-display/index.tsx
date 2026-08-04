@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Heading } from '_app/shared/heading';
+import { useI18n } from '_app/i18n';
 import Loading from '_components/loading';
 import { NftImage, type NftImageProps } from '_components/nft-display/NftImage';
 import { useFileExtensionType, useGetNFTMeta } from '_hooks';
@@ -55,6 +56,7 @@ export function NFTDisplayCard({
 	orientation,
 	isLocked,
 }: NFTDisplayCardProps) {
+	const { t } = useI18n();
 	const { data: objectData } = useGetObject(objectId);
 	const { data: nftMeta, isPending } = useGetNFTMeta(objectId);
 	const nftName = nftMeta?.name || formatAddress(objectId);
@@ -98,7 +100,7 @@ export function NFTDisplayCard({
 							{nftImageUrl ? (
 								`${fileExtensionType.name} ${fileExtensionType.type}`
 							) : (
-								<span className="uppercase font-normal text-bodySmall">NO MEDIA</span>
+								<span className="uppercase font-normal text-bodySmall">{t('nft.noMedia')}</span>
 							)}
 						</div>
 					</div>

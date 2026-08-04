@@ -3,6 +3,7 @@
 
 import { useEffect, useState } from 'react';
 import { v4 as uuidV4 } from 'uuid';
+import { useI18n } from '../i18n';
 
 import Alert from '../components/alert';
 import LoadingIndicator from '../components/loading/LoadingIndicator';
@@ -13,6 +14,7 @@ import { Heading } from '../shared/heading';
 import { Text } from '../shared/text';
 
 export function useQredoTransaction(preventModalDismiss?: boolean) {
+	const { t } = useI18n();
 	const [clientIdentifier, setClientIdentifier] = useState(() => uuidV4());
 	const [qredoTransactionID, setQredoTransactionID] = useState<string | null>(null);
 	const notificationModal = (
@@ -29,23 +31,20 @@ export function useQredoTransaction(preventModalDismiss?: boolean) {
 		>
 			<DialogContent>
 				<div className="flex flex-col gap-2.5 text-center items-center relative">
-					{preventModalDismiss ? (
-						<Alert mode="warning">Don't close this window until the transaction is completed</Alert>
-					) : null}
+					{preventModalDismiss ? <Alert mode="warning">{t('qredo.dontClose')}</Alert> : null}
 					<div className="bg-[url('_assets/images/qredo.png')] h-14 w-14 bg-cover" />
 					<div className="text-steel">
 						<LoadingIndicator color="inherit" />
 					</div>
 					<Heading variant="heading6" color="gray-90" weight="medium">
-						Awaiting transaction approval in the Qredo app
+						{t('qredo.awaitingApproval')}
 					</Heading>
 					<Text variant="pBodySmall" color="steel-dark">
-						Check your Qredo app for status. Once all required custody approvals have been performed
-						the transaction will complete.
+						{t('qredo.statusDescription')}
 					</Text>
 					{!preventModalDismiss ? (
 						<Button
-							text="Close"
+							text={t('common.close')}
 							onClick={() => {
 								QredoEvents.emit('clientIgnoredUpdates', {
 									clientIdentifier,

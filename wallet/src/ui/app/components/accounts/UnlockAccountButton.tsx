@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { type SerializedUIAccount } from '_src/background/accounts/Account';
+import { useI18n } from '_app/i18n';
 import { isZkLoginAccountSerializedUI } from '_src/background/accounts/zklogin/ZkLoginAccount';
 
 import { Button } from '../../shared/ButtonUI';
@@ -12,15 +13,14 @@ export type UnlockAccountButtonProps = {
 	account: SerializedUIAccount;
 	title?: string;
 };
-export function UnlockAccountButton({
-	account,
-	title = 'Unlock Account',
-}: UnlockAccountButtonProps) {
+export function UnlockAccountButton({ account, title }: UnlockAccountButtonProps) {
+	const { t } = useI18n();
+	const buttonTitle = title || t('accounts.unlockAccount');
 	const { isPasswordUnlockable } = account;
 	const { unlockAccount, isPending } = useUnlockAccount();
 
 	if (isPasswordUnlockable) {
-		return <Button text={title} onClick={() => unlockAccount(account)} />;
+		return <Button text={buttonTitle} onClick={() => unlockAccount(account)} />;
 	}
 	if (isZkLoginAccountSerializedUI(account)) {
 		return (

@@ -1,4 +1,3 @@
-@use '_values/colors';
 @use '_utils';
 
 .network-options {
@@ -7,7 +6,7 @@
 	align-items: center;
 	justify-content: center;
 	margin: 0;
-	background-color: #fff;
+	background-color: transparent;
 }
 
 .network-lists {
@@ -27,7 +26,7 @@
 	display: flex;
 	justify-content: flex-start;
 	align-items: center;
-	border-bottom: 1px solid colors.$gray-45;
+	border-bottom: 1px solid var(--rtd-border-color);
 
 	@include utils.typography('table/title-sm');
 
@@ -42,6 +41,13 @@
 		display: flex;
 		width: 100%;
 		cursor: pointer;
+		color: rgb(var(--rtd-text-rgb));
+		border-radius: 12px;
+		transition: background-color 180ms ease;
+
+		&:hover {
+			background: var(--rtd-card-hover-background);
+		}
 
 		@include utils.typography('table/title-sm');
 
@@ -50,7 +56,7 @@
 
 	.network-icon {
 		font-size: 16px;
-		color: colors.$gray-45;
+		color: rgb(var(--rtd-steel-rgb));
 		line-height: 100%;
 		transition: color 0.2s ease-in-out;
 	}
@@ -60,15 +66,15 @@
 	}
 
 	.network-active {
-		color: colors.$success;
+		color: rgb(var(--rtd-primary-rgb));
 
 		&.custom-rpc-active {
-			color: colors.$success;
+			color: rgb(var(--rtd-primary-rgb));
 		}
 	}
 
 	.custom-rpc-active {
-		color: colors.$gray-60;
+		color: rgb(var(--rtd-steel-rgb));
 	}
 }
 

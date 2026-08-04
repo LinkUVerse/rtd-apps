@@ -7,6 +7,7 @@ import Overlay from '_components/overlay';
 import { ReceiptCard } from '_src/ui/app/components/receipt-card';
 import { useActiveAddress } from '_src/ui/app/hooks/useActiveAddress';
 import { useUnlockedGuard } from '_src/ui/app/hooks/useUnlockedGuard';
+import { useI18n } from '_src/ui/app/i18n';
 import { useRtdClient } from 'rtd-dapp-kit';
 import { Check32 } from 'rtd-apps-icons';
 import { type RtdTransactionBlockResponse } from 'rtd-typescript/client';
@@ -15,6 +16,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { Navigate, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
 function ReceiptPage() {
+	const { t } = useI18n();
 	const location = useLocation();
 	const [searchParams] = useSearchParams();
 	const [showModal, setShowModal] = useState(true);
@@ -55,13 +57,11 @@ function ReceiptPage() {
 			const executionStatus = data.effects?.status.status;
 
 			// TODO: Infer out better name:
-			const transferName = 'Transaction';
-
-			return `${executionStatus === 'success' ? transferName : 'Transaction Failed'}`;
+			return executionStatus === 'success' ? t('receipt.transaction') : t('receipt.failed');
 		}
 
-		return 'Transaction Failed';
-	}, [/*activeAddress,*/ data]);
+		return t('receipt.failed');
+	}, [data, t]);
 
 	const isGuardLoading = useUnlockedGuard();
 
@@ -80,7 +80,7 @@ function ReceiptPage() {
 			>
 				{isError ? (
 					<div className="mb-2 h-fit">
-						<Alert>Something went wrong</Alert>
+						<Alert>{t('common.somethingWrong')}</Alert>
 					</div>
 				) : null}
 

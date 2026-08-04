@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { useActiveAddress } from '_app/hooks/useActiveAddress';
+import { useI18n } from '_app/i18n';
 import { ErrorBoundary } from '_src/ui/app/components/error-boundary';
 import ExplorerLink from '_src/ui/app/components/explorer-link';
 import { ExplorerLinkType } from '_src/ui/app/components/explorer-link/ExplorerLinkType';
@@ -17,6 +18,7 @@ import { formatAddress } from 'rtd-typescript/utils';
 import { Link, useSearchParams } from 'react-router-dom';
 
 function KioskDetailsPage() {
+	const { t } = useI18n();
 	const [searchParams] = useSearchParams();
 	const kioskId = searchParams.get('kioskId');
 	const accountAddress = useActiveAddress();
@@ -30,11 +32,11 @@ function KioskDetailsPage() {
 
 	return (
 		<div className="flex flex-1 flex-col flex-nowrap gap-3.75">
-			<PageTitle title="Kiosk" back />
+			<PageTitle title={t('kiosk.title')} back />
 			<Loading loading={isPending}>
 				{!items?.length ? (
 					<div className="flex flex-1 items-center self-center text-caption font-semibold text-steel-darker">
-						Kiosk is empty
+						{t('kiosk.empty')}
 					</div>
 				) : (
 					<>
@@ -61,11 +63,11 @@ function KioskDetailsPage() {
 						</div>
 					</>
 				)}
-				<Collapsible defaultOpen title="Details">
+				<Collapsible defaultOpen title={t('nft.details')}>
 					<LabelValuesContainer>
-						<LabelValueItem label="Number of Items" value={items?.length || '0'} />
+						<LabelValueItem label={t('kiosk.numberOfItems')} value={items?.length || '0'} />
 						<LabelValueItem
-							label="Kiosk ID"
+							label={t('kiosk.id')}
 							value={
 								<ExplorerLink
 									className="text-hero-dark no-underline font-mono"

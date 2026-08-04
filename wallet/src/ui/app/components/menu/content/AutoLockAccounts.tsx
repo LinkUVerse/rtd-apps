@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { useNextMenuUrl } from '_components/menu/hooks';
+import { useI18n } from '_app/i18n';
 import {
 	autoLockDataToMinutes,
 	parseAutoLock,
@@ -19,6 +20,7 @@ import Loading from '../../loading';
 import Overlay from '../../overlay';
 
 export function AutoLockAccounts() {
+	const { t } = useI18n();
 	const mainMenuUrl = useNextMenuUrl(true, '/');
 	const navigate = useNavigate();
 	const autoLock = useAutoLockMinutes();
@@ -37,7 +39,7 @@ export function AutoLockAccounts() {
 	return (
 		<Overlay
 			showModal={true}
-			title={'Auto-lock Accounts'}
+			title={t('settings.autoLock')}
 			closeOverlay={() => navigate(mainMenuUrl)}
 		>
 			<Loading loading={autoLock.isPending}>
@@ -49,10 +51,10 @@ export function AutoLockAccounts() {
 							{ minutes: autoLockDataToMinutes(data.autoLock) },
 							{
 								onSuccess: () => {
-									toast.success('Saved');
+									toast.success(t('common.saved'));
 								},
 								onError: (error) => {
-									toast.error((error as Error)?.message || 'Failed, something went wrong');
+									toast.error((error as Error)?.message || t('common.failed'));
 								},
 							},
 						);
@@ -64,7 +66,7 @@ export function AutoLockAccounts() {
 						type="submit"
 						variant="primary"
 						size="tall"
-						text="Save"
+						text={t('common.save')}
 						disabled={!isValid || !isDirty}
 						loading={isSubmitting}
 					/>

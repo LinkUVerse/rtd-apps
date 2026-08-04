@@ -7,6 +7,7 @@ import { Text } from '_app/shared/text';
 import Alert from '_components/alert';
 import LoadingIndicator from '_components/loading/LoadingIndicator';
 import { ampli } from '_src/shared/analytics/ampli';
+import { useI18n, type MessageKey } from '_src/ui/app/i18n';
 import { calculateStakeShare, formatPercentageDisplay, useGetValidatorsApy } from 'rtd-apps-core';
 import { useRtdClientQuery } from 'rtd-dapp-kit';
 import { ArrowRight16 } from 'rtd-apps-icons';
@@ -16,10 +17,10 @@ import { useMemo, useState } from 'react';
 import { ValidatorListItem } from './ValidatorListItem';
 
 type SortKeys = 'name' | 'stakeShare' | 'apy';
-const sortKeys: Record<SortKeys, string> = {
-	name: 'Name',
-	stakeShare: 'Stake Share',
-	apy: 'APY',
+const sortKeys: Record<SortKeys, MessageKey> = {
+	name: 'staking.sortName',
+	stakeShare: 'staking.stakeShare',
+	apy: 'staking.apy',
 };
 
 type Validator = {
@@ -31,6 +32,7 @@ type Validator = {
 };
 
 export function SelectValidatorCard() {
+	const { t } = useI18n();
 	const [selectedValidator, setSelectedValidator] = useState<Validator | null>(null);
 	const [sortKey, setSortKey] = useState<SortKeys | null>(null);
 	const [sortAscending, setSortAscending] = useState(true);
@@ -104,7 +106,7 @@ export function SelectValidatorCard() {
 		return (
 			<div className="p-2">
 				<Alert>
-					<div className="mb-1 font-semibold">Something went wrong</div>
+					<div className="mb-1 font-semibold">{t('common.somethingWrong')}</div>
 				</Alert>
 			</div>
 		);
@@ -113,10 +115,10 @@ export function SelectValidatorCard() {
 	return (
 		<div className="flex flex-col w-full h-full -my-5">
 			<Content className="flex flex-col w-full items-center">
-				<div className="flex flex-col w-full items-center -top-5 bg-white sticky pt-5 pb-2.5 z-50 mt-0">
+				<div className="theme-surface sticky -top-5 z-50 mt-0 flex w-full flex-col items-center pb-2.5 pt-5">
 					<div className="flex items-start w-full mb-2">
 						<Text variant="subtitle" weight="medium" color="steel-darker">
-							Sort by:
+							{t('staking.sortBy')}
 						</Text>
 						<div className="flex items-center ml-2 gap-1.5">
 							{Object.entries(sortKeys).map(([key, value]) => {
@@ -131,7 +133,7 @@ export function SelectValidatorCard() {
 											weight="medium"
 											color={sortKey === key ? 'hero' : 'steel-darker'}
 										>
-											{value}
+											{t(value)}
 										</Text>
 										{sortKey === key && (
 											<ArrowRight16
@@ -148,7 +150,7 @@ export function SelectValidatorCard() {
 					</div>
 					<div className="flex items-start w-full">
 						<Text variant="subtitle" weight="medium" color="steel-darker">
-							Select a validator to start staking RTD.
+							{t('staking.selectValidator')}
 						</Text>
 					</div>
 				</div>
@@ -188,7 +190,7 @@ export function SelectValidatorCard() {
 								validatorAPY: selectedValidator.apy || 0,
 							})
 						}
-						text="Select Amount"
+						text={t('staking.selectAmount')}
 						after={<ArrowRight16 />}
 					/>
 				</Menu>

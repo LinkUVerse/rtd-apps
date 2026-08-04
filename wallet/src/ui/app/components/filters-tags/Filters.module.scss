@@ -20,17 +20,27 @@
 		@include utils.typography('Primary/BodySmall-SB');
 
 		height: 25px;
-		background: colors.$white;
-		color: colors.$rtd-blue-steel-dark;
+		background: var(--rtd-card-background);
+		color: rgb(var(--rtd-steel-dark-rgb));
 		padding: 6px 10px;
-		border: 1px solid colors.$rtd-steel-blue;
+		border: 1px solid var(--rtd-border-color);
 		border-radius: 16px;
 		text-decoration: none;
 		display: flex;
 		align-items: center;
+		cursor: pointer;
+		transition:
+			background-color 180ms ease,
+			border-color 180ms ease,
+			color 180ms ease;
+
+		&:hover {
+			border-color: var(--rtd-border-strong);
+			background: var(--rtd-card-hover-background);
+		}
 
 		&.active {
-			background: colors.$hero-dark;
+			background: rgb(var(--rtd-primary-rgb));
 			color: colors.$white;
 			border: 1px solid transparent;
 		}

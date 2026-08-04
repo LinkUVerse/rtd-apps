@@ -5,6 +5,7 @@ import Loading from '_components/loading';
 import { useAppDispatch, useAppSelector } from '_hooks';
 import { createDappStatusSelector } from '_redux/slices/permissions';
 import { ampli } from '_src/shared/analytics/ampli';
+import { useI18n } from '_src/ui/app/i18n';
 import {
 	arrow,
 	offset,
@@ -26,6 +27,7 @@ import * as styles from './DappStatus.module.scss';
 const st = styles as any;
 
 function DappStatus() {
+	const { t } = useI18n();
 	const dispatch = useAppDispatch();
 	const activeOriginUrl = useAppSelector(({ app }) => app.activeOrigin);
 	const activeOrigin = useMemo(() => {
@@ -130,10 +132,10 @@ function DappStatus() {
 						<div className={st.popupContent}>
 							<div className={st.originContainer}>
 								{activeOriginFavIcon ? (
-									<img src={activeOriginFavIcon} className={st.favicon} alt="App Icon" />
+									<img src={activeOriginFavIcon} className={st.favicon} alt={t('dapp.appIcon')} />
 								) : null}
 								<span className={st.originText}>
-									<div>Connected to</div>
+									<div>{t('dapp.connectedTo')}</div>
 									<div className={st.originUrl}>{activeOrigin}</div>
 								</span>
 							</div>
@@ -145,7 +147,7 @@ function DappStatus() {
 									onClick={onHandleDisconnect}
 									disabled={disconnecting}
 								>
-									Disconnect App
+									{t('dapp.disconnectApp')}
 								</button>
 							</Loading>
 						</div>

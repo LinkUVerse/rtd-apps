@@ -3,6 +3,7 @@
 
 import { type PermissionType } from '_src/shared/messaging/messages/payloads/permissions';
 import { getValidDAppUrl } from '_src/shared/utils';
+import { useI18n } from '_src/ui/app/i18n';
 import { CheckFill16 } from 'rtd-apps-icons';
 import cn from 'clsx';
 
@@ -34,13 +35,14 @@ export function DAppInfoCard({
 	permissions,
 	showSecurityWarning,
 }: DAppInfoCardProps) {
+	const { t } = useI18n();
 	const validDAppUrl = getValidDAppUrl(url);
 	const appHostname = validDAppUrl?.hostname ?? url;
 	const { data: account } = useAccountByAddress(connectedAddress);
 	const { unlockAccount, lockAccount, isPending, accountToUnlock } = useUnlockAccount();
 
 	return (
-		<div className="bg-white p-6 flex flex-col gap-5">
+		<div className="theme-card flex flex-col gap-5 p-6">
 			<div className="flex flex-row flex-nowrap items-center gap-3.75 py-3">
 				<div className="flex items-stretch h-15 w-15 overflow-hidden bg-steel/20 shrink-0 grow-0 rounded-2xl">
 					{iconUrl ? <img className="flex-1" src={iconUrl} alt={name} /> : null}
@@ -99,15 +101,14 @@ export function DAppInfoCard({
 				{showSecurityWarning && (
 					<Alert mode="warning">
 						<div className="flex flex-col">
-							<strong>Unable to verify site security</strong>
-							An error occurred while validating the integrity of this website. Please proceed with
-							caution.
+							<strong>{t('dapp.securityUnverified')}</strong>
+							{t('dapp.securityUnverifiedDescription')}
 						</div>
 					</Alert>
 				)}
 				{permissions?.length ? (
 					<SummaryCard
-						header="Permissions requested"
+						header={t('dapp.permissionsRequested')}
 						body={<DAppPermissionsList permissions={permissions} />}
 						boxShadow
 					/>

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import FiltersPortal from '_components/filters-tags';
+import { useI18n } from '_app/i18n';
 import { isQredoAccountSerializedUI } from '_src/background/accounts/QredoAccount';
 import { useActiveAccount } from '_src/ui/app/hooks/useActiveAccount';
 import { useUnlockedGuard } from '_src/ui/app/hooks/useUnlockedGuard';
@@ -13,6 +14,7 @@ import { CompletedTransactions } from './CompletedTransactions';
 import { QredoPendingTransactions } from './QredoPendingTransactions';
 
 function TransactionBlocksPage() {
+	const { t } = useI18n();
 	const activeAccount = useActiveAccount();
 	const isQredoAccount = !!(activeAccount && isQredoAccountSerializedUI(activeAccount));
 	const { status } = useParams();
@@ -28,15 +30,15 @@ function TransactionBlocksPage() {
 			{isQredoAccount ? (
 				<FiltersPortal
 					tags={[
-						{ name: 'Complete', link: 'transactions' },
+						{ name: t('activity.complete'), link: 'transactions' },
 						{
-							name: 'Pending Transactions',
+							name: t('activity.pending'),
 							link: 'transactions/pending',
 						},
 					]}
 				/>
 			) : null}
-			<PageTitle title="Your Activity" />
+			<PageTitle title={t('activity.title')} />
 			<div
 				className={cl(
 					'mt-5 flex-grow overflow-y-auto px-5 -mx-5 divide-y divide-solid divide-gray-45 divide-x-0',

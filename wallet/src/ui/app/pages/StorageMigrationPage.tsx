@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { useMutation } from '@tanstack/react-query';
+import { useI18n } from '_app/i18n';
 import { toast } from 'react-hot-toast';
 
 import LoadingIndicator from '../components/loading/LoadingIndicator';
@@ -12,6 +13,7 @@ import { CardLayout } from '../shared/card-layout';
 import { Toaster } from '../shared/toaster';
 
 export function StorageMigrationPage() {
+	const { t } = useI18n();
 	const { data } = useStorageMigrationStatus();
 	const backgroundClient = useBackgroundClient();
 	const migrationMutation = useMutation({
@@ -19,7 +21,7 @@ export function StorageMigrationPage() {
 		mutationFn: ({ password }: { password: string }) =>
 			backgroundClient.doStorageMigration({ password }),
 		onSuccess: () => {
-			toast.success('Storage migration done');
+			toast.success(t('storage.migrationDone'));
 		},
 	});
 	if (!data || data === 'ready') {
@@ -28,8 +30,8 @@ export function StorageMigrationPage() {
 	return (
 		<>
 			<CardLayout
-				title={data === 'inProgress' ? 'Storage migration in progress, please wait' : ''}
-				subtitle={data === 'required' ? 'Storage migration is required' : ''}
+				title={data === 'inProgress' ? t('storage.migrationProgress') : ''}
+				subtitle={data === 'required' ? t('storage.migrationRequired') : ''}
 				icon="rtd"
 			>
 				{data === 'required' && !migrationMutation.isSuccess ? (
@@ -37,7 +39,7 @@ export function StorageMigrationPage() {
 						onPasswordVerified={async (password) => {
 							await migrationMutation.mutateAsync({ password });
 						}}
-						title="Please insert your wallet password"
+						title={t('storage.enterPassword')}
 						legacyAccounts
 					/>
 				) : (

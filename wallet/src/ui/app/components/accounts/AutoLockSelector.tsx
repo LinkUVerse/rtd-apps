@@ -4,22 +4,12 @@
 import { useEffect } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { z } from 'zod';
+import { useI18n } from '_app/i18n';
 
 import { CheckboxField } from '../../shared/forms/CheckboxField';
 import { Input } from '../../shared/forms/controls/Input';
 import FormField from '../../shared/forms/FormField';
 import { SelectField } from '../../shared/forms/SelectField';
-
-const lockIntervals = [
-	{ id: 'day', label: 'Day' },
-	{ id: 'hour', label: 'Hour' },
-	{ id: 'minute', label: 'Minute' },
-];
-const lockIntervalsPlural = [
-	{ id: 'day', label: 'Days' },
-	{ id: 'hour', label: 'Hours' },
-	{ id: 'minute', label: 'Minutes' },
-];
 
 export const zodSchema = z.object({
 	autoLock: z
@@ -39,9 +29,16 @@ type AutoLockSelectorProps = {
 };
 
 export function AutoLockSelector({ disabled }: AutoLockSelectorProps) {
+	const { t } = useI18n();
 	const { register, watch, trigger } = useFormContext();
 	const timer = watch('autoLock.timer');
 	const timerEnabled = watch('autoLock.enabled');
+	const isSingular = Number(timer) === 1;
+	const lockIntervals = [
+		{ id: 'day', label: t(isSingular ? 'autoLock.unitDay' : 'autoLock.unitDays') },
+		{ id: 'hour', label: t(isSingular ? 'autoLock.unitHour' : 'autoLock.unitHours') },
+		{ id: 'minute', label: t(isSingular ? 'autoLock.unitMinute' : 'autoLock.unitMinutes') },
+	];
 	useEffect(() => {
 		const { unsubscribe } = watch((_, { name, type }) => {
 			if (name === 'autoLock.enabled' && type === 'change') {
@@ -54,7 +51,7 @@ export function AutoLockSelector({ disabled }: AutoLockSelectorProps) {
 		<div className="flex flex-col gap-4">
 			<CheckboxField
 				name="autoLock.enabled"
-				label="Auto-lock after I am inactive for"
+				label={t('autoLock.inactiveLabel')}
 				disabled={disabled}
 			/>
 			<FormField name="autoLock.timer">
@@ -68,7 +65,7 @@ export function AutoLockSelector({ disabled }: AutoLockSelectorProps) {
 					<SelectField
 						disabled={disabled || !timerEnabled}
 						name="autoLock.interval"
-						options={Number(timer) === 1 ? lockIntervals : lockIntervalsPlural}
+						options={lockIntervals}
 					/>
 				</div>
 			</FormField>

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Text } from '_app/shared/text';
+import { useI18n } from '_app/i18n';
 import { entropyToSerialized, mnemonicToEntropy } from '_src/shared/utils/bip39';
 import { useNavigate } from 'react-router-dom';
 
@@ -10,27 +11,28 @@ import { ImportRecoveryPhraseForm } from '../../components/accounts/ImportRecove
 import { Heading } from '../../shared/heading';
 
 export function ImportPassphrasePage() {
+	const { t } = useI18n();
 	const navigate = useNavigate();
 	const [, setFormValues] = useAccountsFormContext();
 	return (
-		<div className="rounded-20 bg-rtd-lightest shadow-wallet-content flex flex-col items-center px-6 py-10 h-full overflow-auto">
+		<div className="onboarding-surface rounded-20 flex h-full flex-col items-center overflow-auto px-6 py-10 shadow-wallet-content">
 			<Text variant="caption" color="steel-dark" weight="semibold">
-				Wallet Setup
+				{t('accounts.walletSetup')}
 			</Text>
 			<div className="text-center mt-2.5">
 				<Heading variant="heading1" color="gray-90" as="h1" weight="bold">
-					Add Existing Account
+					{t('accounts.addExisting')}
 				</Heading>
 			</div>
 			<div className="mt-6 grow flex flex-col gap-3">
 				<div className="pl-2.5">
 					<Text variant="pBody" color="steel-darker" weight="semibold">
-						Enter your 12-word Recovery Phrase
+						{t('accounts.enterRecoveryPhrase')}
 					</Text>
 				</div>
 				<ImportRecoveryPhraseForm
-					cancelButtonText="Cancel"
-					submitButtonText="Add Account"
+					cancelButtonText={t('common.cancel')}
+					submitButtonText={t('accounts.addAccount')}
 					onSubmit={({ recoveryPhrase }) => {
 						setFormValues({
 							type: 'import-mnemonic',

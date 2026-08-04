@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Text } from '_app/shared/text';
+import { useI18n } from '_app/i18n';
 import { isMnemonicSerializedUiAccount } from '_src/background/accounts/MnemonicAccount';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-hot-toast';
@@ -32,6 +33,7 @@ function isAllowedAccountType(accountType: string): accountType is AllowedAccoun
 }
 
 export function ProtectAccountPage() {
+	const { t } = useI18n();
 	const [searchParams] = useSearchParams();
 	const accountType = searchParams.get('accountType') || '';
 	const successRedirect = searchParams.get('successRedirect') || '/tokens';
@@ -69,10 +71,10 @@ export function ProtectAccountPage() {
 					navigate(successRedirect, { replace: true });
 				}
 			} catch (e) {
-				toast.error((e as Error).message ?? 'Failed to create account');
+				toast.error((e as Error).message ?? t('accounts.createFailed'));
 			}
 		},
-		[createMutation, navigate, successRedirect],
+		[createMutation, navigate, successRedirect, t],
 	);
 	const autoLockMutation = useAutoLockMinutesMutation();
 	if (!isAllowedAccountType(accountType)) {
@@ -80,7 +82,7 @@ export function ProtectAccountPage() {
 	}
 
 	return (
-		<div className="rounded-20 bg-rtd-lightest shadow-wallet-content flex flex-col items-center px-6 py-10 overflow-auto w-popup-width max-h-popup-height min-h-popup-minimum h-screen">
+		<div className="onboarding-surface rounded-20 flex h-screen max-h-popup-height min-h-popup-minimum w-popup-width flex-col items-center overflow-auto px-6 py-10 shadow-wallet-content">
 			<Loading loading={showVerifyPasswordView === null}>
 				{showVerifyPasswordView ? (
 					<VerifyPasswordModal
@@ -91,17 +93,17 @@ export function ProtectAccountPage() {
 				) : (
 					<>
 						<Text variant="caption" color="steel-dark" weight="semibold">
-							Wallet Setup
+							{t('accounts.walletSetup')}
 						</Text>
 						<div className="text-center mt-2.5">
 							<Heading variant="heading1" color="gray-90" as="h1" weight="bold">
-								Protect Account with a Password Lock
+								{t('accounts.protectTitle')}
 							</Heading>
 						</div>
 						<div className="mt-6 w-full grow">
 							<ProtectAccountForm
-								cancelButtonText="Back"
-								submitButtonText="Create Wallet"
+								cancelButtonText={t('common.back')}
+								submitButtonText={t('accounts.createWallet')}
 								onSubmit={async ({ password, autoLock }) => {
 									await autoLockMutation.mutateAsync({ minutes: autoLockDataToMinutes(autoLock) });
 									await createAccountCallback(password.input, accountType);

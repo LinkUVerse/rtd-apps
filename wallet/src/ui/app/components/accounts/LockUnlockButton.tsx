@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { LockLocked16, LockUnlocked16 } from 'rtd-apps-icons';
+import { useI18n } from '_app/i18n';
 import { type ComponentPropsWithoutRef } from 'react';
 
 import { Tooltip } from '../../shared/tooltip';
@@ -13,8 +14,9 @@ interface LockUnlockButtonProps extends ComponentPropsWithoutRef<'button'> {
 }
 
 export function LockUnlockButton({ isLocked, onClick, isLoading }: LockUnlockButtonProps) {
+	const { t } = useI18n();
 	return (
-		<Tooltip tip={isLocked ? 'Unlock Account' : 'Lock Account'}>
+		<Tooltip tip={isLocked ? t('accounts.unlockAccount') : t('accounts.lockAccount')}>
 			<button
 				className="appearance-none p-0 bg-transparent border-none cursor-pointer text-steel hover:text-hero-dark ml-auto flex items-center justify-center"
 				onClick={onClick}

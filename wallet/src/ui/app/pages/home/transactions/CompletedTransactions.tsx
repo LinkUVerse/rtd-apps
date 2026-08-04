@@ -7,9 +7,11 @@ import Loading from '_components/loading';
 import { TransactionCard } from '_components/transactions-card';
 import { NoActivityCard } from '_components/transactions-card/NoActivityCard';
 import { useQueryTransactionsByAddress } from '_hooks';
+import { useI18n } from '_app/i18n';
 import { useActiveAddress } from '_src/ui/app/hooks/useActiveAddress';
 
 export function CompletedTransactions() {
+	const { t } = useI18n();
 	const activeAddress = useActiveAddress();
 	const { data: txns, isPending, error } = useQueryTransactionsByAddress(activeAddress);
 	if (error) {
@@ -24,7 +26,7 @@ export function CompletedTransactions() {
 					</ErrorBoundary>
 				))
 			) : (
-				<NoActivityCard message="When available, your Rtd network transactions will show up here." />
+				<NoActivityCard message={t('activity.empty')} />
 			)}
 		</Loading>
 	);

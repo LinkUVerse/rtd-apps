@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Image32, LockLocked16, MediaPlay16 } from 'rtd-apps-icons';
+import { useI18n } from '_app/i18n';
 import { cva } from 'class-variance-authority';
 import type { VariantProps } from 'class-variance-authority';
 import cl from 'clsx';
@@ -64,6 +65,7 @@ export function NftImage({
 	className,
 	isLocked,
 }: NftImageProps) {
+	const { t } = useI18n();
 	const [error, setError] = useState(false);
 	const imgCls = cl(
 		'w-full h-full object-cover',
@@ -104,7 +106,9 @@ export function NftImage({
 					title={title}
 				>
 					<Image32 className="text-steel text-3xl h-6 w-6" />
-					{showLabel ? <span className="text-captionSmall font-medium">No media</span> : null}
+					{showLabel ? (
+						<span className="text-captionSmall font-medium">{t('nft.noMedia')}</span>
+					) : null}
 				</div>
 			) : (
 				<img

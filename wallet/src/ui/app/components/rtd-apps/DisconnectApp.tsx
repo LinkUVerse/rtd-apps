@@ -5,6 +5,7 @@ import Overlay from '_components/overlay';
 import { useAppSelector } from '_hooks';
 import { permissionsSelectors } from '_redux/slices/permissions';
 import { ampli } from '_src/shared/analytics/ampli';
+import { useI18n } from '_src/ui/app/i18n';
 import { formatAddress } from 'rtd-typescript/utils';
 import { useMutation } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
@@ -31,6 +32,7 @@ function DisconnectApp({
 	permissionID,
 	setShowDisconnectApp,
 }: DisconnectAppProps) {
+	const { t } = useI18n();
 	const [accountsToDisconnect, setAccountsToDisconnect] = useState<string[]>([]);
 	const permission = useAppSelector((state) =>
 		permissionsSelectors.selectById(state, permissionID),
@@ -62,25 +64,25 @@ function DisconnectApp({
 			});
 		},
 		onSuccess: () => {
-			toast.success('Disconnected successfully');
+			toast.success(t('dapp.disconnectSuccess'));
 			setShowDisconnectApp(false);
 		},
-		onError: () => toast.error('Disconnect failed'),
+		onError: () => toast.error(t('dapp.disconnectFailed')),
 	});
 	if (!permission) {
 		return null;
 	}
 	return (
-		<Overlay showModal setShowModal={setShowDisconnectApp} title="Connection Active">
+		<Overlay showModal setShowModal={setShowDisconnectApp} title={t('dapp.connectionActive')}>
 			<div className="flex flex-col flex-nowrap items-stretch flex-1 gap-3.75">
 				<DAppInfoCard name={name} iconUrl={icon} url={link} />
 				<SummaryCard
-					header="Permissions given"
+					header={t('dapp.permissionsGiven')}
 					body={<DAppPermissionsList permissions={permission.permissions} />}
 				/>
 				{connectedAccounts.length > 1 ? (
 					<WalletListSelect
-						title="Connected Accounts"
+						title={t('dapp.connectedAccounts')}
 						visibleValues={connectedAccounts}
 						values={accountsToDisconnect}
 						onChange={setAccountsToDisconnect}
@@ -89,7 +91,7 @@ function DisconnectApp({
 					/>
 				) : (
 					<SummaryCard
-						header="Connected Account"
+						header={t('dapp.connectedAccount')}
 						body={
 							<Text variant="body" color="steel-dark" weight="semibold" mono>
 								{connectedAccounts[0] ? formatAddress(connectedAccounts[0]) : null}
@@ -97,17 +99,17 @@ function DisconnectApp({
 						}
 					/>
 				)}
-				<div className="sticky flex items-end flex-1 -bottom-5 bg-white pt-1 pb-5">
+				<div className="theme-card sticky -bottom-5 flex flex-1 items-end pb-5 pt-1">
 					<Button
 						size="tall"
 						variant="warning"
 						text={
 							connectedAccounts.length === 1
-								? 'Disconnect'
+								? t('dapp.disconnect')
 								: accountsToDisconnect.length === 0 ||
 									  connectedAccounts.length === accountsToDisconnect.length
-									? 'Disconnect All'
-									: 'Disconnect Selected'
+									? t('dapp.disconnectAll')
+									: t('dapp.disconnectSelected')
 						}
 						loading={disconnectMutation.isPending}
 						onClick={() => disconnectMutation.mutate()}

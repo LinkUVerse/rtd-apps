@@ -9,6 +9,7 @@ import type { RootState } from '_redux/RootReducer';
 import { permissionsSelectors, respondToPermissionRequest } from '_redux/slices/permissions';
 import { type SerializedUIAccount } from '_src/background/accounts/Account';
 import { ampli } from '_src/shared/analytics/ampli';
+import { useI18n } from '_src/ui/app/i18n';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
@@ -21,6 +22,7 @@ import { PageMainLayoutTitle } from '../../shared/page-main-layout/PageMainLayou
 import './SiteConnectPage.module.scss';
 
 function SiteConnectPage() {
+	const { t } = useI18n();
 	const { requestID } = useParams();
 	const permissionsInitialized = useAppSelector(({ permissions }) => permissions.initialized);
 	const loading = !permissionsInitialized;
@@ -94,38 +96,32 @@ function SiteConnectPage() {
 					<UserApproveContainer
 						origin={permissionRequest.origin}
 						originFavIcon={permissionRequest.favIcon}
-						approveTitle="Continue"
-						rejectTitle="Reject"
+						approveTitle={t('dapp.continue')}
+						rejectTitle={t('dapp.reject')}
 						onSubmit={handleHideWarning}
 						isWarning
 						addressHidden
 						blended
 					>
-						<PageMainLayoutTitle title="Insecure Website" />
+						<PageMainLayoutTitle title={t('dapp.insecureWebsite')} />
 						<div className="warning-wrapper">
-							<h1 className="warning-title">Your Connection is Not Secure</h1>
+							<h1 className="warning-title">{t('dapp.connectionNotSecure')}</h1>
 						</div>
 
-						<div className="warning-message">
-							If you connect your wallet to this site your data could be exposed to attackers. Click
-							**Reject** if you don't trust this site.
-							<br />
-							<br />
-							Continue at your own risk.
-						</div>
+						<div className="warning-message">{t('dapp.insecureDescription')}</div>
 					</UserApproveContainer>
 				) : (
 					<UserApproveContainer
 						origin={permissionRequest.origin}
 						originFavIcon={permissionRequest.favIcon}
 						permissions={permissionRequest.permissions}
-						approveTitle="Connect"
-						rejectTitle="Reject"
+						approveTitle={t('dapp.connect')}
+						rejectTitle={t('dapp.reject')}
 						onSubmit={handleOnSubmit}
 						approveDisabled={!accountsToConnect.length}
 						blended
 					>
-						<PageMainLayoutTitle title="Approve Connection" />
+						<PageMainLayoutTitle title={t('dapp.approveConnection')} />
 						<div className="flex flex-col gap-8 py-6">
 							{unlockedAccounts.length > 0 ? (
 								<AccountMultiSelectWithControls
@@ -136,13 +132,11 @@ function SiteConnectPage() {
 									}}
 								/>
 							) : (
-								<Alert mode="warning">
-									All accounts are currently locked. Unlock accounts to connect.
-								</Alert>
+								<Alert mode="warning">{t('dapp.allAccountsLocked')}</Alert>
 							)}
 							{lockedAccounts?.length > 0 && (
 								<div className="flex flex-col gap-3">
-									<SectionHeader title="Locked & Unavailable" />
+									<SectionHeader title={t('dapp.lockedUnavailable')} />
 									{lockedAccounts?.map((account) => (
 										<AccountItemApproveConnection
 											key={account.id}

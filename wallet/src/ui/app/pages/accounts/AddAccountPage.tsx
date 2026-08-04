@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Button } from '_app/shared/ButtonUI';
+import { useI18n } from '_app/i18n';
 import { Text } from '_app/shared/text';
 import Overlay from '_components/overlay';
 import {
@@ -34,6 +35,7 @@ async function openTabWithSearchParam(searchParam: string, searchParamValue: str
 }
 
 export function AddAccountPage() {
+	const { t } = useI18n();
 	const [searchParams, setSearchParams] = useSearchParams();
 	const navigate = useNavigate();
 	const sourceFlow = searchParams.get('sourceFlow') || 'Unknown';
@@ -53,12 +55,12 @@ export function AddAccountPage() {
 						navigate('/tokens');
 					},
 					onError: (error) => {
-						toast.error((error as Error)?.message || 'Failed to create account. (Unknown error)');
+						toast.error((error as Error)?.message || t('accounts.createFailed'));
 					},
 				},
 			);
 		},
-		[setAccountsFormValues, createAccountsMutation, navigate],
+		[setAccountsFormValues, createAccountsMutation, navigate, t],
 	);
 	const [forcedZkLoginProvider, setForcedZkLoginProvider] = useState<ZkLoginProvider | null>(null);
 	const forceZkLoginWithProviderRef = useRef(searchParams.get('forceZkLoginProvider'));
@@ -92,7 +94,7 @@ export function AddAccountPage() {
 		isAccountsCountLoading,
 	]);
 	return (
-		<Overlay showModal title="Add Account" closeOverlay={() => navigate('/')}>
+		<Overlay showModal title={t('accounts.addAccount')} closeOverlay={() => navigate('/')}>
 			<div className="w-full flex flex-col gap-8">
 				<div className="flex flex-col gap-3">
 					{showSocialSignInOptions && (
@@ -113,11 +115,11 @@ export function AddAccountPage() {
 						/>
 					)}
 				</div>
-				<Section title="Create New">
+				<Section title={t('accounts.createNew')}>
 					<Button
 						variant="outline"
 						size="tall"
-						text="Create a new Passphrase Account"
+						text={t('accounts.createPassphrase')}
 						to="/accounts/protect-account?accountType=new-mnemonic"
 						onClick={() => {
 							setAccountsFormValues({ type: 'new-mnemonic' });
@@ -126,11 +128,11 @@ export function AddAccountPage() {
 						disabled={createAccountsMutation.isPending}
 					/>
 				</Section>
-				<Section title="Import Existing Accounts">
+				<Section title={t('accounts.importExisting')}>
 					<Button
 						variant="outline"
 						size="tall"
-						text="Import Passphrase"
+						text={t('accounts.importPassphrase')}
 						to="/accounts/import-passphrase"
 						onClick={() => {
 							ampli.clickedImportPassphrase({ sourceFlow });
@@ -140,7 +142,7 @@ export function AddAccountPage() {
 					<Button
 						variant="outline"
 						size="tall"
-						text="Import Private Key"
+						text={t('accounts.importPrivateKey')}
 						to="/accounts/import-private-key"
 						onClick={() => {
 							ampli.clickedImportPrivateKey({ sourceFlow });

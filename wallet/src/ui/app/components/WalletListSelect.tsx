@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { cx } from 'class-variance-authority';
+import { useI18n } from '_app/i18n';
 import { useMemo } from 'react';
 
 import { useAccounts } from '../hooks/useAccounts';
@@ -28,6 +29,7 @@ export function WalletListSelect({
 	onChange,
 	boxShadow = false,
 }: WalletListSelectProps) {
+	const { t } = useI18n();
 	const { data: accounts } = useAccounts();
 	const filteredAccounts = useMemo(() => {
 		if (!accounts) {
@@ -88,7 +90,7 @@ export function WalletListSelect({
 								<Link
 									color="heroDark"
 									weight="medium"
-									text="Select all"
+									text={t('common.selectAll')}
 									disabled={disabled}
 									onClick={() => onChange(filteredAccounts.map(({ address }) => address))}
 								/>

@@ -11,6 +11,7 @@ import { useAccountByAddress } from '_src/ui/app/hooks/useAccountByAddress';
 import { useQredoTransaction } from '_src/ui/app/hooks/useQredoTransaction';
 import { useRecognizedPackages } from '_src/ui/app/hooks/useRecognizedPackages';
 import { useSigner } from '_src/ui/app/hooks/useSigner';
+import { useI18n } from '_src/ui/app/i18n';
 import { PageMainLayoutTitle } from '_src/ui/app/shared/page-main-layout/PageMainLayoutTitle';
 import { TransactionSummary } from '_src/ui/app/shared/transaction-summary';
 import { useTransactionSummary } from 'rtd-apps-core';
@@ -32,6 +33,7 @@ export type TransactionRequestProps = {
 const appOriginsToExcludeFromAnalytics = ['https://rtd8192.ethoswallet.xyz'];
 
 export function TransactionRequest({ txRequest }: TransactionRequestProps) {
+	const { t } = useI18n();
 	const addressForTransaction = txRequest.tx.account;
 	const { data: accountForTransaction } = useAccountByAddress(addressForTransaction);
 	const signer = useSigner(accountForTransaction);
@@ -67,8 +69,8 @@ export function TransactionRequest({ txRequest }: TransactionRequestProps) {
 			<UserApproveContainer
 				origin={txRequest.origin}
 				originFavIcon={txRequest.originFavIcon}
-				approveTitle="Approve"
-				rejectTitle="Reject"
+				approveTitle={t('approval.approve')}
+				rejectTitle={t('dapp.reject')}
 				onSubmit={async (approved: boolean) => {
 					if (isPending) return;
 					if (approved && isError) {
@@ -96,7 +98,7 @@ export function TransactionRequest({ txRequest }: TransactionRequestProps) {
 				approveLoading={isPending || isConfirmationVisible}
 				checkAccountLock
 			>
-				<PageMainLayoutTitle title="Approve Transaction" />
+				<PageMainLayoutTitle title={t('approval.approveTransaction')} />
 				<div className="flex flex-col">
 					<div className="flex flex-col gap-4">
 						<TransactionSummary
@@ -107,7 +109,7 @@ export function TransactionRequest({ txRequest }: TransactionRequestProps) {
 							summary={summary}
 						/>
 					</div>
-					<section className=" bg-white -mx-6">
+					<section className="theme-card -mx-6">
 						<div className="flex flex-col gap-4 p-6">
 							<GasFees sender={addressForTransaction} transaction={transaction} />
 							<TransactionDetails sender={addressForTransaction} transaction={transaction} />
@@ -117,11 +119,11 @@ export function TransactionRequest({ txRequest }: TransactionRequestProps) {
 			</UserApproveContainer>
 			<ConfirmationModal
 				isOpen={isConfirmationVisible}
-				title="This transaction might fail. Are you sure you still want to approve the transaction?"
-				hint="You will still be charged a gas fee for this transaction."
+				title={t('approval.mightFail')}
+				hint={t('approval.gasStillCharged')}
 				confirmStyle="primary"
-				confirmText="Approve"
-				cancelText="Reject"
+				confirmText={t('approval.approve')}
+				cancelText={t('dapp.reject')}
 				cancelStyle="warning"
 				onResponse={async (isConfirmed) => {
 					await dispatch(

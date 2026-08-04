@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ChevronDown12 } from 'rtd-apps-icons';
+import { useI18n } from '_app/i18n';
 import clsx from 'clsx';
 import { useMemo, useState, type ReactNode } from 'react';
 
@@ -14,6 +15,7 @@ interface ExpandableListProps {
 }
 
 export function ExpandableList({ items, defaultItemsToShow }: ExpandableListProps) {
+	const { t } = useI18n();
 	const [showAll, setShowAll] = useState(false);
 
 	const itemsDisplayed = useMemo(
@@ -42,7 +44,7 @@ export function ExpandableList({ items, defaultItemsToShow }: ExpandableListProp
 							/>
 						}
 					>
-						<Text variant="bodySmall">{showAll ? 'Show Less' : 'Show All'}</Text>
+						<Text variant="bodySmall">{showAll ? t('common.showLess') : t('common.showAll')}</Text>
 					</Link>
 				</div>
 			)}

@@ -13,7 +13,7 @@
 	align-items: center;
 	justify-content: stretch;
 	overflow: hidden;
-	border: 1px solid rgb(111 188 240 / 1%);
+	border: 1px solid var(--rtd-border-color);
 	transition:
 		max-height 300ms ease-in-out,
 		opacity 300ms ease-in-out;
@@ -21,7 +21,8 @@
 	flex-direction: column;
 	z-index: 40;
 	max-height: 120px;
-	padding-top: 8px;
+	padding-top: 6px;
+	box-shadow: 0 -8px 24px rgb(var(--rtd-primary-rgb) / 8%);
 }
 
 .nav-menu {
@@ -58,25 +59,27 @@
 	display: flex;
 	flex-flow: column nowrap;
 	align-items: center;
-	padding: 6px;
+	padding: 7px 6px 8px;
 	text-decoration: none;
 	color: v.use(v.$colors-nav-item-color);
 	user-select: none;
 	flex-grow: 1;
 	flex-basis: 80px;
-	height: 70px;
+	height: 68px;
 	justify-content: space-between;
-	padding-bottom: 12px;
+	padding-bottom: 9px;
 	border-bottom: 2px solid;
 	border-bottom-color: transparent;
 
 	&:hover {
 		color: v.use(v.$colors-nav-item-highlighted-color);
+		background: rgb(var(--rtd-primary-subtle-rgb) / 70%);
 	}
 
 	&.active {
 		color: v.use(v.$colors-nav-item-active-color);
 		border-bottom-color: v.use(v.$colors-nav-item-active-color);
+		background: linear-gradient(180deg, transparent, rgb(var(--rtd-primary-soft-rgb) / 52%));
 
 		&:hover {
 			color: v.use(v.$colors-nav-item-active-highlighted-color);

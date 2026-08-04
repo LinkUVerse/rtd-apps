@@ -9,6 +9,7 @@ import {
 	NUM_OF_EPOCH_BEFORE_STAKING_REWARDS_STARTS,
 } from '_src/shared/constants';
 import { CountDownTimer } from '_src/ui/app/shared/countdown-timer';
+import { useI18n } from '_src/ui/app/i18n';
 import { useCoinMetadata, useFormatCoin, useGetTimeBeforeEpochNumber } from 'rtd-apps-core';
 import { Field, Form, useFormikContext } from 'formik';
 import { memo, useCallback, useMemo } from 'react';
@@ -28,6 +29,7 @@ export type StakeFromProps = {
 };
 
 function StakeForm({ validatorAddress, coinBalance, coinType, epoch }: StakeFromProps) {
+	const { t } = useI18n();
 	const { values, setFieldValue } = useFormikContext<FormValues>();
 
 	const { data: metadata } = useCoinMetadata(coinType);
@@ -64,35 +66,35 @@ function StakeForm({ validatorAddress, coinBalance, coinType, epoch }: StakeFrom
 		<Form className="flex flex-1 flex-col flex-nowrap items-center" autoComplete="off">
 			<div className="flex flex-col justify-between items-center mb-3 mt-3.5 w-full gap-1.5">
 				<Text variant="caption" color="gray-85" weight="semibold">
-					Enter the amount of RTD to stake
+					{t('staking.enterAmount')}
 				</Text>
 				<Text variant="bodySmall" color="steel" weight="medium">
-					Available - {maxToken} {symbol}
+					{t('staking.available', { amount: maxToken, symbol })}
 				</Text>
 			</div>
 			<Card
 				variant="gray"
 				titleDivider
 				header={
-					<div className="p-2.5 w-full flex bg-white">
+					<div className="theme-surface flex w-full p-2.5">
 						<Field
 							data-testid="stake-amount-input"
 							component={NumberInput}
 							allowNegative={false}
 							name="amount"
-							className="w-full border-none text-hero-dark text-heading4 font-semibold bg-white placeholder:text-gray-70 placeholder:font-semibold"
+							className="w-full border-none bg-transparent text-heading4 font-semibold text-hero-dark placeholder:font-semibold placeholder:text-gray-70"
 							decimals
 							suffix={` ${symbol}`}
 							autoFocus
 						/>
 						{!HIDE_MAX ? (
 							<button
-								className="bg-white border border-solid border-gray-60 hover:border-steel-dark rounded-2xl h-6 w-11 flex justify-center items-center cursor-pointer text-steel-darker hover:text-steel-darker text-bodySmall font-medium disabled:opacity-50 disabled:cursor-auto"
+								className="theme-surface flex h-6 w-11 cursor-pointer items-center justify-center rounded-2xl border border-solid border-gray-60 text-bodySmall font-medium text-steel-darker hover:border-steel-dark hover:text-steel-darker disabled:cursor-auto disabled:opacity-50"
 								onClick={setMaxToken}
 								disabled={queryResult.isPending}
 								type="button"
 							>
-								Max
+								{t('common.max')}
 							</button>
 						) : null}
 					</div>
@@ -100,7 +102,7 @@ function StakeForm({ validatorAddress, coinBalance, coinType, epoch }: StakeFrom
 				footer={
 					<div className="py-px flex justify-between w-full">
 						<Text variant="body" weight="medium" color="steel-darker">
-							Gas Fees
+							{t('transaction.gasFees')}
 						</Text>
 						<Text variant="body" weight="medium" color="steel-darker">
 							{gasBudget} {symbol}
@@ -110,7 +112,7 @@ function StakeForm({ validatorAddress, coinBalance, coinType, epoch }: StakeFrom
 			>
 				<div className="pb-3.75 flex justify-between w-full">
 					<Text variant="body" weight="medium" color="steel-darker">
-						Staking Rewards Start
+						{t('staking.rewardsStart')}
 					</Text>
 					{timeBeforeStakeRewardsStarts > 0 ? (
 						<CountDownTimer
@@ -118,19 +120,19 @@ function StakeForm({ validatorAddress, coinBalance, coinType, epoch }: StakeFrom
 							variant="body"
 							color="steel-darker"
 							weight="semibold"
-							label="in"
+							label={t('staking.in')}
 							endLabel="--"
 						/>
 					) : (
 						<Text variant="body" weight="medium" color="steel-darker">
-							{epoch ? `Epoch #${Number(startEarningRewardsEpoch)}` : '--'}
+							{epoch ? t('staking.epochNumber', { count: Number(startEarningRewardsEpoch) }) : '--'}
 						</Text>
 					)}
 				</div>
 				<div className="pb-3.75 flex justify-between item-center w-full">
 					<div className="flex-1">
 						<Text variant="pBody" weight="medium" color="steel-darker">
-							Staking Rewards Redeemable
+							{t('staking.rewardsRedeemable')}
 						</Text>
 					</div>
 					<div className="flex-1 flex justify-end gap-1 items-center">
@@ -140,12 +142,12 @@ function StakeForm({ validatorAddress, coinBalance, coinType, epoch }: StakeFrom
 								variant="body"
 								color="steel-darker"
 								weight="semibold"
-								label="in"
+								label={t('staking.in')}
 								endLabel="--"
 							/>
 						) : (
 							<Text variant="body" weight="medium" color="steel-darker">
-								{epoch ? `Epoch #${Number(redeemableRewardsEpoch)}` : '--'}
+								{epoch ? t('staking.epochNumber', { count: Number(redeemableRewardsEpoch) }) : '--'}
 							</Text>
 						)}
 					</div>

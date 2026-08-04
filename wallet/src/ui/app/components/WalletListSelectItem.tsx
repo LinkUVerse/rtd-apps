@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { CheckFill16, XFill16 } from 'rtd-apps-icons';
+import { useI18n } from '_app/i18n';
 import { formatAddress } from 'rtd-typescript/utils';
 import { cva, cx, type VariantProps } from 'class-variance-authority';
 import { useEffect, useRef } from 'react';
@@ -58,6 +59,7 @@ export function WalletListSelectItem({
 	disabled = false,
 	isNew = false,
 }: WalletListSelectItemProps) {
+	const { t } = useI18n();
 	const elementRef = useRef<HTMLDivElement>(null);
 	useEffect(() => {
 		const timeout = setTimeout(() => {
@@ -95,14 +97,14 @@ export function WalletListSelectItem({
 			{isDisconnect && !selected ? (
 				<div className="flex flex-1 justify-end text-issue-dark">
 					<Text variant="subtitle" weight="normal">
-						Disconnect
+						{t('dapp.disconnect')}
 					</Text>
 				</div>
 			) : null}
 			{isSelect && isNew ? (
 				<div className="flex-1 flex justify-end">
 					<Text variant="subtitleSmall" color="steel">
-						NEW
+						{t('common.new')}
 					</Text>
 				</div>
 			) : null}

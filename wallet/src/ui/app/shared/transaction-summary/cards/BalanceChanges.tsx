@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import Alert from '_components/alert';
 import { CoinIcon } from '_src/ui/app/components/coin-icon';
+import { useI18n } from '_src/ui/app/i18n';
 import { Text } from '_src/ui/app/shared/text';
 import {
 	CoinFormat,
@@ -22,6 +23,7 @@ interface BalanceChangesProps {
 }
 
 function BalanceChangeEntry({ change }: { change: BalanceChange }) {
+	const { t } = useI18n();
 	const { amount, coinType, unRecognizedToken } = change;
 	const isPositive = BigInt(amount) > 0n;
 	const [formatted, symbol] = useFormatCoin(amount, coinType, CoinFormat.FULL);
@@ -40,7 +42,7 @@ function BalanceChangeEntry({ change }: { change: BalanceChange }) {
 						{unRecognizedToken && (
 							<Alert mode="warning" spacing="sm" showIcon={false}>
 								<div className="item-center leading-none max-w-[70px] overflow-hidden truncate whitespace-nowrap text-captionSmallExtra font-medium uppercase tracking-wider">
-									Unrecognized
+									{t('transaction.unrecognized')}
 								</div>
 							</Alert>
 						)}
@@ -87,11 +89,16 @@ function BalanceChangeEntries({ changes }: { changes: BalanceChange[] }) {
 }
 
 export function BalanceChanges({ changes }: BalanceChangesProps) {
+	const { t } = useI18n();
 	if (!changes) return null;
 	return (
 		<>
 			{Object.entries(changes).map(([owner, changes]) => (
-				<Card heading="Balance Changes" key={owner} footer={<OwnerFooter owner={owner} />}>
+				<Card
+					heading={t('transaction.balanceChanges')}
+					key={owner}
+					footer={<OwnerFooter owner={owner} />}
+				>
 					<div className="flex flex-col gap-4 pb-3">
 						<BalanceChangeEntries changes={changes} />
 					</div>

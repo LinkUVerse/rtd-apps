@@ -4,6 +4,7 @@ import { Heading } from '_app/shared/heading';
 import { ImageIcon } from '_app/shared/image-icon';
 import { Text } from '_app/shared/text';
 import { Badge } from '_src/ui/app/shared/Badge';
+import { useI18n } from '_src/ui/app/i18n';
 import { useRtdClientQuery } from 'rtd-dapp-kit';
 import { formatAddress } from 'rtd-typescript/utils';
 import cl from 'clsx';
@@ -30,6 +31,7 @@ export function ValidatorLogo({
 	showActiveStatus = false,
 	activeEpoch,
 }: ValidatorLogoProps) {
+	const { t } = useI18n();
 	const { data, isPending } = useRtdClientQuery('getLatestRtdSystemState');
 
 	const validatorMeta = useMemo(() => {
@@ -55,7 +57,9 @@ export function ValidatorLogo({
 	}
 	// for inactive validators, show the epoch number
 	const fallBackText = activeEpoch
-		? `Staked ${Number(data?.epoch) - Number(activeEpoch)} epochs ago`
+		? t('staking.stakedEpochsAgo', {
+				count: Number(data?.epoch) - Number(activeEpoch),
+			})
 		: '';
 	const validatorName = validatorMeta?.name || fallBackText;
 
@@ -90,8 +94,8 @@ export function ValidatorLogo({
 
 					{showActiveStatus && (
 						<div className="ml-1 flex gap-1">
-							{newValidator && <Badge label="New" variant="success" />}
-							{isAtRisk && <Badge label="At Risk" variant="warning" />}
+							{newValidator && <Badge label={t('staking.newValidator')} variant="success" />}
+							{isAtRisk && <Badge label={t('staking.atRisk')} variant="warning" />}
 						</div>
 					)}
 				</div>

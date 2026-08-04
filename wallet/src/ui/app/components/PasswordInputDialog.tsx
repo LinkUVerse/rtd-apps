@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { useBackgroundClient } from '_src/ui/app/hooks/useBackgroundClient';
+import { useI18n } from '_app/i18n';
 import { Button } from '_src/ui/app/shared/ButtonUI';
 import FieldLabel from '_src/ui/app/shared/field-label';
 import { Heading } from '_src/ui/app/shared/heading';
@@ -35,7 +36,7 @@ export type PasswordExportDialogProps = {
 /** @deprecated - use UnlockAccountModal instead **/
 export function PasswordInputDialog({
 	title,
-	continueLabel = 'Continue',
+	continueLabel,
 	showArrowIcon = false,
 	spacing = false,
 	background = false,
@@ -44,6 +45,8 @@ export function PasswordInputDialog({
 	showBackButton = false,
 	legacyAccounts = false,
 }: PasswordExportDialogProps) {
+	const { t } = useI18n();
+	const resolvedContinueLabel = continueLabel || t('common.continue');
 	const navigate = useNavigate();
 	const backgroundService = useBackgroundClient();
 	return (
@@ -55,10 +58,10 @@ export function PasswordInputDialog({
 					try {
 						await onPasswordVerified(password);
 					} catch (e) {
-						toast.error((e as Error).message || 'Wrong password');
+						toast.error((e as Error).message || t('common.wrongPassword'));
 					}
 				} catch (e) {
-					setFieldError('password', (e as Error).message || 'Wrong password');
+					setFieldError('password', (e as Error).message || t('common.wrongPassword'));
 				}
 			}}
 			validationSchema={validation}
@@ -77,20 +80,20 @@ export function PasswordInputDialog({
 						</Heading>
 					</div>
 					<div className="self-stretch flex-1">
-						<FieldLabel txt="Enter Wallet Password to Continue">
+						<FieldLabel txt={t('accounts.enterWalletPassword')}>
 							<PasswordInputField name="password" />
 							<ErrorMessage render={(error) => <Alert>{error}</Alert>} name="password" />
 						</FieldLabel>
 						<div className="text-center mt-4">
 							<Text variant="pBodySmall" color="steel-dark" weight="normal">
-								This is the password you currently use to lock and unlock your Rtd wallet.
+								{t('accounts.passwordDescription')}
 							</Text>
 						</div>
 					</div>
 					<div className="flex flex-nowrap gap-3.75 self-stretch">
 						{showBackButton ? (
 							<Button
-								text="Back"
+								text={t('common.back')}
 								color="heroDark"
 								size="tall"
 								variant="outline"
@@ -109,7 +112,7 @@ export function PasswordInputDialog({
 							type="submit"
 							variant="primary"
 							size="tall"
-							text={continueLabel}
+							text={resolvedContinueLabel}
 							loading={isSubmitting}
 							disabled={!isValid}
 							after={showArrowIcon ? <ArrowRight16 /> : null}

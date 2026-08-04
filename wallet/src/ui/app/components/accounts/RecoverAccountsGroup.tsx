@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { type SerializedUIAccount } from '_src/background/accounts/Account';
+import { useI18n } from '_src/ui/app/i18n';
 import { CheckFill16 } from 'rtd-apps-icons';
 
 import { Link } from '../../shared/Link';
@@ -24,6 +25,8 @@ export function RecoverAccountsGroup({
 	onRecover,
 	recoverDone,
 }: RecoverAccountsGroupProps) {
+	const { t } = useI18n();
+
 	return (
 		<div className="flex flex-col items-stretch w-full gap-4">
 			<div className="flex flex-nowrap items-center gap-1 px-2">
@@ -37,12 +40,12 @@ export function RecoverAccountsGroup({
 							size="bodySmall"
 							color="hero"
 							weight="semibold"
-							text="Recover"
+							text={t('accounts.recover')}
 							onClick={onRecover}
 						/>
 					) : null}
 					{recoverDone ? (
-						<Tooltip tip="Recovery process done">
+						<Tooltip tip={t('accounts.recoveryDone')}>
 							<CheckFill16 className="text-success w-4 h-4" />
 						</Tooltip>
 					) : null}

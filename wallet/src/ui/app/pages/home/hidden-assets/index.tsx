@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { useBlockedObjectList } from '_app/hooks/useBlockedObjectList';
+import { useI18n } from '_app/i18n';
 import Alert from '_components/alert';
 import { ErrorBoundary } from '_components/error-boundary';
 import Loading from '_components/loading';
@@ -22,6 +23,7 @@ import { useHiddenAssets } from './HiddenAssetsProvider';
 
 function HiddenNftsPage() {
 	const { hiddenAssetIds, showAsset } = useHiddenAssets();
+	const { t } = useI18n();
 	const kioskClient = useKioskClient();
 	const { data: blockedObjectList } = useBlockedObjectList();
 
@@ -75,12 +77,12 @@ function HiddenNftsPage() {
 
 	return (
 		<div className="flex flex-1 flex-col flex-nowrap items-center gap-4">
-			<PageTitle title="Hidden Assets" back="/nfts" />
+			<PageTitle title={t('assets.hidden')} back="/nfts" />
 			<Loading loading={isPending && Boolean(hiddenAssetIds.length)}>
 				{isError ? (
 					<Alert>
 						<div>
-							<strong>Sync error (data might be outdated)</strong>
+							<strong>{t('common.syncError')}</strong>
 						</div>
 						<small>{(error as Error).message}</small>
 					</Alert>
@@ -129,7 +131,7 @@ function HiddenNftsPage() {
 					</div>
 				) : (
 					<div className="flex flex-1 items-center self-center text-caption font-semibold text-steel-darker">
-						No Assets found
+						{t('assets.noAssets')}
 					</div>
 				)}
 			</Loading>

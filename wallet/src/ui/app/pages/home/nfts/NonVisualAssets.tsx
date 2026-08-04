@@ -4,10 +4,12 @@
 import ExplorerLink from '_src/ui/app/components/explorer-link';
 import { ExplorerLinkType } from '_src/ui/app/components/explorer-link/ExplorerLinkType';
 import { Text } from '_src/ui/app/shared/text';
+import { useI18n } from '_app/i18n';
 import { type RtdObjectData } from 'rtd-typescript/client';
 import { formatAddress, parseStructTag } from 'rtd-typescript/utils';
 
 export default function NonVisualAssets({ items }: { items: RtdObjectData[] }) {
+	const { t } = useI18n();
 	return (
 		<div className="flex flex-col items-center gap-4 w-full flex-1">
 			{items?.length ? (
@@ -41,7 +43,7 @@ export default function NonVisualAssets({ items }: { items: RtdObjectData[] }) {
 				</div>
 			) : (
 				<div className="flex flex-1 items-center self-center text-caption font-semibold text-steel-darker">
-					No Assets found
+					{t('assets.noAssets')}
 				</div>
 			)}
 		</div>

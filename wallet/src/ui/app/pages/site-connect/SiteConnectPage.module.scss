@@ -17,7 +17,7 @@
 	margin-bottom: 8px;
 	display: flex;
 	justify-content: space-around;
-	color: colors.$rtd-steel-darker;
+	color: rgb(var(--rtd-steel-darker-rgb));
 }
 
 .warning-title {
@@ -32,8 +32,9 @@
 	@include utils.typography('Primary/BodySmall-M');
 
 	color: colors.$gray-80;
-	background-color: colors.$white;
+	background-color: var(--rtd-card-background);
 	padding: 20px;
 	border-radius: 16px;
 	box-shadow: v.use(v.$shadows-message-content);
+	border: 1px solid var(--rtd-border-color);
 }

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { useTransactionData } from '_src/ui/app/hooks';
+import { useI18n } from '_src/ui/app/i18n';
 import { Tab as HeadlessTab, type TabProps } from '@headlessui/react';
 import { type Transaction } from 'rtd-typescript/transactions';
 
@@ -22,22 +23,23 @@ const Tab = (props: TabProps<'div'>) => (
 );
 
 export function TransactionDetails({ sender, transaction }: Props) {
+	const { t } = useI18n();
 	const { data: transactionData, isPending, isError } = useTransactionData(sender, transaction);
 	if (transactionData?.commands.length === 0 && transactionData.inputs.length === 0) {
 		return null;
 	}
 	return (
-		<SummaryCard header="Transaction Details" initialExpanded>
+		<SummaryCard header={t('approval.transactionDetails')} initialExpanded>
 			{isPending || isError ? (
 				<div className="ml-0 text-steel-darker text-pBodySmall font-medium">
-					{isPending ? 'Gathering data...' : "Couldn't gather data"}
+					{isPending ? t('approval.gathering') : t('approval.gatherFailed')}
 				</div>
 			) : transactionData ? (
 				<div>
 					<HeadlessTab.Group>
 						<HeadlessTab.List className="flex gap-6 border-0 border-b border-solid border-gray-45 mb-6">
-							{!!transactionData.commands.length && <Tab>Commands</Tab>}
-							{!!transactionData.inputs.length && <Tab>Inputs</Tab>}
+							{!!transactionData.commands.length && <Tab>{t('approval.commands')}</Tab>}
+							{!!transactionData.inputs.length && <Tab>{t('approval.inputs')}</Tab>}
 						</HeadlessTab.List>
 						<HeadlessTab.Panels>
 							{!!transactionData.commands.length && (

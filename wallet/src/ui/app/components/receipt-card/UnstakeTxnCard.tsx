@@ -4,6 +4,7 @@
 import { ValidatorLogo } from '_app/staking/validators/ValidatorLogo';
 import { TxnAmount } from '_components/receipt-card/TxnAmount';
 import { Text } from '_src/ui/app/shared/text';
+import { useI18n } from '_src/ui/app/i18n';
 import { useFormatCoin } from 'rtd-apps-core';
 import type { RtdEvent } from 'rtd-typescript/client';
 import { RTD_TYPE_ARG } from 'rtd-typescript/utils';
@@ -15,6 +16,7 @@ type UnStakeTxnCardProps = {
 };
 
 export function UnStakeTxnCard({ event }: UnStakeTxnCardProps) {
+	const { t } = useI18n();
 	const json = event.parsedJson as {
 		principal_amount?: number;
 		reward_amount?: number;
@@ -40,12 +42,14 @@ export function UnStakeTxnCard({ event }: UnStakeTxnCardProps) {
 						/>
 					</div>
 				)}
-				{totalAmount && <TxnAmount amount={totalAmount} coinType={RTD_TYPE_ARG} label="Total" />}
+				{totalAmount && (
+					<TxnAmount amount={totalAmount} coinType={RTD_TYPE_ARG} label={t('common.total')} />
+				)}
 
 				<div className="flex justify-between w-full py-3.5">
 					<div className="flex gap-1 items-baseline text-steel">
 						<Text variant="body" weight="medium" color="steel-darker">
-							Your RTD Stake
+							{t('staking.yourStakedRtd')}
 						</Text>
 					</div>
 
@@ -59,7 +63,7 @@ export function UnStakeTxnCard({ event }: UnStakeTxnCardProps) {
 				<div className="flex justify-between w-full py-3.5">
 					<div className="flex gap-1 items-baseline text-steel">
 						<Text variant="body" weight="medium" color="steel-darker">
-							Staking Rewards Earned
+							{t('staking.rewardsEarned')}
 						</Text>
 					</div>
 

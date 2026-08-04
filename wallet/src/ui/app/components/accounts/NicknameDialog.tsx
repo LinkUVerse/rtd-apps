@@ -9,6 +9,7 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from '_src/ui/app/shared/Dialog';
+import { useI18n } from '_app/i18n';
 import { useZodForm } from 'rtd-apps-core';
 import { useState, type JSX } from 'react';
 import toast from 'react-hot-toast';
@@ -30,6 +31,7 @@ interface NicknameDialogProps {
 }
 
 export function NicknameDialog({ accountID, trigger }: NicknameDialogProps) {
+	const { t } = useI18n();
 	const [open, setOpen] = useState(false);
 	const backgroundClient = useBackgroundClient();
 	const { data: accounts } = useAccounts();
@@ -56,7 +58,7 @@ export function NicknameDialog({ accountID, trigger }: NicknameDialogProps) {
 				});
 				setOpen(false);
 			} catch (e) {
-				toast.error((e as Error).message || 'Failed to set nickname');
+				toast.error((e as Error).message || t('accounts.nicknameFailed'));
 			}
 		}
 	};
@@ -66,22 +68,27 @@ export function NicknameDialog({ accountID, trigger }: NicknameDialogProps) {
 			<DialogTrigger asChild>{trigger}</DialogTrigger>
 			<DialogContent onPointerDownOutside={(e: Event) => e.preventDefault()}>
 				<DialogHeader>
-					<DialogTitle>Account Nickname</DialogTitle>
+					<DialogTitle>{t('accounts.nickname')}</DialogTitle>
 					<DialogDescription asChild>
-						<span className="sr-only">Enter your account password to unlock your account</span>
+						<span className="sr-only">{t('accounts.nicknameDescription')}</span>
 					</DialogDescription>
 				</DialogHeader>
 				<Form className="flex flex-col gap-6 h-full" form={form} onSubmit={onSubmit}>
-					<TextField label="Personalize account with a nickname." {...register('nickname')} />
+					<TextField label={t('accounts.nicknameDescription')} {...register('nickname')} />
 					<div className="flex gap-2.5">
-						<Button variant="outline" size="tall" text="Cancel" onClick={() => setOpen(false)} />
+						<Button
+							variant="outline"
+							size="tall"
+							text={t('common.cancel')}
+							onClick={() => setOpen(false)}
+						/>
 						<Button
 							type="submit"
 							disabled={isSubmitting || !isValid}
 							variant="primary"
 							size="tall"
 							loading={isSubmitting}
-							text={'Save'}
+							text={t('common.save')}
 						/>
 					</div>
 				</Form>

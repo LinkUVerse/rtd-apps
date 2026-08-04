@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { useTransactionData, useTransactionGasBudget } from '_src/ui/app/hooks';
+import { useI18n } from '_src/ui/app/i18n';
 import { GAS_SYMBOL } from '_src/ui/app/redux/slices/rtd-objects/Coin';
 import { type Transaction } from 'rtd-typescript/transactions';
 import { formatAddress } from 'rtd-typescript/utils';
@@ -15,36 +16,37 @@ interface Props {
 }
 
 export function GasFees({ sender, transaction }: Props) {
+	const { t } = useI18n();
 	const { data: transactionData } = useTransactionData(sender, transaction);
 	const { data: gasBudget, isPending, isError } = useTransactionGasBudget(sender, transaction);
 	const isSponsored =
 		transactionData?.gasData.owner && transactionData.sender !== transactionData.gasData.owner;
 	return (
 		<SummaryCard
-			header="Estimated Gas Fees"
+			header={t('approval.estimatedGas')}
 			badge={
 				isSponsored ? (
-					<div className="bg-white text-success px-1.5 py-0.5 text-captionSmallExtra rounded-full font-medium uppercase">
-						Sponsored
+					<div className="theme-card rounded-full px-1.5 py-0.5 text-captionSmallExtra font-medium uppercase text-success">
+						{t('approval.sponsored')}
 					</div>
 				) : null
 			}
 			initialExpanded
 		>
 			<DescriptionList>
-				<DescriptionItem title="You Pay">
+				<DescriptionItem title={t('approval.youPay')}>
 					{isPending
-						? 'Estimating...'
+						? t('approval.estimating')
 						: isError
-							? 'Gas estimation failed'
+							? t('approval.estimationFailed')
 							: `${isSponsored ? 0 : gasBudget} ${GAS_SYMBOL}`}
 				</DescriptionItem>
 				{isSponsored && (
 					<>
-						<DescriptionItem title="Sponsor Pays">
+						<DescriptionItem title={t('approval.sponsorPays')}>
 							{gasBudget ? `${gasBudget} ${GAS_SYMBOL}` : '-'}
 						</DescriptionItem>
-						<DescriptionItem title="Sponsor">
+						<DescriptionItem title={t('approval.sponsor')}>
 							{formatAddress(transactionData!.gasData.owner!)}
 						</DescriptionItem>
 					</>

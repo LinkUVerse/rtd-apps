@@ -2,10 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 import ExplorerLink from '_src/ui/app/components/explorer-link';
 import { ExplorerLinkType } from '_src/ui/app/components/explorer-link/ExplorerLinkType';
+import { useI18n, type MessageKey } from '_src/ui/app/i18n';
 import { Text } from '_src/ui/app/shared/text';
 import { Disclosure } from '@headlessui/react';
 import {
-	getObjectChangeLabel,
 	type ObjectChangesByOwner,
 	type ObjectChangeSummary,
 	type RtdObjectChangeTypes,
@@ -19,6 +19,15 @@ import { ExpandableList } from '../../ExpandableList';
 import { Card } from '../Card';
 import { OwnerFooter } from '../OwnerFooter';
 import { ObjectChangeDisplay } from './objectSummary/ObjectChangeDisplay';
+
+const objectChangeLabelKeys: Record<RtdObjectChangeTypes, MessageKey> = {
+	created: 'transaction.changeCreated',
+	mutated: 'transaction.changeMutated',
+	transferred: 'transaction.changeTransferred',
+	published: 'transaction.changePublished',
+	deleted: 'transaction.changeDeleted',
+	wrapped: 'transaction.changeWrapped',
+};
 
 function ChevronDown({ expanded }: { expanded: boolean }) {
 	return expanded ? (
@@ -36,6 +45,8 @@ export function ObjectDetail({
 	ownerKey: string;
 	display?: boolean;
 }) {
+	const { t } = useI18n();
+
 	if (change.type === 'transferred' || change.type === 'published') {
 		return null;
 	}
@@ -49,7 +60,7 @@ export function ObjectDetail({
 					<div className="grid grid-cols-2 overflow-auto cursor-pointer">
 						<Disclosure.Button className="flex items-center cursor-pointer border-none bg-transparent ouline-none p-0 gap-1 text-steel-dark hover:text-steel-darker select-none">
 							<Text variant="pBody" weight="medium">
-								Object
+								{t('transaction.object')}
 							</Text>
 							{open ? (
 								<ChevronDown12 className="text-gray-45" />
@@ -75,7 +86,7 @@ export function ObjectDetail({
 						<div className="flex flex-col gap-1">
 							<div className="grid grid-cols-2 overflow-auto relative">
 								<Text variant="pBody" weight="medium" color="steel-dark">
-									Package
+									{t('transaction.package')}
 								</Text>
 								<div className="flex justify-end">
 									<ExplorerLink
@@ -91,7 +102,7 @@ export function ObjectDetail({
 							</div>
 							<div className="grid grid-cols-2 overflow-auto">
 								<Text variant="pBody" weight="medium" color="steel-dark">
-									Module
+									{t('transaction.module')}
 								</Text>
 								<div className="flex justify-end">
 									<ExplorerLink
@@ -108,7 +119,7 @@ export function ObjectDetail({
 							</div>
 							<div className="grid grid-cols-2 overflow-auto">
 								<Text variant="pBody" weight="medium" color="steel-dark">
-									Type
+									{t('transaction.type')}
 								</Text>
 								<div className="flex justify-end">
 									<ExplorerLink
@@ -137,6 +148,8 @@ interface ObjectChangeEntryProps {
 }
 
 export function ObjectChangeEntry({ changes, type }: ObjectChangeEntryProps) {
+	const { t } = useI18n();
+
 	return (
 		<>
 			{Object.entries(changes).map(([owner, changes]) => {
@@ -144,7 +157,7 @@ export function ObjectChangeEntry({ changes, type }: ObjectChangeEntryProps) {
 					<Card
 						footer={<OwnerFooter owner={owner} ownerType={changes.ownerType} />}
 						key={`${type}-${owner}`}
-						heading="Changes"
+						heading={t('transaction.changes')}
 					>
 						<Disclosure defaultOpen>
 							{({ open }) => (
@@ -156,7 +169,7 @@ export function ObjectChangeEntry({ changes, type }: ObjectChangeEntryProps) {
 												weight="semibold"
 												color={type === 'created' ? 'success-dark' : 'steel-darker'}
 											>
-												{getObjectChangeLabel(type)}
+												{t(objectChangeLabelKeys[type])}
 											</Text>
 											<div className="h-px bg-gray-40 w-full" />
 											<ChevronDown expanded={open} />

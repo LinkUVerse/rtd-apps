@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { type Wallet } from '_src/shared/qredo-api';
+import { useI18n } from '_src/ui/app/i18n';
 import { Search16 } from 'rtd-apps-icons';
 import { useState } from 'react';
 
@@ -32,15 +33,16 @@ export function QredoAccountsSelector({
 	selectedAccounts,
 	onChange,
 }: QredoAccountsSelectorProps) {
+	const { t } = useI18n();
 	const [searchTerm, setSearchTerm] = useState('');
 	return (
 		<>
-			<div className="flex items-center bg-white pt-1 sticky -top-4">
+			<div className="theme-surface sticky -top-4 flex items-center pt-1">
 				<input
-					className="flex-1 p-3 pr-7.5 bg-white border border-solid border-gray-45 rounded-lg text-steel-dark placeholder:text-steel"
+					className="theme-input flex-1 rounded-lg border border-solid border-gray-45 p-3 pr-7.5 text-steel-dark placeholder:text-steel"
 					onChange={(e) => setSearchTerm(e.target.value)}
 					value={searchTerm}
-					placeholder="Search"
+					placeholder={t('qredo.search')}
 				/>
 				<Search16 className="absolute w-4.5 h-4.5 right-3 pointer-events-none text-steel" />
 			</div>

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { ExplorerLinkType } from '_src/ui/app/components/explorer-link/ExplorerLinkType';
 import { useExplorerLink } from '_src/ui/app/hooks/useExplorerLink';
+import { useI18n } from '_src/ui/app/i18n';
 import { ArrowUpRight12 } from 'rtd-apps-icons';
 import { useEffect, useState } from 'react';
 
@@ -27,6 +28,7 @@ function useShouldShowExplorerLink(timestamp?: string, digest?: string) {
 }
 
 export function ExplorerLinkCard({ digest, timestamp }: { digest?: string; timestamp?: string }) {
+	const { t } = useI18n();
 	const shouldShowExplorerLink = useShouldShowExplorerLink(timestamp, digest);
 	const explorerHref = useExplorerLink({
 		type: ExplorerLinkType.transaction,
@@ -37,7 +39,7 @@ export function ExplorerLinkCard({ digest, timestamp }: { digest?: string; times
 		<Card as="a" href={explorerHref!} target="_blank">
 			<div className="flex items-center justify-center gap-1 tracking-wider w-full">
 				<Text variant="captionSmall" weight="semibold">
-					View on Explorer
+					{t('common.viewOnExplorer')}
 				</Text>
 				<ArrowUpRight12 className="text-steel text-pSubtitle" />
 			</div>

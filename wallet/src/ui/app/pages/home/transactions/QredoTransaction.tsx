@@ -5,6 +5,7 @@ import { toUtf8OrB64 } from '_src/shared/utils';
 import LoadingIndicator from '_src/ui/app/components/loading/LoadingIndicator';
 import { TxnIcon } from '_src/ui/app/components/transactions-card/TxnIcon';
 import { useGetQredoTransaction } from '_src/ui/app/hooks/useGetQredoTransaction';
+import { useI18n } from '_src/ui/app/i18n';
 import { Text } from '_src/ui/app/shared/text';
 import { formatDate, useOnScreen } from 'rtd-apps-core';
 import { bcs } from 'rtd-typescript/bcs';
@@ -17,6 +18,7 @@ export type QredoTransactionProps = {
 };
 
 export function QredoTransaction({ qredoID, qredoTransactionID }: QredoTransactionProps) {
+	const { t } = useI18n();
 	const transactionElementRef = useRef<HTMLDivElement>(null);
 	const { isIntersecting } = useOnScreen(transactionElementRef);
 	const { data, isPending, error } = useGetQredoTransaction({
@@ -59,7 +61,7 @@ export function QredoTransaction({ qredoID, qredoTransactionID }: QredoTransacti
 					<>
 						<div className="flex flex-nowrap gap-1 item-center">
 							<Text color="gray-90" weight="semibold">
-								{isSignMessage ? 'Sign personal message' : 'Transaction'}
+								{isSignMessage ? t('qredo.signPersonalMessage') : t('receipt.transaction')}
 							</Text>
 							<Text color="gray-90" variant="bodySmall">
 								({data.status})
@@ -82,14 +84,14 @@ export function QredoTransaction({ qredoID, qredoTransactionID }: QredoTransacti
 						) : null}
 						<div className="flex items-center gap-1.5 text-issue">
 							<Text weight="medium" variant="pBodySmall">
-								Check status in Qredo app
+								{t('qredo.checkStatus')}
 							</Text>
 							<LoadingIndicator color="inherit" />
 						</div>
 					</>
 				) : (
 					<Text color="gray-80">
-						{(error as Error)?.message || 'Something went wrong while fetching transaction details'}
+						{(error as Error)?.message || t('qredo.transactionFetchFailed')}
 					</Text>
 				)}
 			</div>

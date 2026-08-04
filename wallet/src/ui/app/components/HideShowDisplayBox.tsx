@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Copy16, EyeClose16, EyeOpen16 } from 'rtd-apps-icons';
+import { useI18n } from '_app/i18n';
 import { cx } from 'class-variance-authority';
 import { useEffect, useState } from 'react';
 
@@ -22,6 +23,7 @@ export function HideShowDisplayBox({
 	hideCopy = false,
 	copiedMessage,
 }: HideShowDisplayBoxProps) {
+	const { t } = useI18n();
 	const [valueHidden, setValueHidden] = useState(true);
 	const copyCallback = useCopyToClipboard(
 		hideCopy ? '' : typeof value === 'string' ? value : value.join(' '),
@@ -54,7 +56,7 @@ export function HideShowDisplayBox({
 		};
 	}, [valueHidden]);
 	return (
-		<div className="flex flex-col flex-nowrap items-stretch gap-2 bg-white border border-solid border-gray-60 rounded-lg overflow-hidden py-4 px-5">
+		<div className="theme-card flex flex-col flex-nowrap items-stretch gap-2 rounded-lg overflow-hidden py-4 px-5">
 			<div className="break-all relative">
 				{valueHidden ? null : (
 					<div className="absolute top-0">
@@ -80,7 +82,7 @@ export function HideShowDisplayBox({
 							color="heroDark"
 							weight="medium"
 							size="body"
-							text="Copy"
+							text={t('common.copy')}
 							before={<Copy16 className="text-base leading-none" />}
 							onClick={copyCallback}
 						/>

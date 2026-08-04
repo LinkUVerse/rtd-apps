@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Text } from '_src/ui/app/shared/text';
+import { useI18n } from '_app/i18n';
 import { Check12 } from 'rtd-apps-icons';
 import { get, set } from 'idb-keyval';
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
@@ -27,6 +28,7 @@ export const HiddenAssetsContext = createContext<HiddenAssetContext>({
 
 export const HiddenAssetsProvider = ({ children }: { children: ReactNode }) => {
 	const [hiddenAssetIds, setHiddenAssetIds] = useState<string[]>([]);
+	const { t: translate } = useI18n();
 
 	useEffect(() => {
 		(async () => {
@@ -55,7 +57,7 @@ export const HiddenAssetsProvider = ({ children }: { children: ReactNode }) => {
 					await set(HIDDEN_ASSET_IDS, updatedHiddenAssetIds);
 				} catch (error) {
 					// Handle any error that occurred during the unhide process
-					toast.error('Failed to unhide asset.');
+					toast.error(translate('assets.showFailed'));
 					// Restore the asset ID back to the hidden asset IDs list
 					setHiddenAssetIds([...hiddenAssetIds, assetId]);
 					await set(HIDDEN_ASSET_IDS, hiddenAssetIds);
@@ -66,7 +68,7 @@ export const HiddenAssetsProvider = ({ children }: { children: ReactNode }) => {
 				toast.custom(
 					(t) => (
 						<div
-							className="flex items-center justify-between gap-2 bg-white w-full shadow-notification border-solid border-gray-45 rounded-full px-3 py-2"
+							className="theme-card flex w-full items-center justify-between gap-2 rounded-full border-solid border-gray-45 px-3 py-2 shadow-notification"
 							style={{
 								animation: 'fade-in-up 200ms ease-in-out',
 							}}
@@ -84,10 +86,10 @@ export const HiddenAssetsProvider = ({ children }: { children: ReactNode }) => {
 										weight="medium"
 										before={
 											<Text variant="body" color="gray-80">
-												Moved to
+												{translate('assets.movedTo')}
 											</Text>
 										}
-										text="Hidden Assets"
+										text={translate('assets.hidden')}
 										onClick={() => toast.dismiss(t.id)}
 									/>
 								</div>
@@ -102,7 +104,7 @@ export const HiddenAssetsProvider = ({ children }: { children: ReactNode }) => {
 									}}
 									color="hero"
 									weight="medium"
-									text="UNDO"
+									text={translate('common.undo')}
 								/>
 							</div>
 						</div>
@@ -115,7 +117,7 @@ export const HiddenAssetsProvider = ({ children }: { children: ReactNode }) => {
 
 			showAssetHiddenToast(newAssetId);
 		},
-		[hiddenAssetIds],
+		[hiddenAssetIds, translate],
 	);
 
 	const showAssetId = useCallback(
@@ -128,7 +130,7 @@ export const HiddenAssetsProvider = ({ children }: { children: ReactNode }) => {
 				await set(HIDDEN_ASSET_IDS, updatedHiddenAssetIds);
 			} catch (error) {
 				// Handle any error that occurred during the unhide process
-				toast.error('Failed to show asset.');
+				toast.error(translate('assets.showFailed'));
 				// Restore the asset ID back to the hidden asset IDs list
 				setHiddenAssetIds([...hiddenAssetIds, newAssetId]);
 				await set(HIDDEN_ASSET_IDS, hiddenAssetIds);
@@ -146,7 +148,7 @@ export const HiddenAssetsProvider = ({ children }: { children: ReactNode }) => {
 				toast.custom(
 					(t) => (
 						<div
-							className="flex items-center justify-between gap-2 bg-white w-full shadow-notification border-solid border-gray-45 rounded-full px-3 py-2"
+							className="theme-card flex w-full items-center justify-between gap-2 rounded-full border-solid border-gray-45 px-3 py-2 shadow-notification"
 							style={{
 								animation: 'fade-in-up 200ms ease-in-out',
 							}}
@@ -164,10 +166,10 @@ export const HiddenAssetsProvider = ({ children }: { children: ReactNode }) => {
 										weight="medium"
 										before={
 											<Text variant="body" color="gray-80">
-												Moved to
+												{translate('assets.movedTo')}
 											</Text>
 										}
-										text="Visual Assets"
+										text={translate('assets.visual')}
 										onClick={() => toast.dismiss(t.id)}
 									/>
 								</div>
@@ -182,7 +184,7 @@ export const HiddenAssetsProvider = ({ children }: { children: ReactNode }) => {
 									}}
 									color="hero"
 									weight="medium"
-									text="UNDO"
+									text={translate('common.undo')}
 								/>
 							</div>
 						</div>
@@ -195,7 +197,7 @@ export const HiddenAssetsProvider = ({ children }: { children: ReactNode }) => {
 
 			assetShownToast(newAssetId);
 		},
-		[hiddenAssetIds],
+		[hiddenAssetIds, translate],
 	);
 
 	const showAsset = (objectId: string) => {

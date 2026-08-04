@@ -1,19 +1,21 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 import { Heading } from '_src/ui/app/shared/heading';
+import { useI18n } from '_src/ui/app/i18n';
 import { Text } from '_src/ui/app/shared/text';
 import { useFormatCoin } from 'rtd-apps-core';
 
 import { Card } from '../Card';
 
 export function TotalAmount({ amount, coinType }: { amount?: string; coinType?: string }) {
+	const { t } = useI18n();
 	const [formatted, symbol] = useFormatCoin(amount, coinType);
 	if (!amount) return null;
 	return (
 		<Card>
 			<div className="flex justify-between items-center">
 				<Text color="steel-darker" variant="pBody">
-					Total Amount
+					{t('transaction.totalAmount')}
 				</Text>
 				<div className="flex gap-0.5 items-center">
 					<Heading color="steel-darker" variant="heading2">

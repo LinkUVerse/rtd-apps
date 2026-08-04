@@ -30,6 +30,8 @@ import { ZkLoginAccountWarningModal } from './app/components/accounts/ZkLoginAcc
 import { growthbook } from './app/experimentation/feature-gating';
 import { persister, queryClient } from './app/helpers/queryClient';
 import { useAppSelector } from './app/hooks';
+import { I18nProvider } from './app/i18n';
+import { ThemeProvider } from './app/theme';
 
 import './styles/global.scss';
 import 'bootstrap-icons/font/bootstrap-icons.scss';
@@ -77,51 +79,57 @@ function AppWrapper() {
 	const network = useAppSelector(({ app: { apiEnv, customRPC } }) => `${apiEnv}_${customRPC}`);
 	const isFullscreen = useAppSelector((state) => state.app.appType === AppType.fullscreen);
 	return (
-		<GrowthBookProvider growthbook={growthbook}>
-			<HashRouter>
-				{/*
-				 * NOTE: We set a key here to force the entire react tree to be re-created when the network changes so that
-				 * the RPC client instance (api.instance.fullNode) is updated correctly. In the future, we should look into
-				 * making the API provider instance a reactive value and moving it out of the redux-thunk middleware
-				 */}
-				<Fragment key={network}>
-					<PersistQueryClientProvider
-						client={queryClient}
-						persistOptions={{
-							persister,
-							dehydrateOptions: {
-								shouldDehydrateQuery: ({ meta, state }) =>
-									state.status === 'success' && !meta?.skipPersistedCache,
-							},
-						}}
-					>
-						<RtdClientProvider
-							networks={{ [walletApiProvider.apiEnv]: walletApiProvider.instance.fullNode }}
-						>
-							<KioskClientProvider>
-								<AccountsFormProvider>
-									<UnlockAccountProvider>
-										<div
-											className={cn(
-												'relative flex flex-col flex-nowrap items-center justify-center w-popup-width min-h-popup-minimum max-h-popup-height h-screen overflow-hidden',
-												isFullscreen && 'shadow-lg rounded-xl',
-											)}
-										>
-											<ErrorBoundary>
-												<App />
-												<ZkLoginAccountWarningModal />
-											</ErrorBoundary>
-											<div id="overlay-portal-container"></div>
-											<div id="toaster-portal-container"></div>
-										</div>
-									</UnlockAccountProvider>
-								</AccountsFormProvider>
-							</KioskClientProvider>
-						</RtdClientProvider>
-					</PersistQueryClientProvider>
-				</Fragment>
-			</HashRouter>
-		</GrowthBookProvider>
+		<I18nProvider>
+			<ThemeProvider>
+				<GrowthBookProvider growthbook={growthbook}>
+					<HashRouter>
+						{/*
+						 * NOTE: We set a key here to force the entire react tree to be re-created when the network changes so that
+						 * the RPC client instance (api.instance.fullNode) is updated correctly. In the future, we should look into
+						 * making the API provider instance a reactive value and moving it out of the redux-thunk middleware
+						 */}
+						<Fragment key={network}>
+							<PersistQueryClientProvider
+								client={queryClient}
+								persistOptions={{
+									persister,
+									dehydrateOptions: {
+										shouldDehydrateQuery: ({ meta, state }) =>
+											state.status === 'success' && !meta?.skipPersistedCache,
+									},
+								}}
+							>
+								<RtdClientProvider
+									networks={{
+										[walletApiProvider.apiEnv]: walletApiProvider.instance.fullNode,
+									}}
+								>
+									<KioskClientProvider>
+										<AccountsFormProvider>
+											<UnlockAccountProvider>
+												<div
+													className={cn(
+														'relative flex flex-col flex-nowrap items-center justify-center w-popup-width min-h-popup-minimum max-h-popup-height h-screen overflow-hidden',
+														isFullscreen && 'shadow-lg rounded-xl',
+													)}
+												>
+													<ErrorBoundary>
+														<App />
+														<ZkLoginAccountWarningModal />
+													</ErrorBoundary>
+													<div id="overlay-portal-container"></div>
+													<div id="toaster-portal-container"></div>
+												</div>
+											</UnlockAccountProvider>
+										</AccountsFormProvider>
+									</KioskClientProvider>
+								</RtdClientProvider>
+							</PersistQueryClientProvider>
+						</Fragment>
+					</HashRouter>
+				</GrowthBookProvider>
+			</ThemeProvider>
+		</I18nProvider>
 	);
 }
 

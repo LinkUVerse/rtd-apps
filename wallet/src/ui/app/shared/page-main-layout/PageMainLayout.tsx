@@ -37,7 +37,7 @@ export function PageMainLayout({
 	return (
 		<div
 			className={cn(
-				'flex flex-col flex-nowrap items-stretch justify-center flex-1 w-full max-h-full bg-gradients-graph-cards overflow-hidden',
+				'wallet-shell flex flex-col flex-nowrap items-stretch justify-center flex-1 w-full max-h-full overflow-hidden',
 				isFullScreen ? 'rounded-xl' : '',
 			)}
 		>
@@ -46,8 +46,8 @@ export function PageMainLayout({
 				middleContent={dappStatusEnabled ? <DappStatus /> : <div ref={setTitlePortalContainer} />}
 				rightContent={topNavMenuEnabled ? <WalletSettingsButton /> : undefined}
 			/>
-			<div className="relative flex flex-col flex-nowrap flex-grow overflow-hidden rounded-t-xl shadow-wallet-content">
-				<div className="flex flex-col flex-nowrap bg-white flex-grow overflow-y-auto overflow-x-hidden rounded-t-xl">
+			<div className="wallet-content relative flex flex-col flex-nowrap flex-grow overflow-hidden rounded-t-3xl shadow-wallet-content">
+				<div className="wallet-content__surface flex flex-col flex-nowrap flex-grow overflow-y-auto overflow-x-hidden rounded-t-3xl">
 					<main
 						className={cn('flex flex-col flex-grow w-full', {
 							'p-5': bottomNavEnabled,

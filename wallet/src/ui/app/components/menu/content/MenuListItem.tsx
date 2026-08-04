@@ -59,7 +59,7 @@ function MenuListItem({
 				href={href}
 				target="_blank"
 				rel="noreferrer noopener"
-				className="flex flex-nowrap items-center px-1 py-4.5 first:pt-3 first:pb-3 last:pb-3 gap-5 no-underline overflow-hidden group cursor-pointer"
+				className="settings-menu-item group flex cursor-pointer flex-nowrap items-center gap-5 overflow-hidden px-3 py-4.5 no-underline first:mt-1"
 			>
 				{MenuItemContent}
 			</a>
@@ -68,7 +68,7 @@ function MenuListItem({
 	return (
 		<Component
 			data-testid={title}
-			className="flex flex-nowrap items-center px-1 py-5 first:pt-3 first:pb-3 last:pb-3 gap-5 no-underline overflow-hidden group cursor-pointer"
+			className="settings-menu-item group flex cursor-pointer flex-nowrap items-center gap-5 overflow-hidden px-3 py-5 no-underline first:mt-1"
 			to={to}
 			onClick={onClick}
 		>

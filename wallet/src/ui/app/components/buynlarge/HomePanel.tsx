@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ampli } from '_src/shared/analytics/ampli';
+import { useI18n } from '_src/ui/app/i18n';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -12,6 +13,7 @@ import { useBuyNLargeAssets } from './useBuyNLargeAssets';
 const SEEN_KEY = 'buy-n-large-seen-v2';
 
 export function BuyNLargeHomePanel() {
+	const { t } = useI18n();
 	const navigate = useNavigate();
 	const [seen, setSeen] = useState<string[]>(() => {
 		const stored = localStorage.getItem(SEEN_KEY);
@@ -63,7 +65,7 @@ export function BuyNLargeHomePanel() {
 							<div>
 								<button
 									type="button"
-									aria-label="Close"
+									aria-label={t('common.close')}
 									className="bg-transparent p-0 m-0 border-none"
 									onClick={(e) => {
 										e.preventDefault();

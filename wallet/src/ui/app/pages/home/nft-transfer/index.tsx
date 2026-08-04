@@ -7,11 +7,13 @@ import { NFTDisplayCard } from '_components/nft-display';
 import Overlay from '_components/overlay';
 import { useOwnedNFT } from '_hooks';
 import { useUnlockedGuard } from '_src/ui/app/hooks/useUnlockedGuard';
+import { useI18n } from '_src/ui/app/i18n';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 
 import { TransferNFTForm } from './TransferNFTForm';
 
 function NftTransferPage() {
+	const { t } = useI18n();
 	const { nftId } = useParams();
 	const address = useActiveAddress();
 	// verify that the nft is owned by the user and is transferable
@@ -20,7 +22,7 @@ function NftTransferPage() {
 	const isGuardLoading = useUnlockedGuard();
 	const isPending = isNftLoading || isGuardLoading;
 	return (
-		<Overlay showModal={true} title="Send NFT" closeOverlay={() => navigate('/nfts')}>
+		<Overlay showModal={true} title={t('nft.send')} closeOverlay={() => navigate('/nfts')}>
 			<div className="flex w-full flex-col h-full">
 				<Loading loading={isPending}>
 					{ownedNFT &&

@@ -2,10 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Menu } from '@headlessui/react';
+import { useI18n } from '_app/i18n';
 import { Ooo24 } from 'rtd-apps-icons';
 import { Link } from 'react-router-dom';
 
 const AssetsOptionsMenu = () => {
+	const { t } = useI18n();
+
 	return (
 		<Menu>
 			<Menu.Button
@@ -19,7 +22,7 @@ const AssetsOptionsMenu = () => {
 			>
 				<Ooo24 className="text-gray-90 w-full h-full" />
 			</Menu.Button>
-			<Menu.Items className="absolute top-4 right-0 mt-2 w-50 bg-white divide-y divide-gray-200 rounded-md z-50">
+			<Menu.Items className="theme-card absolute right-0 top-4 z-50 mt-2 w-50 divide-y divide-gray-200 rounded-md">
 				<div className="rounded-md w-full h-full p-2 shadow-card-soft">
 					<Menu.Item>
 						{({ active }) => (
@@ -28,7 +31,7 @@ const AssetsOptionsMenu = () => {
 								className="no-underline text-steel-darker hover:text-steel-darker focus:text-steel-darker disabled:text-steel-darker font-medium text-bodySmall"
 							>
 								<div className="p-3 hover:bg-rtd-light bg-opacity-50 rounded-md">
-									View Hidden Assets
+									{t('assets.viewHidden')}
 								</div>
 							</Link>
 						)}

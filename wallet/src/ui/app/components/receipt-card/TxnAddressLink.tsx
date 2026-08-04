@@ -3,6 +3,7 @@
 
 import ExplorerLink from '_components/explorer-link';
 import { ExplorerLinkType } from '_components/explorer-link/ExplorerLinkType';
+import { useI18n } from '_app/i18n';
 import { formatAddress, isValidRtdNSName } from 'rtd-typescript/utils';
 
 type TxnAddressLinkProps = {
@@ -10,11 +11,13 @@ type TxnAddressLinkProps = {
 };
 
 export function TxnAddressLink({ address }: TxnAddressLinkProps) {
+	const { t } = useI18n();
+
 	return (
 		<ExplorerLink
 			type={ExplorerLinkType.address}
 			address={address}
-			title="View on Rtd Explorer"
+			title={t('common.viewOnExplorer')}
 			showIcon={false}
 		>
 			{isValidRtdNSName(address) ? address : formatAddress(address)}

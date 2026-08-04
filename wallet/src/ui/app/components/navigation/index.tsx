@@ -3,6 +3,7 @@
 
 import { useAppSelector } from '_hooks';
 import { getNavIsVisible } from '_redux/slices/app';
+import { useI18n } from '_app/i18n';
 import { Activity32, Apps32, Nft132, Tokens32 } from 'rtd-apps-icons';
 import cl from 'clsx';
 import { NavLink } from 'react-router-dom';
@@ -24,10 +25,14 @@ function logNavigationDebug(tab: string, activeAccount?: ReturnType<typeof useAc
 }
 
 export function Navigation() {
+	const { t } = useI18n();
 	const isVisible = useAppSelector(getNavIsVisible);
 	const activeAccount = useActiveAccount();
 	const makeLinkCls = ({ isActive }: { isActive: boolean }) =>
-		cl(st.link, { [st.active]: isActive, [st.disabled]: activeAccount?.isLocked });
+		cl(st.link, {
+			[st.active]: isActive,
+			[st.disabled]: activeAccount?.isLocked,
+		});
 	const makeLinkClsNoDisabled = ({ isActive }: { isActive: boolean }) =>
 		cl(st.link, { [st.active]: isActive });
 	return (
@@ -42,16 +47,16 @@ export function Navigation() {
 					data-testid="nav-tokens"
 					to="/tokens"
 					className={makeLinkClsNoDisabled}
-					title="Home"
+					title={t('navigation.home')}
 					onClick={() => logNavigationDebug('Home', activeAccount)}
 				>
 					<Tokens32 className="w-8 h-8" />
-					<span className={st.title}>Home</span>
+					<span className={st.title}>{t('navigation.home')}</span>
 				</NavLink>
 				<NavLink
 					to="/nfts"
 					className={makeLinkCls}
-					title="Assets"
+					title={t('navigation.assets')}
 					onClick={(e) => {
 						logNavigationDebug('Assets', activeAccount);
 						if (activeAccount?.isLocked) {
@@ -60,12 +65,12 @@ export function Navigation() {
 					}}
 				>
 					<Nft132 className="w-8 h-8" />
-					<span className={st.title}>Assets</span>
+					<span className={st.title}>{t('navigation.assets')}</span>
 				</NavLink>
 				<NavLink
 					to="/apps"
 					className={makeLinkCls}
-					title="Apps"
+					title={t('navigation.apps')}
 					onClick={(e) => {
 						logNavigationDebug('Apps', activeAccount);
 						if (activeAccount?.isLocked) {
@@ -74,13 +79,13 @@ export function Navigation() {
 					}}
 				>
 					<Apps32 className="w-8 h-8" />
-					<span className={st.title}>Apps</span>
+					<span className={st.title}>{t('navigation.apps')}</span>
 				</NavLink>
 				<NavLink
 					data-testid="nav-activity"
 					to="/transactions"
 					className={makeLinkCls}
-					title="Transactions"
+					title={t('navigation.transactions')}
 					onClick={(e) => {
 						logNavigationDebug('Activity', activeAccount);
 						if (activeAccount?.isLocked) {
@@ -89,7 +94,7 @@ export function Navigation() {
 					}}
 				>
 					<Activity32 className="w-8 h-8" />
-					<span className={st.title}>Activity</span>
+					<span className={st.title}>{t('navigation.activity')}</span>
 				</NavLink>
 			</div>
 		</nav>

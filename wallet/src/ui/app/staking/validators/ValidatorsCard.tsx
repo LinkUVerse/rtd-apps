@@ -8,6 +8,7 @@ import { Text } from '_app/shared/text';
 import Alert from '_components/alert';
 import LoadingIndicator from '_components/loading/LoadingIndicator';
 import { ampli } from '_src/shared/analytics/ampli';
+import { useI18n } from '_src/ui/app/i18n';
 import {
 	DELEGATED_STAKES_QUERY_REFETCH_INTERVAL,
 	DELEGATED_STAKES_QUERY_STALE_TIME,
@@ -24,6 +25,7 @@ import { StakeAmount } from '../home/StakeAmount';
 import { StakeCard, type DelegationObjectWithValidator } from '../home/StakedCard';
 
 export function ValidatorsCard() {
+	const { t } = useI18n();
 	const accountAddress = useActiveAddress();
 	const {
 		data: delegatedStake,
@@ -107,10 +109,7 @@ export function ValidatorsCard() {
 					<div className="mb-4">
 						{hasInactiveValidatorDelegation ? (
 							<div className="mb-3">
-								<Alert>
-									Unstake RTD from the inactive validators and stake on an active validator to start
-									earning rewards again.
-								</Alert>
+								<Alert>{t('staking.inactiveValidatorsWarning')}</Alert>
 							</div>
 						) : null}
 						<div className="grid grid-cols-2 gap-2.5 mb-4">
@@ -131,17 +130,21 @@ export function ValidatorsCard() {
 							header={
 								<div className="py-2.5 flex px-3.75 justify-center w-full">
 									<Text variant="captionSmall" weight="semibold" color="steel-darker">
-										Staking on {numberOfValidators}
-										{numberOfValidators > 1 ? ' Validators' : ' Validator'}
+										{t(
+											numberOfValidators > 1
+												? 'staking.validatorsCountPlural'
+												: 'staking.validatorsCount',
+											{ count: numberOfValidators },
+										)}
 									</Text>
 								</div>
 							}
 						>
 							<div className="flex divide-x divide-solid divide-gray-45 divide-y-0">
-								<CardItem title="Your Stake">
+								<CardItem title={t('staking.yourStake')}>
 									<StakeAmount balance={totalStake} variant="heading5" />
 								</CardItem>
-								<CardItem title="Earned">
+								<CardItem title={t('staking.earned')}>
 									<StakeAmount balance={totalEarnTokenReward} variant="heading5" isEarnedRewards />
 								</CardItem>
 							</div>
@@ -173,7 +176,7 @@ export function ValidatorsCard() {
 							})
 						}
 						before={<Plus12 />}
-						text="Stake RTD"
+						text={t('staking.stakeRtd')}
 					/>
 				</Menu>
 			</BottomMenuLayout>

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { EyeClose16, EyeOpen16 } from 'rtd-apps-icons';
+import { useI18n } from '_app/i18n';
 import { forwardRef, useState, type ComponentProps } from 'react';
 
 import { ButtonOrLink } from '../../utils/ButtonOrLink';
@@ -13,6 +14,7 @@ type PasswordInputProps = {
 
 export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
 	({ placeholder, ...props }, forwardedRef) => {
+		const { t } = useI18n();
 		const [passwordShown, setPasswordShown] = useState(false);
 		const IconComponent = passwordShown ? EyeOpen16 : EyeClose16;
 
@@ -21,7 +23,7 @@ export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
 				<Input
 					{...props}
 					type={passwordShown ? 'text' : 'password'}
-					placeholder="Password"
+					placeholder={placeholder || t('common.password')}
 					ref={forwardedRef}
 				/>
 				<ButtonOrLink

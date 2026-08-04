@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { cx } from 'class-variance-authority';
+import { useI18n } from '_app/i18n';
 
 import { Button } from '../../shared/ButtonUI';
 import { Heading } from '../../shared/heading';
@@ -16,15 +17,16 @@ export type ScamOverlayProps = {
 };
 
 function Warning({ title, subtitle }: { title: string; subtitle: string }) {
+	const { t } = useI18n();
+
 	return (
 		<div className="flex flex-col gap-2 text-center pb-4">
 			<Heading variant="heading2" weight="semibold" color="gray-90">
-				{title || 'Malicious website'}
+				{title || t('dapp.maliciousWebsite')}
 			</Heading>
 			<div className="flex text-center font-medium text-pBody text-gray-90">
 				<div className="font-medium text-pBody text-gray-90">
-					{subtitle ||
-						'This website has been flagged for malicious behavior. To protect your wallet from potential threats, please return to safety.'}
+					{subtitle || t('dapp.maliciousDescription')}
 				</div>
 			</div>
 		</div>
@@ -32,6 +34,7 @@ function Warning({ title, subtitle }: { title: string; subtitle: string }) {
 }
 
 export function ScamOverlay({ preflight, onClickBack, onClickContinue }: ScamOverlayProps) {
+	const { t } = useI18n();
 	const { block, warnings } = preflight;
 
 	if (!block.enabled && !warnings?.length) return null;
@@ -54,9 +57,9 @@ export function ScamOverlay({ preflight, onClickBack, onClickContinue }: ScamOve
 				})}
 
 				<div className="flex flex-col gap-2 mt-auto w-full items-stretch">
-					<Button variant="primary" text="Return to safety" onClick={onClickBack} />
+					<Button variant="primary" text={t('dapp.returnToSafety')} onClick={onClickBack} />
 					{!block.enabled && (
-						<Button variant="outlineWarning" text="Proceed" onClick={onClickContinue} />
+						<Button variant="outlineWarning" text={t('dapp.proceed')} onClick={onClickContinue} />
 					)}
 				</div>
 			</div>

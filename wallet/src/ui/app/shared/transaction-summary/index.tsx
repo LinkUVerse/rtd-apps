@@ -1,6 +1,7 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 import { type TransactionSummary as TransactionSummaryType } from 'rtd-apps-core';
+import { useI18n } from '_app/i18n';
 import clsx from 'clsx';
 
 import LoadingIndicator from '../../components/loading/LoadingIndicator';
@@ -24,6 +25,8 @@ export function TransactionSummary({
 	isError?: boolean;
 	showGasSummary?: boolean;
 }) {
+	const { t } = useI18n();
+
 	if (isError) return null;
 	return (
 		<section className="-mx-6 bg-rtd/10 min-h-full">
@@ -38,7 +41,7 @@ export function TransactionSummary({
 							{isDryRun && (
 								<div className="pl-4.5">
 									<Heading variant="heading6" color="steel-darker">
-										Do you approve these actions?
+										{t('transaction.approveActions')}
 									</Heading>
 								</div>
 							)}

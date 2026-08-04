@@ -11,6 +11,7 @@ import { useActiveAddress } from '_src/ui/app/hooks';
 import { useActiveAccount } from '_src/ui/app/hooks/useActiveAccount';
 import { useQredoTransaction } from '_src/ui/app/hooks/useQredoTransaction';
 import { useSigner } from '_src/ui/app/hooks/useSigner';
+import { useI18n } from '_src/ui/app/i18n';
 import { QredoActionIgnoredByUser } from '_src/ui/app/QredoSigner';
 import { useGetKioskContents, useRtdNSEnabled } from 'rtd-apps-core';
 import { useRtdClient } from 'rtd-dapp-kit';
@@ -32,6 +33,7 @@ export function TransferNFTForm({
 	objectId: string;
 	objectType?: string | null;
 }) {
+	const { t } = useI18n();
 	const activeAddress = useActiveAddress();
 	const rpc = useRtdClient();
 	const rtdNSEnabled = useRtdNSEnabled();
@@ -125,7 +127,7 @@ export function TransferNFTForm({
 							<div className="flex gap-2.5 flex-col">
 								<div className="px-2.5 tracking-wider">
 									<Text variant="caption" color="steel" weight="semibold">
-										Enter Recipient Address
+										{t('transfer.recipient')}
 									</Text>
 								</div>
 								<div className="w-full flex relative items-center flex-col">
@@ -133,7 +135,7 @@ export function TransferNFTForm({
 										component={AddressInput}
 										allowNegative={false}
 										name="to"
-										placeholder="Enter Address"
+										placeholder={t('transfer.addressPlaceholder')}
 									/>
 								</div>
 							</div>
@@ -145,7 +147,7 @@ export function TransferNFTForm({
 								loading={transferNFT.isPending}
 								disabled={!isValid}
 								size="tall"
-								text="Send NFT Now"
+								text={t('nft.sendNow')}
 								after={<ArrowRight16 />}
 							/>
 						</Menu>

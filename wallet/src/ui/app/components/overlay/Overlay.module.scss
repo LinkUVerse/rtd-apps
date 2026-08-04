@@ -1,10 +1,8 @@
-@use '_variables' as v;
-@use '_values' as val;
 @use '_values/colors';
 @use '_utils';
 
 .container {
-	background: rgba(42 54 69 / 50%);
+	background: rgb(24 36 53 / 46%);
 	display: flex;
 	flex-flow: column nowrap;
 	align-items: center;
@@ -25,7 +23,7 @@
 .header {
 	width: 100%;
 	height: 48px;
-	background-color: colors.$white;
+	background: var(--rtd-card-background);
 }
 
 .content {
@@ -33,9 +31,10 @@
 	padding: 20px;
 	overflow-y: auto;
 	overflow-x: hidden;
-	background: colors.$white;
+	background: rgb(var(--rtd-surface-rgb) / 96%);
 	border-radius: 0 0 20px 20px;
 	position: relative;
+	box-shadow: var(--rtd-elevated-shadow);
 }
 
 .close-overlay {
@@ -49,7 +48,7 @@
 	border: none;
 
 	.close {
-		color: #e1f3ff;
+		color: rgb(var(--rtd-primary-soft-rgb));
 		font-size: 32px;
 		font-weight: 100;
 	}
@@ -72,6 +71,6 @@
 	align-items: center;
 	width: 100%;
 	height: 48px;
-	background-color: rgba(225 243 255 / 50%);
-	color: colors.$rtd-dark-blue;
+	background-color: rgb(var(--rtd-primary-soft-rgb) / 62%);
+	color: rgb(var(--rtd-primary-dark-rgb));
 }

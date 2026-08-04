@@ -4,14 +4,15 @@
 .card {
 	background: colors.$white;
 	border-radius: 15px;
-	border: 1px solid colors.$card-border-color;
+	border: 1px solid var(--rtd-border-color);
+	box-shadow: var(--rtd-soft-shadow);
 
 	.header {
-		background: #e1f3ff80;
+		background: rgb(var(--rtd-primary-soft-rgb) / 58%);
 		height: 31px;
 		display: flex;
 		justify-content: center;
-		color: colors.$rtd-blue-steel-darker;
+		color: rgb(var(--rtd-steel-darker-rgb));
 		padding: 10px 0;
 		font-weight: 600;
 		font-size: 11px;
@@ -37,7 +38,7 @@
 
 		.tx-type-header-status {
 			font-weight: 600;
-			color: colors.$rtd-blue-steel-dark;
+			color: rgb(var(--rtd-steel-dark-rgb));
 		}
 	}
 
@@ -46,7 +47,7 @@
 		display: flex;
 		justify-content: space-between;
 		padding-top: 10px;
-		color: colors.$rtd-blue-steel-dark;
+		color: rgb(var(--rtd-steel-dark-rgb));
 
 		@include utils.typography('Primary/BodySmall-M');
 	}
@@ -89,7 +90,7 @@
 	line-height: 100%;
 
 	.label {
-		color: colors.$rtd-blue-steel-dark;
+		color: rgb(var(--rtd-steel-dark-rgb));
 		display: flex;
 		justify-content: flex-start;
 	}
@@ -120,15 +121,15 @@
 		padding: 8px 0;
 		padding-top: 0;
 		margin-bottom: -1px;
-		color: colors.$rtd-blue-steel-darker;
+		color: rgb(var(--rtd-steel-darker-rgb));
 		font-weight: 600;
 		font-size: 14px;
 		line-height: 100%;
 		border-bottom: 1px solid colors.$gray-45;
 
 		&.active {
-			color: colors.$cta-blue-hover;
-			border-color: colors.$cta-blue-hover;
+			color: rgb(var(--rtd-primary-rgb));
+			border-color: rgb(var(--rtd-primary-rgb));
 		}
 	}
 }
@@ -144,7 +145,7 @@
 	font-weight: 500;
 	font-size: 13px;
 	line-height: 17px;
-	color: colors.$rtd-blue-steel-dark;
+	color: rgb(var(--rtd-steel-dark-rgb));
 	font-family: 'Red Hat Mono Variable', ui-monospace, monospace;
 	word-break: break-all;
 }
@@ -154,7 +155,7 @@
 	font-size: 13px;
 	line-height: 17px;
 	font-family: 'Red Hat Mono Variable', ui-monospace, monospace;
-	color: colors.$rtd-dark-blue;
+	color: rgb(var(--rtd-primary-dark-rgb));
 	text-decoration: none;
 }
 
@@ -185,7 +186,7 @@
 	font-weight: 500;
 	text-decoration: none;
 	text-transform: lowercase;
-	color: colors.$rtd-dark-blue;
+	color: rgb(var(--rtd-primary-dark-rgb));
 }
 
 .permissions-content {
@@ -210,11 +211,11 @@
 	}
 
 	.label {
-		color: colors.$rtd-blue-steel-dark;
+		color: rgb(var(--rtd-steel-dark-rgb));
 	}
 
 	.value {
-		color: colors.$rtd-blue-steel-darker;
+		color: rgb(var(--rtd-steel-darker-rgb));
 	}
 
 	.content-wrapper {

@@ -4,6 +4,7 @@
 import { Button } from '_app/shared/ButtonUI';
 import { type AccountType } from '_src/background/accounts/Account';
 import { useAccounts } from '_src/ui/app/hooks/useAccounts';
+import { useI18n } from '_src/ui/app/i18n';
 import { Navigate, useNavigate } from 'react-router-dom';
 
 import { RecoverAccountsGroup } from '../../../components/accounts/RecoverAccountsGroup';
@@ -16,6 +17,7 @@ import { useForgotPasswordContext } from './ForgotPasswordPage';
 const zkLoginType: AccountType = 'zkLogin';
 
 export function ResetWarningPage() {
+	const { t } = useI18n();
 	const navigate = useNavigate();
 	const accountGroups = useAccountGroups();
 	const { value } = useForgotPasswordContext();
@@ -37,11 +39,10 @@ export function ResetWarningPage() {
 		<div className="flex flex-col items-center overflow-auto w-full h-full">
 			<div className="flex flex-col items-center gap-2 text-center">
 				<Heading variant="heading1" color="gray-90" as="h1" weight="bold">
-					Reset Password
+					{t('accounts.resetPassword')}
 				</Heading>
 				<Text variant="pBody" color="gray-90">
-					To ensure wallet security, the following accounts will be removed as part of the password
-					reset process. You will need to connect/import them again.
+					{t('accounts.resetDescription')}
 				</Text>
 			</div>
 			<div className="flex flex-col flex-1 overflow-auto mt-5 mb-10 bg-hero-darkest/5 w-full px-4 py-6 gap-8 rounded-lg">
@@ -49,17 +50,22 @@ export function ResetWarningPage() {
 					<RecoverAccountsGroup
 						key={sourceID}
 						accounts={accounts}
-						title={getGroupTitle(accounts[0])}
+						title={getGroupTitle(accounts[0], t)}
 					/>
 				))}
 			</div>
 			<div className="flex w-full gap-3">
-				<Button variant="outline" size="tall" text="Back" onClick={() => navigate(-1)} />
+				<Button
+					variant="outline"
+					size="tall"
+					text={t('common.back')}
+					onClick={() => navigate(-1)}
+				/>
 				<Button
 					type="submit"
 					variant="primary"
 					size="tall"
-					text="Continue"
+					text={t('common.continue')}
 					onClick={() => navigate('../reset')}
 				/>
 			</div>

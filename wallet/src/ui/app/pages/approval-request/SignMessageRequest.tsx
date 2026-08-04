@@ -3,6 +3,7 @@
 
 import { type SignMessageApprovalRequest } from '_payloads/transactions/ApprovalRequest';
 import { toUtf8OrB64 } from '_src/shared/utils';
+import { useI18n } from '_src/ui/app/i18n';
 import { useMemo } from 'react';
 
 import { UserApproveContainer } from '../../components/user-approve-container';
@@ -20,6 +21,7 @@ export type SignMessageRequestProps = {
 };
 
 export function SignMessageRequest({ request }: SignMessageRequestProps) {
+	const { t } = useI18n();
 	const { message, type } = useMemo(() => toUtf8OrB64(request.tx.message), [request.tx.message]);
 	const { data: account } = useAccountByAddress(request.tx.accountAddress);
 	const signer = useSigner(account);
@@ -30,8 +32,8 @@ export function SignMessageRequest({ request }: SignMessageRequestProps) {
 		<UserApproveContainer
 			origin={request.origin}
 			originFavIcon={request.originFavIcon}
-			approveTitle="Sign"
-			rejectTitle="Reject"
+			approveTitle={t('approval.sign')}
+			rejectTitle={t('dapp.reject')}
 			approveDisabled={!signer}
 			onSubmit={async (approved) => {
 				if (!signer) {
@@ -51,13 +53,13 @@ export function SignMessageRequest({ request }: SignMessageRequestProps) {
 			blended
 			checkAccountLock
 		>
-			<PageMainLayoutTitle title="Sign Message" />
+			<PageMainLayoutTitle title={t('approval.signMessage')} />
 			<div className="py-4">
 				<Heading variant="heading6" color="gray-90" weight="semibold" centered>
-					Message You Are Signing
+					{t('approval.messageSigning')}
 				</Heading>
 			</div>
-			<div className="flex flex-col flex-nowrap items-stretch border border-solid border-gray-50 rounded-15 overflow-y-auto overflow-x-hidden bg-white shadow-card-soft">
+			<div className="theme-card flex flex-col flex-nowrap items-stretch overflow-x-hidden overflow-y-auto rounded-15 border border-solid border-gray-50 shadow-card-soft">
 				<div className="p-5 break-words">
 					<Text variant="pBodySmall" weight="medium" color="steel-darker" mono={type === 'base64'}>
 						{message}

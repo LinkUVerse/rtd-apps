@@ -18,6 +18,7 @@ import {
 	MIN_NUMBER_RTD_TO_STAKE,
 } from '_src/shared/constants';
 import FaucetRequestButton from '_src/ui/app/shared/faucet/FaucetRequestButton';
+import { useI18n } from '_src/ui/app/i18n';
 import { useCoinMetadata, useGetDelegatedStake, useGetValidatorsApy } from 'rtd-apps-core';
 import { useRtdClientQuery } from 'rtd-dapp-kit';
 import { ArrowLeft16, StakeAdd16, StakeRemove16 } from 'rtd-apps-icons';
@@ -37,6 +38,7 @@ type DelegationDetailCardProps = {
 };
 
 export function DelegationDetailCard({ validatorAddress, stakedId }: DelegationDetailCardProps) {
+	const { t } = useI18n();
 	const {
 		data: system,
 		isPending: loadingValidators,
@@ -118,7 +120,7 @@ export function DelegationDetailCard({ validatorAddress, stakedId }: DelegationD
 		return (
 			<div className="p-2">
 				<Alert>
-					<div className="mb-1 font-semibold">Something went wrong</div>
+					<div className="mb-1 font-semibold">{t('common.somethingWrong')}</div>
 				</Alert>
 			</div>
 		);
@@ -131,21 +133,18 @@ export function DelegationDetailCard({ validatorAddress, stakedId }: DelegationD
 					<div className="justify-center w-full flex flex-col items-center">
 						{hasInactiveValidatorDelegation ? (
 							<div className="mb-3">
-								<Alert>
-									Unstake RTD from this inactive validator and stake on an active validator to start
-									earning rewards again.
-								</Alert>
+								<Alert>{t('staking.inactiveWarning')}</Alert>
 							</div>
 						) : null}
 						<div className="w-full flex">
 							<Card
 								header={
 									<div className="grid grid-cols-2 divide-x divide-solid divide-gray-45 divide-y-0 w-full">
-										<CardItem title="Your Stake">
+										<CardItem title={t('staking.yourStake')}>
 											<StakeAmount balance={totalStake} variant="heading5" />
 										</CardItem>
 
-										<CardItem title="Earned">
+										<CardItem title={t('staking.earned')}>
 											<StakeAmount balance={rtdEarned} variant="heading5" isEarnedRewards />
 										</CardItem>
 									</div>
@@ -156,9 +155,9 @@ export function DelegationDetailCard({ validatorAddress, stakedId }: DelegationD
 									<CardItem
 										title={
 											<div className="flex text-steel-darker gap-1 items-start">
-												APY
+												{t('staking.apy')}
 												<div className="text-steel">
-													<IconTooltip tip="Annual Percentage Yield" placement="top" />
+													<IconTooltip tip={t('staking.apyFull')} placement="top" />
 												</div>
 											</div>
 										}
@@ -178,9 +177,9 @@ export function DelegationDetailCard({ validatorAddress, stakedId }: DelegationD
 									<CardItem
 										title={
 											<div className="flex text-steel-darker gap-1">
-												Commission
+												{t('staking.commission')}
 												<div className="text-steel">
-													<IconTooltip tip="Validator commission" placement="top" />
+													<IconTooltip tip={t('staking.commissionDescription')} placement="top" />
 												</div>
 											</div>
 										}
@@ -205,7 +204,7 @@ export function DelegationDetailCard({ validatorAddress, stakedId }: DelegationD
 									variant="outline"
 									to={stakeByValidatorAddress}
 									before={<StakeAdd16 />}
-									text="Stake RTD"
+									text={t('staking.stakeRtd')}
 									onClick={() => {
 										ampli.clickedStakeRtd({
 											isCurrentlyStaking: true,
@@ -228,7 +227,7 @@ export function DelegationDetailCard({ validatorAddress, stakedId }: DelegationD
 											validatorAddress,
 										});
 									}}
-									text="Unstake RTD"
+									text={t('staking.unstakeRtd')}
 									before={<StakeRemove16 />}
 								/>
 							)}
@@ -241,7 +240,7 @@ export function DelegationDetailCard({ validatorAddress, stakedId }: DelegationD
 					<div className="flex flex-col gap-4 items-center">
 						<div className="w-8/12 text-center">
 							<Text variant="pSubtitle" weight="medium" color="steel-darker">
-								You need a minimum of {MIN_NUMBER_RTD_TO_STAKE} RTD to continue staking.
+								{t('staking.minimumRequired', { amount: MIN_NUMBER_RTD_TO_STAKE })}
 							</Text>
 						</div>
 						<FaucetRequestButton size="tall" />
@@ -252,7 +251,7 @@ export function DelegationDetailCard({ validatorAddress, stakedId }: DelegationD
 						variant="secondary"
 						to="/stake"
 						before={<ArrowLeft16 />}
-						text="Back"
+						text={t('common.back')}
 					/>
 				)}
 			</BottomMenuLayout>

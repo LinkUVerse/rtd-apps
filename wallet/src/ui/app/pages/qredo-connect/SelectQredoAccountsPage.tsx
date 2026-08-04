@@ -3,6 +3,7 @@
 
 import Overlay from '_components/overlay';
 import { type Wallet } from '_src/shared/qredo-api';
+import { useI18n } from '_src/ui/app/i18n';
 import { ArrowRight16 } from 'rtd-apps-icons';
 import { useEffect, useState } from 'react';
 import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom';
@@ -13,6 +14,7 @@ import { SelectQredoAccountsSummaryCard } from './components/SelectQredoAccounts
 import { useQredoUIPendingRequest } from './hooks';
 
 export function SelectQredoAccountsPage() {
+	const { t } = useI18n();
 	const { id } = useParams();
 	const { state } = useLocation();
 	const navigate = useNavigate();
@@ -39,7 +41,7 @@ export function SelectQredoAccountsPage() {
 	return (
 		<Overlay
 			showModal
-			title="Import Accounts"
+			title={t('qredo.importAccounts')}
 			closeOverlay={() => {
 				navigate(-1);
 			}}
@@ -57,7 +59,7 @@ export function SelectQredoAccountsPage() {
 					<Button
 						size="tall"
 						variant="primary"
-						text="Continue"
+						text={t('common.continue')}
 						after={<ArrowRight16 />}
 						disabled={!selectedAccounts?.length}
 						onClick={async () => {

@@ -8,6 +8,7 @@ import {
 	NUM_OF_EPOCH_BEFORE_STAKING_REWARDS_STARTS,
 } from '_src/shared/constants';
 import { CountDownTimer } from '_src/ui/app/shared/countdown-timer';
+import { useI18n } from '_src/ui/app/i18n';
 import { Text } from '_src/ui/app/shared/text';
 import { IconTooltip } from '_src/ui/app/shared/tooltip';
 import {
@@ -26,6 +27,7 @@ type StakeTxnCardProps = {
 
 // For Staked Transaction use moveEvent Field to get the validator address, delegation amount, epoch
 export function StakeTxnCard({ event }: StakeTxnCardProps) {
+	const { t } = useI18n();
 	const json = event.parsedJson as { amount: string; validator_address: string; epoch: string };
 	const validatorAddress = json?.validator_address;
 	const stakedAmount = json?.amount;
@@ -64,14 +66,16 @@ export function StakeTxnCard({ event }: StakeTxnCardProps) {
 						/>
 					</div>
 				)}
-				{stakedAmount && <TxnAmount amount={stakedAmount} coinType={RTD_TYPE_ARG} label="Stake" />}
+				{stakedAmount && (
+					<TxnAmount amount={stakedAmount} coinType={RTD_TYPE_ARG} label={t('staking.stake')} />
+				)}
 				<div className="flex flex-col">
 					<div className="flex justify-between w-full py-3.5">
 						<div className="flex gap-1 items-baseline justify-center text-steel">
 							<Text variant="body" weight="medium" color="steel-darker">
-								APY
+								{t('staking.apy')}
 							</Text>
-							<IconTooltip tip="This is the Annualized Percentage Yield of the a specific validator’s past operations. Note there is no guarantee this APY will be true in the future." />
+							<IconTooltip tip={t('staking.apyDescription')} />
 						</div>
 						<Text variant="body" weight="medium" color="steel-darker">
 							{formatPercentageDisplay(apy, '--', isApyApproxZero)}
@@ -83,8 +87,8 @@ export function StakeTxnCard({ event }: StakeTxnCardProps) {
 						<div className="flex gap-1 items-baseline text-steel">
 							<Text variant="body" weight="medium" color="steel-darker">
 								{timeBeforeStakeRewardsStarts > 0
-									? 'Staking Rewards Start'
-									: 'Staking Rewards Started'}
+									? t('staking.rewardsStart')
+									: t('staking.rewardsStarted')}
 							</Text>
 						</div>
 
@@ -94,19 +98,19 @@ export function StakeTxnCard({ event }: StakeTxnCardProps) {
 								variant="body"
 								color="steel-darker"
 								weight="medium"
-								label="in"
+								label={t('staking.in')}
 								endLabel="--"
 							/>
 						) : (
 							<Text variant="body" weight="medium" color="steel-darker">
-								Epoch #{startEarningRewardsEpoch}
+								{t('staking.epochNumber', { count: startEarningRewardsEpoch })}
 							</Text>
 						)}
 					</div>
 					<div className="flex justify-between w-full">
 						<div className="flex gap-1 flex-1 items-baseline text-steel">
 							<Text variant="pBody" weight="medium" color="steel-darker">
-								Staking Rewards Redeemable
+								{t('staking.rewardsRedeemable')}
 							</Text>
 						</div>
 						<div className="flex-1 flex justify-end gap-1 items-center">
@@ -116,12 +120,12 @@ export function StakeTxnCard({ event }: StakeTxnCardProps) {
 									variant="body"
 									color="steel-darker"
 									weight="medium"
-									label="in"
+									label={t('staking.in')}
 									endLabel="--"
 								/>
 							) : (
 								<Text variant="body" weight="medium" color="steel-darker">
-									Epoch #{redeemableRewardsEpoch}
+									{t('staking.epochNumber', { count: redeemableRewardsEpoch })}
 								</Text>
 							)}
 						</div>

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { GAS_TYPE_ARG } from '_redux/slices/rtd-objects/Coin';
+import { useI18n } from '_app/i18n';
 import { Text } from '_src/ui/app/shared/text';
 import { useFormatCoin } from 'rtd-apps-core';
 import type { GasCostSummary } from 'rtd-typescript/client';
@@ -14,6 +15,7 @@ type TxnGasSummaryProps = {
 
 //TODO add gas breakdown
 export function TxnGasSummary({ gasSummary, totalGas, transferAmount }: TxnGasSummaryProps) {
+	const { t } = useI18n();
 	const [totalAmount, totalAmountSymbol] = useFormatCoin(
 		totalGas + (transferAmount || 0n),
 		GAS_TYPE_ARG,
@@ -24,7 +26,7 @@ export function TxnGasSummary({ gasSummary, totalGas, transferAmount }: TxnGasSu
 		<div className="flex flex-col w-full items-center gap-3.5 border-t border-solid border-steel/20 border-x-0 border-b-0 py-3.5 first:pt-0">
 			<div className="flex justify-between items-center w-full">
 				<Text variant="body" weight="medium" color="steel-darker">
-					Gas Fees
+					{t('transaction.gasFees')}
 				</Text>
 				<Text variant="body" weight="medium" color="steel-darker">
 					{gas} {symbol}
@@ -33,7 +35,7 @@ export function TxnGasSummary({ gasSummary, totalGas, transferAmount }: TxnGasSu
 			{transferAmount ? (
 				<div className="flex justify-between items-center w-full">
 					<Text variant="body" weight="medium" color="steel-darker">
-						Total Amount
+						{t('transaction.totalAmount')}
 					</Text>
 					<Text variant="body" weight="medium" color="steel-darker">
 						{totalAmount} {totalAmountSymbol}

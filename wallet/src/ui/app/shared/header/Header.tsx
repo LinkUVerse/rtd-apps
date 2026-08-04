@@ -19,9 +19,9 @@ type HeaderProps = {
  */
 export function Header({ networkName, middleContent, rightContent }: HeaderProps) {
 	return (
-		<header className="grid grid-cols-header items-center gap-3 px-3 py-2">
+		<header className="wallet-header grid grid-cols-header items-center gap-3 px-4 py-2.5">
 			<div>
-				<Link to="/" className="no-underline text-gray-90">
+				<Link to="/" className="no-underline">
 					<Logo networkName={networkName} />
 				</Link>
 			</div>

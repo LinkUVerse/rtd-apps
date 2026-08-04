@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Heading } from '_app/shared/heading';
+import { useI18n } from '_app/i18n';
 import { Text } from '_app/shared/text';
 import { useAppSelector } from '_hooks';
 import { FEATURES } from '_src/shared/experimentation/features';
@@ -16,6 +17,7 @@ import { RtdApp, type DAppEntry } from './RtdApp';
 import { RtdAppEmpty } from './RtdAppEmpty';
 
 function AppsPlayGround() {
+	const { t } = useI18n();
 	const ecosystemApps = useFeature<DAppEntry[]>(FEATURES.WALLET_DAPPS).value;
 	const { tagName } = useParams();
 
@@ -44,7 +46,7 @@ function AppsPlayGround() {
 		<>
 			<div className="flex justify-center mb-4">
 				<Heading variant="heading6" color="gray-90" weight="semibold">
-					Rtd Apps
+					{t('apps.title')}
 				</Heading>
 			</div>
 
@@ -53,8 +55,7 @@ function AppsPlayGround() {
 			{filteredEcosystemApps?.length ? (
 				<div className="p-4 bg-gray-40 rounded-xl">
 					<Text variant="pBodySmall" color="gray-75" weight="normal">
-						Apps below are actively curated but do not indicate any endorsement or relationship with
-						Rtd Wallet. Please DYOR.
+						{t('apps.disclaimer')}
 					</Text>
 				</div>
 			) : null}

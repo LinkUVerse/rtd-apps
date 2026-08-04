@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ampli } from '_src/shared/analytics/ampli';
+import { useI18n } from '_src/ui/app/i18n';
 import { FEATURES } from '_src/shared/experimentation/features';
 import { useFeature } from '@growthbook/growthbook-react';
 
@@ -14,6 +15,7 @@ export type BannerProps = {
 };
 
 export function AppsPageBanner() {
+	const { t } = useI18n();
 	const AppsBannerConfig = useFeature<BannerProps>(FEATURES.WALLET_APPS_BANNER_CONFIG);
 
 	if (!AppsBannerConfig.value?.enabled) {
@@ -30,7 +32,7 @@ export function AppsPageBanner() {
 					<img
 						className="w-full rounded-xl"
 						src={AppsBannerConfig.value?.imageUrl}
-						alt="Apps Banner"
+						alt={t('apps.title')}
 					/>
 				</ExternalLink>
 			)}

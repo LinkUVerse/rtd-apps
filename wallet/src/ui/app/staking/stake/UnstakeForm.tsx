@@ -4,6 +4,7 @@
 import { Card } from '_app/shared/card';
 import { Text } from '_app/shared/text';
 import { CountDownTimer } from '_src/ui/app/shared/countdown-timer';
+import { useI18n } from '_src/ui/app/i18n';
 import { useFormatCoin, useGetTimeBeforeEpochNumber } from 'rtd-apps-core';
 import { RTD_TYPE_ARG } from 'rtd-typescript/utils';
 import { Form } from 'formik';
@@ -29,6 +30,7 @@ export function UnStakeForm({
 	stakingReward,
 	epoch,
 }: StakeFromProps) {
+	const { t } = useI18n();
 	const [rewards, rewardSymbol] = useFormatCoin(stakingReward, RTD_TYPE_ARG);
 	const [totalRtd] = useFormatCoin(BigInt(stakingReward || 0) + coinBalance, RTD_TYPE_ARG);
 	const [tokenBalance] = useFormatCoin(coinBalance, coinType);
@@ -44,9 +46,9 @@ export function UnStakeForm({
 			<Card
 				titleDivider
 				header={
-					<div className="px-4 py-3 w-full flex bg-white justify-between">
+					<div className="theme-surface flex w-full justify-between px-4 py-3">
 						<Text variant="body" weight="medium" color="steel-darker">
-							Current Epoch Ends
+							{t('staking.currentEpochEnds')}
 						</Text>
 						<div className="flex gap-0.5 ml-auto">
 							{currentEpochEndTime > 0 ? (
@@ -59,7 +61,7 @@ export function UnStakeForm({
 								/>
 							) : (
 								<Text variant="body" weight="medium" color="steel-dark">
-									Epoch #{epoch}
+									{t('staking.epochNumber', { count: epoch })}
 								</Text>
 							)}
 						</div>
@@ -68,7 +70,7 @@ export function UnStakeForm({
 				footer={
 					<div className="flex gap-0.5 justify-between w-full">
 						<Text variant="pBodySmall" weight="medium" color="steel-darker">
-							Total unstaked RTD
+							{t('staking.totalUnstaked')}
 						</Text>
 						<div className="flex gap-0.5 ml-auto">
 							<Heading variant="heading4" weight="semibold" color="steel-darker" leading="none">
@@ -84,7 +86,7 @@ export function UnStakeForm({
 				<div className="pb-3.75 flex flex-col  w-full gap-2">
 					<div className="flex gap-0.5 justify-between w-full">
 						<Text variant="body" weight="medium" color="steel-darker">
-							Your Stake
+							{t('staking.yourStake')}
 						</Text>
 						<Text variant="body" weight="medium" color="steel-darker">
 							{tokenBalance} {GAS_SYMBOL}
@@ -92,7 +94,7 @@ export function UnStakeForm({
 					</div>
 					<div className="flex gap-0.5 justify-between w-full">
 						<Text variant="body" weight="medium" color="steel-darker">
-							Staking Rewards Earned
+							{t('staking.rewardsEarned')}
 						</Text>
 						<Text variant="body" weight="medium" color="steel-darker">
 							{rewards} {rewardSymbol}
@@ -104,7 +106,7 @@ export function UnStakeForm({
 				<Card variant="gray">
 					<div className=" w-full flex justify-between">
 						<Text variant="body" weight="medium" color="steel-darker">
-							Gas Fees
+							{t('transaction.gasFees')}
 						</Text>
 
 						<Text variant="body" weight="medium" color="steel-dark">

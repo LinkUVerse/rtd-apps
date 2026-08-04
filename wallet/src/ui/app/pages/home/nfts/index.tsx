@@ -3,6 +3,7 @@
 
 import { useActiveAddress } from '_app/hooks/useActiveAddress';
 import { useBlockedObjectList } from '_app/hooks/useBlockedObjectList';
+import { useI18n } from '_app/i18n';
 import Alert from '_components/alert';
 import FiltersPortal from '_components/filters-tags';
 import Loading from '_components/loading';
@@ -21,6 +22,7 @@ import NonVisualAssets from './NonVisualAssets';
 import VisualAssets from './VisualAssets';
 
 function NftsPage() {
+	const { t } = useI18n();
 	const accountAddress = useActiveAddress();
 	const { data: blockedObjectList } = useBlockedObjectList();
 	const {
@@ -71,13 +73,16 @@ function NftsPage() {
 	}
 
 	const tags = [
-		{ name: 'Visual Assets', link: 'nfts' },
-		{ name: 'Everything Else', link: 'nfts/other' },
+		{ name: t('assets.visual'), link: 'nfts' },
+		{ name: t('assets.other'), link: 'nfts/other' },
 	];
 
 	return (
 		<div className="flex min-h-full flex-col flex-nowrap items-center gap-4">
-			<PageTitle title="Assets" after={hiddenAssetIds.length ? <AssetsOptionsMenu /> : null} />
+			<PageTitle
+				title={t('assets.title')}
+				after={hiddenAssetIds.length ? <AssetsOptionsMenu /> : null}
+			/>
 			{!!ownedAssets?.other.length && (
 				<FiltersPortal firstLastMargin tags={tags} callback={handleFilterChange} />
 			)}
@@ -85,7 +90,7 @@ function NftsPage() {
 				{isError ? (
 					<Alert>
 						<div>
-							<strong>Sync error (data might be outdated)</strong>
+							<strong>{t('common.syncError')}</strong>
 						</div>
 						<small>{(error as Error).message}</small>
 					</Alert>
@@ -98,7 +103,7 @@ function NftsPage() {
 					)
 				) : (
 					<div className="flex flex-1 items-center self-center text-caption font-semibold text-steel-darker">
-						No Assets found
+						{t('assets.noAssets')}
 					</div>
 				)}
 			</Loading>

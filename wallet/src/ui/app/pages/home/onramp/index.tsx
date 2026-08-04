@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ampli } from '_src/shared/analytics/ampli';
+import { useI18n } from '_app/i18n';
 import Alert from '_src/ui/app/components/alert';
 import Overlay from '_src/ui/app/components/overlay';
 import { SectionHeader } from '_src/ui/app/components/SectionHeader';
@@ -16,6 +17,7 @@ import { useNavigate } from 'react-router-dom';
 import { useOnrampProviders } from './useOnrampProviders';
 
 export function Onramp() {
+	const { t } = useI18n();
 	const navigate = useNavigate();
 	const address = useActiveAddress();
 	const { providers, setPreferredProvider } = useOnrampProviders();
@@ -47,7 +49,7 @@ export function Onramp() {
 	return (
 		<Overlay
 			showModal
-			title="Buy"
+			title={t('onramp.title')}
 			closeOverlay={() => {
 				navigate('/tokens');
 			}}
@@ -55,7 +57,7 @@ export function Onramp() {
 			<div className="w-full flex flex-col gap-5">
 				{preferredProvider && (
 					<Text variant="body" weight="medium" color="steel-darker">
-						Continue checkout out with one of our partners:{' '}
+						{t('onramp.description')}
 					</Text>
 				)}
 				<button
@@ -69,16 +71,16 @@ export function Onramp() {
 					</span>
 
 					<Heading variant="heading6" weight="semibold" color="hero-dark">
-						Continue with {preferredProvider.name}
+						{t('onramp.continueWith', { provider: preferredProvider.name })}
 					</Heading>
 				</button>
 
 				{!!error && (
 					<div className="mt-2">
-						<Alert>An unexpected error occurred. Please try again later.</Alert>
+						<Alert>{t('common.unexpectedError')}</Alert>
 					</div>
 				)}
-				<SectionHeader title="Or" />
+				<SectionHeader title={t('common.or')} />
 				<div className="flex gap-2">
 					{otherProviders.map((provider) => {
 						return (

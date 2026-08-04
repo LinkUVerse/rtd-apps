@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { API_ENV_TO_INFO, generateActiveNetworkList } from '_app/ApiProvider';
+import { useI18n, type MessageKey } from '_app/i18n';
 import { useAppDispatch, useAppSelector } from '_hooks';
 import { changeActiveNetwork } from '_redux/slices/app';
 import { ampli } from '_src/shared/analytics/ampli';
@@ -19,6 +20,7 @@ import * as styles from './NetworkSelector.module.scss';
 const st = styles as any;
 
 const NetworkSelector = () => {
+	const { t } = useI18n();
 	const [activeApiEnv, activeRpcUrl] = useAppSelector(({ app }) => [app.apiEnv, app.customRPC]);
 	const [isCustomRpcInputVisible, setCustomRpcInputVisible] = useState<boolean>(
 		activeApiEnv === API_ENV.customRPC,
@@ -79,7 +81,7 @@ const NetworkSelector = () => {
 								)}
 							/>
 
-							{apiEnv.name}
+							{t(`network.${apiEnv.env}` as MessageKey)}
 						</button>
 					</li>
 				))}

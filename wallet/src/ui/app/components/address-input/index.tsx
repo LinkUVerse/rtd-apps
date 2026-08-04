@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Text } from '_app/shared/text';
+import { useI18n } from '_app/i18n';
 import Alert from '_src/ui/app/components/alert';
 import { useRtdClient } from 'rtd-dapp-kit';
 import { QrCode, X12 } from 'rtd-apps-icons';
@@ -31,6 +32,7 @@ export function AddressInput({
 	placeholder = '0x...',
 	name = 'to',
 }: AddressInputProps) {
+	const { t } = useI18n();
 	const [field, meta] = useField(name);
 
 	const client = useRtdClient();
@@ -98,7 +100,7 @@ export function AddressInput({
 		<>
 			<div
 				className={cx(
-					'flex h-max w-full rounded-2lg bg-white border border-solid box-border focus-within:border-steel transition-all overflow-hidden',
+					'theme-card flex h-max w-full overflow-hidden rounded-2lg border border-solid box-border transition-all focus-within:border-steel',
 					hasWarningOrError ? 'border-issue' : 'border-gray-45',
 				)}
 			>
@@ -113,7 +115,7 @@ export function AddressInput({
 						onChange={handleOnChange}
 						onBlur={field.onBlur}
 						className={cx(
-							'w-full text-bodySmall leading-100 font-medium font-mono bg-white placeholder:text-steel-dark placeholder:font-normal placeholder:font-mono border-none resize-none',
+							'w-full resize-none border-none bg-transparent font-mono text-bodySmall font-medium leading-100 placeholder:font-mono placeholder:font-normal placeholder:text-steel-dark',
 							hasWarningOrError ? 'text-issue' : 'text-gray-90',
 						)}
 						name={name}
@@ -138,25 +140,24 @@ export function AddressInput({
 						{warningData === RecipientWarningType.OBJECT ? (
 							<>
 								<Text variant="pBody" weight="semibold">
-									This address is an Object
+									{t('address.objectTitle')}
 								</Text>
 								<Text variant="pBodySmall" weight="medium">
-									Once sent, the funds cannot be recovered. Please make sure you want to send coins
-									to this address.
+									{t('address.objectWarning')}
 								</Text>
 							</>
 						) : warningData === RecipientWarningType.EMPTY ? (
 							<>
 								<Text variant="pBody" weight="semibold">
-									This address has no prior transactions
+									{t('address.emptyTitle')}
 								</Text>
 								<Text variant="pBodySmall" weight="medium">
-									Please make sure you want to send coins to this address.
+									{t('address.emptyWarning')}
 								</Text>
 							</>
 						) : (
 							<Text variant="pBodySmall" weight="medium">
-								{meta.error || 'Valid address'}
+								{meta.error || t('common.validAddress')}
 							</Text>
 						)}
 					</Alert>

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Button } from '_app/shared/ButtonUI';
+import { useI18n } from '_app/i18n';
 import { useNextMenuUrl } from '_components/menu/hooks';
 import { ampli } from '_src/shared/analytics/ampli';
 import { persister } from '_src/ui/app/helpers/queryClient';
@@ -13,6 +14,7 @@ import { useState } from 'react';
 import { MenuLayout } from './MenuLayout';
 
 export function MoreOptions() {
+	const { t } = useI18n();
 	const mainMenuUrl = useNextMenuUrl(true, '/');
 	const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false);
 	const backgroundClient = useBackgroundClient();
@@ -28,10 +30,10 @@ export function MoreOptions() {
 		},
 	});
 	return (
-		<MenuLayout title="More Options" back={mainMenuUrl}>
+		<MenuLayout title={t('moreOptions.title')} back={mainMenuUrl}>
 			<Button
 				variant="warning"
-				text="Logout"
+				text={t('moreOptions.logout')}
 				size="narrow"
 				loading={logoutMutation.isPending}
 				disabled={isLogoutDialogOpen}
@@ -39,10 +41,10 @@ export function MoreOptions() {
 			/>
 			<ConfirmationModal
 				isOpen={isLogoutDialogOpen}
-				confirmText="Logout"
+				confirmText={t('moreOptions.logout')}
 				confirmStyle="outlineWarning"
-				title="Are you sure you want to Logout?"
-				hint="You will need to set up all your accounts again."
+				title={t('moreOptions.logoutTitle')}
+				hint={t('moreOptions.logoutHint')}
 				onResponse={async (confirmed) => {
 					setIsLogoutDialogOpen(false);
 					if (confirmed) {
