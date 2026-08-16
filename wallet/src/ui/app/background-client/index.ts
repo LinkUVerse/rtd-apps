@@ -45,6 +45,12 @@ const entitiesToClientQueryKeys: Record<UIAccessibleEntityType, QueryKey> = {
 	accountSources: accountSourcesQueryKey,
 };
 
+const DISCONNECTED_PORT_ERROR = 'Attempting to use a disconnected port object';
+
+function isDisconnectedPortError(error: unknown): boolean {
+	return error instanceof Error && error.message.includes(DISCONNECTED_PORT_ERROR);
+}
+
 export class BackgroundClient {
 	private _portStream: PortStream | null = null;
 	private _dispatch: AppDispatch | null = null;
@@ -618,19 +624,41 @@ export class BackgroundClient {
 		}
 	}
 
-	private createPortStream() {
-		this._portStream = PortStream.connectToBackgroundService('rtd_ui<->background');
-		this._portStream.onDisconnect.subscribe(() => {
-			this.createPortStream();
+	private createPortStream(): PortStream {
+		const portStream = PortStream.connectToBackgroundService('rtd_ui<->background');
+		this._portStream = portStream;
+		portStream.onDisconnect.subscribe(() => {
+			// A failed send can reconnect before the old port's disconnect event is delivered.
+			// In that case, don't replace the newer connection with another one.
+			if (this._portStream === portStream) {
+				this.createPortStream();
+			}
 		});
-		this._portStream.onMessage.subscribe((msg) => this.handleIncomingMessage(msg));
+		portStream.onMessage.subscribe((msg) => this.handleIncomingMessage(msg));
+		return portStream;
 	}
 
 	private sendMessage(msg: Message) {
-		if (this._portStream?.connected) {
-			return this._portStream.sendMessage(msg);
-		} else {
+		let portStream = this._portStream;
+		if (!portStream) {
 			throw new Error('Failed to send message to background service. Port not connected.');
+		}
+		if (!portStream.connected) {
+			portStream = this.createPortStream();
+		}
+		try {
+			return portStream.sendMessage(msg);
+		} catch (error) {
+			// Chromium/Edge can invalidate a Manifest V3 service-worker port just before
+			// onDisconnect updates `connected`. Reconnect and retry the undelivered message once.
+			if (!isDisconnectedPortError(error)) {
+				throw error;
+			}
+			const activePortStream =
+				this._portStream && this._portStream !== portStream
+					? this._portStream
+					: this.createPortStream();
+			return activePortStream.sendMessage(msg);
 		}
 	}
 }
