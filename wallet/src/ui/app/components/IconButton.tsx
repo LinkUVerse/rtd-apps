@@ -3,17 +3,21 @@
 
 import { cva, type VariantProps } from 'class-variance-authority';
 
-import { ButtonOrLink, type ButtonOrLinkProps } from '../shared/utils/ButtonOrLink';
+import {
+	ButtonOrLink,
+	type ButtonOrLinkProps,
+} from '../shared/utils/ButtonOrLink';
 
-import type { JSX } from "react";
+import type { JSX } from 'react';
 
-interface IconButtonProps extends ButtonOrLinkProps, VariantProps<typeof buttonStyles> {
+interface IconButtonProps
+	extends ButtonOrLinkProps, VariantProps<typeof buttonStyles> {
 	icon: JSX.Element;
 }
 
 const buttonStyles = cva(
 	[
-		'flex items-center rounded-sm bg-transparent border-0 p-0 text-hero-darkest/40 hover:text-hero-darkest/50 transition cursor-pointer',
+		'flex min-h-10 min-w-10 items-center justify-center rounded-[10px] bg-transparent border-0 p-0 text-hero-darkest/40 hover:text-hero-darkest/50 transition cursor-pointer',
 	],
 	{
 		variants: {
@@ -28,7 +32,12 @@ const buttonStyles = cva(
 	},
 );
 
-export function IconButton({ onClick, icon, variant, ...buttonOrLinkProps }: IconButtonProps) {
+export function IconButton({
+	onClick,
+	icon,
+	variant,
+	...buttonOrLinkProps
+}: IconButtonProps) {
 	return (
 		<ButtonOrLink
 			onClick={onClick}

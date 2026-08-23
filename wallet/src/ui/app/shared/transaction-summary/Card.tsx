@@ -2,10 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 import { Heading } from '_src/ui/app/shared/heading';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { type AnchorHTMLAttributes, type ElementType, type ReactNode } from 'react';
+import {
+	type AnchorHTMLAttributes,
+	type ElementType,
+	type ReactNode,
+} from 'react';
 
 const cardStyles = cva(
-	['bg-white relative flex flex-col p-4.5 w-full shadow-card-soft rounded-2xl'],
+	['nova-card relative flex min-w-0 flex-col p-4 w-full'],
 	{
 		variants: {
 			as: {
@@ -27,13 +31,20 @@ type CardProps = Props & AnchorHTMLAttributes<HTMLAnchorElement>;
 
 export const SummaryCardFooter = ({ children }: { children: ReactNode }) => {
 	return (
-		<div className="-mb-4.5 -mx-4.5 px-4 py-2 rounded-b-2xl flex justify-between items-center bg-rtd/10 ">
+		<div className="-mb-4 -mx-4 px-4 py-2 rounded-b-[9px] flex justify-between items-center bg-rtd/10">
 			{children}
 		</div>
 	);
 };
 
-export function Card({ as = 'div', heading, children, after, footer = null, ...props }: CardProps) {
+export function Card({
+	as = 'div',
+	heading,
+	children,
+	after,
+	footer = null,
+	...props
+}: CardProps) {
 	const Component = as as ElementType;
 	return (
 		<Component className={cardStyles({ as })} {...props}>

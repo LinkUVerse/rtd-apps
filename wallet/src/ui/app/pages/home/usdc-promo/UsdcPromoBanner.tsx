@@ -1,6 +1,7 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 import { useGetAllBalances } from '_app/hooks/useGetAllBalances';
+import { useI18n } from '_app/i18n';
 import { Text } from '_app/shared/text';
 import { ButtonOrLink } from '_app/shared/utils/ButtonOrLink';
 import { useActiveAddress } from '_hooks';
@@ -20,12 +21,15 @@ function useUsdcInUserBalance() {
 
 	return coinBalances
 		? coinBalances.filter(
-				(coin) => wrappedUsdcList.includes(coin.coinType) && Number(coin.totalBalance) > 0,
+				(coin) =>
+					wrappedUsdcList.includes(coin.coinType) &&
+					Number(coin.totalBalance) > 0,
 			)
 		: [];
 }
 
 function BannerImage({ balance }: { balance: CoinBalance }) {
+	const { t } = useI18n();
 	const navigate = useNavigate();
 	const { promoBannerBackground, promoBannerText } = useUsdcPromo();
 	const { data: metadata } = useCoinMetadata(balance.coinType);
@@ -54,14 +58,23 @@ function BannerImage({ balance }: { balance: CoinBalance }) {
 				);
 			}}
 		>
-			<img className="w-full cursor-pointer h-16" alt="USDC Promo" src={promoBannerBackground} />
+			<img
+				className="w-full cursor-pointer h-16"
+				alt={t('promo.usdcBannerAlt')}
+				src={promoBannerBackground}
+			/>
 			<div className="absolute top-1/2 -translate-y-1/2 w-full flex flex-row gap-4 px-3">
 				<img
 					alt="USDC"
 					src="https://fe-assets.linkuverse.com/wallet_next/usdc_icon.png"
 					className="h-8 w-8"
 				/>
-				<Text variant="bodySmall" weight="medium" color="white" className="text-left">
+				<Text
+					variant="bodySmall"
+					weight="medium"
+					color="white"
+					className="text-left"
+				>
 					{promoBannerText}
 				</Text>
 			</div>

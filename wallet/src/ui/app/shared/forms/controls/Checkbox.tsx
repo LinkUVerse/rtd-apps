@@ -12,14 +12,14 @@ type CheckboxProps = {
 
 export const Checkbox = forwardRef<HTMLButtonElement, CheckboxProps>(
 	({ label, ...props }, forwardedRef) => (
-		<div className="flex items-center gap-2 pl-2.5">
+		<div className="flex min-h-11 items-center gap-2.5">
 			<RadixCheckbox.Root
-				className="group peer appearance-none border-0 bg-transparent p-0 m-0"
+				className="group peer inline-flex min-h-11 min-w-11 appearance-none items-center justify-center border-0 bg-transparent p-0 m-0 cursor-pointer"
 				ref={forwardedRef}
 				id={props.name}
 				{...props}
 			>
-				<div className="bg-white group-data-[state=checked]:bg-success group-data-[state=checked]:border-0 h-5 w-5 border-steel disabled:border-hero-darkest/10 border border-solid rounded flex items-center justify-center">
+				<div className="theme-input group-data-[state=checked]:bg-success group-data-[state=checked]:border-success h-5 w-5 border-steel disabled:border-hero-darkest/10 border border-solid rounded flex items-center justify-center">
 					<Check12 className="text-hero-darkest/10 group-data-[state=checked]:text-white text-body font-semibold" />
 				</div>
 			</RadixCheckbox.Root>

@@ -7,8 +7,8 @@ import type { ReactNode } from 'react';
 const cardContentStyle = cva([], {
 	variants: {
 		variant: {
-			white: 'bg-white',
-			gray: 'bg-gray-40',
+			white: 'theme-surface',
+			gray: 'bg-rtd-lightest',
 		},
 		padding: {
 			none: 'p-0',
@@ -33,16 +33,20 @@ export interface CardProps extends VariantProps<typeof cardContentStyle> {
 export function Card({ header, footer, children, ...styleProps }: CardProps) {
 	return (
 		<div
-			className={
-				'rounded-2xl border border-solid border-gray-45 box-border overflow-hidden flex flex-col outline-1 w-full'
-			}
+			className={'nova-card box-border overflow-hidden flex flex-col w-full'}
 		>
-			{header && <div className="bg-gray-40 flex items-center justify-center">{header}</div>}
+			{header && (
+				<div className="bg-rtd-lightest flex items-center justify-center">
+					{header}
+				</div>
+			)}
 			<div className={cardContentStyle(styleProps)}>
 				{children}
 				{footer && (
 					<div className={'flex flex-col pt-0 justify-center w-full'}>
-						{children && <span className="h-px bg-gray-45 w-full px-4 mb-3.5"></span>}
+						{children && (
+							<span className="h-px bg-gray-45 w-full px-4 mb-3.5"></span>
+						)}
 						<div className="flex justify-between">{footer}</div>
 					</div>
 				)}

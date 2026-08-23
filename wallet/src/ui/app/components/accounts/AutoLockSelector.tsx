@@ -4,25 +4,28 @@
 import { useEffect } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { z } from 'zod';
-import { useI18n } from '_app/i18n';
+import { useI18n, type MessageKey, type MessageValues } from '_app/i18n';
 
 import { CheckboxField } from '../../shared/forms/CheckboxField';
 import { Input } from '../../shared/forms/controls/Input';
 import FormField from '../../shared/forms/FormField';
 import { SelectField } from '../../shared/forms/SelectField';
 
-export const zodSchema = z.object({
-	autoLock: z
-		.object({
-			enabled: z.boolean(),
-			timer: z.coerce.number().int('Only integer numbers allowed'),
-			interval: z.enum(['day', 'hour', 'minute']),
-		})
-		.refine(({ enabled, timer }) => !enabled || timer > 0, {
-			message: 'Minimum of 1 minute is allowed',
-			path: ['timer'],
-		}),
-});
+type Translate = (key: MessageKey, values?: MessageValues) => string;
+
+export const createAutoLockSchema = (t: Translate) =>
+	z.object({
+		autoLock: z
+			.object({
+				enabled: z.boolean(),
+				timer: z.coerce.number().int(t('autoLock.integerOnly')),
+				interval: z.enum(['day', 'hour', 'minute']),
+			})
+			.refine(({ enabled, timer }) => !enabled || timer > 0, {
+				message: t('autoLock.minimum'),
+				path: ['timer'],
+			}),
+	});
 
 type AutoLockSelectorProps = {
 	disabled?: boolean;
@@ -35,9 +38,18 @@ export function AutoLockSelector({ disabled }: AutoLockSelectorProps) {
 	const timerEnabled = watch('autoLock.enabled');
 	const isSingular = Number(timer) === 1;
 	const lockIntervals = [
-		{ id: 'day', label: t(isSingular ? 'autoLock.unitDay' : 'autoLock.unitDays') },
-		{ id: 'hour', label: t(isSingular ? 'autoLock.unitHour' : 'autoLock.unitHours') },
-		{ id: 'minute', label: t(isSingular ? 'autoLock.unitMinute' : 'autoLock.unitMinutes') },
+		{
+			id: 'day',
+			label: t(isSingular ? 'autoLock.unitDay' : 'autoLock.unitDays'),
+		},
+		{
+			id: 'hour',
+			label: t(isSingular ? 'autoLock.unitHour' : 'autoLock.unitHours'),
+		},
+		{
+			id: 'minute',
+			label: t(isSingular ? 'autoLock.unitMinute' : 'autoLock.unitMinutes'),
+		},
 	];
 	useEffect(() => {
 		const { unsubscribe } = watch((_, { name, type }) => {

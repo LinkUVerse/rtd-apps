@@ -2,12 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { useQuery } from '@tanstack/react-query';
-import { type z } from 'zod';
-
-import { type zodSchema } from '../components/accounts/AutoLockSelector';
 import { useBackgroundClient } from './useBackgroundClient';
 
-export type AutoLockInterval = z.infer<typeof zodSchema>['autoLock']['interval'];
+export type AutoLockInterval = 'day' | 'hour' | 'minute';
 export const autoLockMinutesQueryKey = ['get auto-lock minutes'];
 
 export function useAutoLockMinutes() {

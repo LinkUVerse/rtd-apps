@@ -17,10 +17,6 @@ import { object, string as YupString } from 'yup';
 
 import Alert from './alert';
 
-const validation = object({
-	password: YupString().ensure().required().label('Password'),
-});
-
 export type PasswordExportDialogProps = {
 	title: string;
 	continueLabel?: string;
@@ -47,6 +43,9 @@ export function PasswordInputDialog({
 }: PasswordExportDialogProps) {
 	const { t } = useI18n();
 	const resolvedContinueLabel = continueLabel || t('common.continue');
+	const validation = object({
+		password: YupString().ensure().required(t('validation.required')),
+	});
 	const navigate = useNavigate();
 	const backgroundService = useBackgroundClient();
 	return (
@@ -61,7 +60,10 @@ export function PasswordInputDialog({
 						toast.error((e as Error).message || t('common.wrongPassword'));
 					}
 				} catch (e) {
-					setFieldError('password', (e as Error).message || t('common.wrongPassword'));
+					setFieldError(
+						'password',
+						(e as Error).message || t('common.wrongPassword'),
+					);
 				}
 			}}
 			validationSchema={validation}
@@ -69,10 +71,13 @@ export function PasswordInputDialog({
 		>
 			{({ isSubmitting, isValid }) => (
 				<Form
-					className={classNames('flex flex-col flex-nowrap items-center flex-1 gap-7.5', {
-						'bg-white': background,
-						'px-5 pt-10': spacing,
-					})}
+					className={classNames(
+						'flex flex-col flex-nowrap items-center flex-1 gap-7.5',
+						{
+							'bg-white': background,
+							'px-5 pt-10': spacing,
+						},
+					)}
 				>
 					<div className="text-center">
 						<Heading variant="heading1" color="gray-90" weight="bold">
@@ -82,7 +87,10 @@ export function PasswordInputDialog({
 					<div className="self-stretch flex-1">
 						<FieldLabel txt={t('accounts.enterWalletPassword')}>
 							<PasswordInputField name="password" />
-							<ErrorMessage render={(error) => <Alert>{error}</Alert>} name="password" />
+							<ErrorMessage
+								render={(error) => <Alert>{error}</Alert>}
+								name="password"
+							/>
 						</FieldLabel>
 						<div className="text-center mt-4">
 							<Text variant="pBodySmall" color="steel-dark" weight="normal">

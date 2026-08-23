@@ -5,7 +5,11 @@ import {
 	zkLoginProviderDataMap,
 	type ZkLoginProvider,
 } from '_src/background/accounts/zklogin/providers';
-import { ampli, type ClickedSocialSignInButtonProperties } from '_src/shared/analytics/ampli';
+import {
+	ampli,
+	type ClickedSocialSignInButtonProperties,
+} from '_src/shared/analytics/ampli';
+import { useI18n } from '_app/i18n';
 import { cx } from 'class-variance-authority';
 import { useState } from 'react';
 
@@ -17,7 +21,6 @@ const zkLoginProviders = Object.entries(zkLoginProviderDataMap)
 	.map(([provider, { enabled, order }]) => ({
 		provider: provider as ZkLoginProvider,
 		enabled,
-		tooltip: !enabled ? 'Coming soon!' : undefined,
 		order,
 	}))
 	.sort((a, b) => a.order - b.order);
@@ -49,9 +52,9 @@ export function ZkLoginButtons({
 	sourceFlow,
 	forcedZkLoginProvider,
 }: ZkLoginButtonsProps) {
-	const [createInProgressProvider, setCreateInProgressProvider] = useState<ZkLoginProvider | null>(
-		null,
-	);
+	const { t } = useI18n();
+	const [createInProgressProvider, setCreateInProgressProvider] =
+		useState<ZkLoginProvider | null>(null);
 	const { data: accountsTotalByType, isPending } = useCountAccountsByType();
 	return (
 		<div
@@ -60,10 +63,16 @@ export function ZkLoginButtons({
 				'flex-row gap-2': layout === 'row',
 			})}
 		>
-			{zkLoginProviders.map(({ provider, enabled, tooltip }) => (
+			{zkLoginProviders.map(({ provider, enabled }) => (
 				<div key={provider} className="flex-1">
 					<SocialButton
-						title={accountsTotalByType?.zkLogin?.extra?.[provider] ? 'Already signed-in' : tooltip}
+						title={
+							accountsTotalByType?.zkLogin?.extra?.[provider]
+								? t('accounts.alreadySignedIn')
+								: !enabled
+									? t('common.comingSoon')
+									: undefined
+						}
 						provider={provider}
 						onClick={async () => {
 							ampli.clickedSocialSignInButton({
@@ -87,7 +96,10 @@ export function ZkLoginButtons({
 							!!accountsTotalByType?.zkLogin?.extra?.[provider] ||
 							!!forcedZkLoginProvider
 						}
-						loading={createInProgressProvider === provider || forcedZkLoginProvider === provider}
+						loading={
+							createInProgressProvider === provider ||
+							forcedZkLoginProvider === provider
+						}
 						showLabel={showLabel}
 					/>
 				</div>

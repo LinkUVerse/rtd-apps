@@ -15,7 +15,7 @@ const SelectTrigger = forwardRef<
 >(({ className, children, ...props }, ref) => (
 	<SelectPrimitive.Trigger
 		ref={ref}
-		className="flex transition items-center text-steel-dark hover:text-steel-darker active:text-steel-dark disabled:text-gray-60 border border-solid border-gray-45 hover:border-steel disabled:border-gray-45 shadow-sm rounded-lg bg-white px-4 py-3 gap-0.5 focus:outline-none cursor-pointer disabled:cursor-default group active:bg-hero/5 disabled:bg-white"
+		className="nova-input flex items-center justify-between gap-2 font-medium cursor-pointer disabled:cursor-default group"
 		{...props}
 	>
 		{children}
@@ -36,7 +36,7 @@ const SelectContent = forwardRef<
 			className="z-[99999] min-w-[112px] bg-transparent"
 			{...props}
 		>
-			<SelectPrimitive.Viewport className="bg-white p-2 border border-solid border-gray-45 rounded-lg shadow-sm">
+			<SelectPrimitive.Viewport className="nova-card p-1.5">
 				{children}
 			</SelectPrimitive.Viewport>
 		</SelectPrimitive.Content>
@@ -50,7 +50,7 @@ const SelectItem = forwardRef<
 >(({ className, children, ...props }, ref) => (
 	<SelectPrimitive.Item
 		ref={ref}
-		className="transition flex items-center text-steel-dark cursor-pointer p-2 outline-none rounded-md hover:text-steel-darker hover:bg-hero/5"
+		className="transition flex min-h-10 items-center text-steel-dark cursor-pointer px-2.5 py-2 outline-none rounded-lg hover:text-steel-darker hover:bg-rtd-lightest"
 		{...props}
 	>
 		<SelectPrimitive.ItemText>

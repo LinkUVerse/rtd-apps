@@ -18,8 +18,8 @@ export function GasSummary({ gasSummary }: { gasSummary?: GasSummaryType }) {
 	if (!gasSummary) return null;
 
 	return (
-		<div className="theme-card relative flex flex-col rounded-2xl shadow-card-soft">
-			<div className="bg-gray-40 rounded-t-2xl py-2.5 px-4">
+		<div className="nova-card relative flex flex-col">
+			<div className="bg-rtd-lightest rounded-t-[9px] py-2.5 px-4">
 				<Text color="steel-darker" variant="captionSmall" weight="semibold">
 					{t('transaction.gasFees')}
 				</Text>

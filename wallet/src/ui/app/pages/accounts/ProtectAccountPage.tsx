@@ -14,7 +14,10 @@ import Loading from '../../components/loading';
 import { useAccounts } from '../../hooks/useAccounts';
 import { autoLockDataToMinutes } from '../../hooks/useAutoLockMinutes';
 import { useAutoLockMinutesMutation } from '../../hooks/useAutoLockMinutesMutation';
-import { useCreateAccountsMutation, type CreateType } from '../../hooks/useCreateAccountMutation';
+import {
+	useCreateAccountsMutation,
+	type CreateType,
+} from '../../hooks/useCreateAccountMutation';
 import { Heading } from '../../shared/heading';
 
 const allowedAccountTypes: CreateType[] = [
@@ -28,7 +31,9 @@ const allowedAccountTypes: CreateType[] = [
 
 type AllowedAccountTypes = (typeof allowedAccountTypes)[number];
 
-function isAllowedAccountType(accountType: string): accountType is AllowedAccountTypes {
+function isAllowedAccountType(
+	accountType: string,
+): accountType is AllowedAccountTypes {
 	return allowedAccountTypes.includes(accountType as any);
 }
 
@@ -41,10 +46,14 @@ export function ProtectAccountPage() {
 	const { data: accounts } = useAccounts();
 	const createMutation = useCreateAccountsMutation();
 	const hasPasswordAccounts = useMemo(
-		() => accounts && accounts.some(({ isPasswordUnlockable }) => isPasswordUnlockable),
+		() =>
+			accounts &&
+			accounts.some(({ isPasswordUnlockable }) => isPasswordUnlockable),
 		[accounts],
 	);
-	const [showVerifyPasswordView, setShowVerifyPasswordView] = useState<boolean | null>(null);
+	const [showVerifyPasswordView, setShowVerifyPasswordView] = useState<
+		boolean | null
+	>(null);
 	useEffect(() => {
 		if (
 			typeof hasPasswordAccounts !== 'undefined' &&
@@ -60,7 +69,10 @@ export function ProtectAccountPage() {
 					type,
 					password,
 				});
-				if (type === 'new-mnemonic' && isMnemonicSerializedUiAccount(createdAccounts[0])) {
+				if (
+					type === 'new-mnemonic' &&
+					isMnemonicSerializedUiAccount(createdAccounts[0])
+				) {
 					navigate(`/accounts/backup/${createdAccounts[0].sourceID}`, {
 						replace: true,
 						state: {
@@ -82,13 +94,15 @@ export function ProtectAccountPage() {
 	}
 
 	return (
-		<div className="onboarding-surface rounded-20 flex h-screen max-h-popup-height min-h-popup-minimum w-popup-width flex-col items-center overflow-auto px-6 py-10 shadow-wallet-content">
+		<div className="onboarding-surface flex h-screen max-h-popup-height min-h-popup-minimum w-popup-width flex-col items-center overflow-auto rounded-[10px] px-6 py-8 shadow-wallet-content">
 			<Loading loading={showVerifyPasswordView === null}>
 				{showVerifyPasswordView ? (
 					<VerifyPasswordModal
 						open
 						onClose={() => navigate(-1)}
-						onVerify={(password) => createAccountCallback(password, accountType)}
+						onVerify={(password) =>
+							createAccountCallback(password, accountType)
+						}
 					/>
 				) : (
 					<>
@@ -105,7 +119,9 @@ export function ProtectAccountPage() {
 								cancelButtonText={t('common.back')}
 								submitButtonText={t('accounts.createWallet')}
 								onSubmit={async ({ password, autoLock }) => {
-									await autoLockMutation.mutateAsync({ minutes: autoLockDataToMinutes(autoLock) });
+									await autoLockMutation.mutateAsync({
+										minutes: autoLockDataToMinutes(autoLock),
+									});
 									await createAccountCallback(password.input, accountType);
 								}}
 							/>

@@ -8,21 +8,18 @@ import { ButtonOrLink, type ButtonOrLinkProps } from './utils/ButtonOrLink';
 
 const styles = cva(
 	[
-		'inline-block outline-none transition no-underline bg-white py-1 px-2',
-		'border border-solid rounded-20 cursor-pointer',
-		'truncate leading-tight uppercase text-captionSmall font-semibold',
-		'disabled:border-transparent disabled:text-gray-60',
+		'nova-pill outline-none truncate',
+		'disabled:cursor-default disabled:opacity-50',
 	],
 	{
 		variants: {
 			loading: {
-				true: 'bg-white border-gray-45 text-steel disabled:border-gray-45 disabled:text-steel',
+				true: 'opacity-70',
 				false: '',
 			},
 			dark: {
-				true: 'border-gray-60 text-steel-darker hover:border-steel-darker hover:text-steel-darker disabled:bg-gray-40 font-medium',
-				false:
-					'border-rtd-light text-hero-dark active:bg-gray-45 active:text-steel-darker active:border-gray-45 disabled:bg-white hover:bg-rtd-light focus:bg-rtd-light',
+				true: 'text-steel-darker',
+				false: 'text-hero-dark hover:bg-rtd-light focus:bg-rtd-light',
 			},
 		},
 		defaultVariants: {
@@ -32,7 +29,8 @@ const styles = cva(
 );
 
 export interface PillProps
-	extends Omit<VariantProps<typeof styles>, 'loading'>,
+	extends
+		Omit<VariantProps<typeof styles>, 'loading'>,
 		Omit<ButtonOrLinkProps, 'className'> {
 	before?: ReactNode;
 	after?: ReactNode;
@@ -44,7 +42,12 @@ export const Pill = forwardRef(
 		{ before, after, text, loading, dark, ...otherProps }: PillProps,
 		ref: Ref<HTMLAnchorElement | HTMLButtonElement>,
 	) => (
-		<ButtonOrLink className={styles({ loading, dark })} {...otherProps} loading={loading} ref={ref}>
+		<ButtonOrLink
+			className={styles({ loading, dark })}
+			{...otherProps}
+			loading={loading}
+			ref={ref}
+		>
 			{text}
 		</ButtonOrLink>
 	),

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { LargeButton } from '_app/shared/LargeButton';
+import { useI18n } from '_app/i18n';
 import { ampli } from '_src/shared/analytics/ampli';
 import {
 	DELEGATED_STAKES_QUERY_REFETCH_INTERVAL,
@@ -20,6 +21,7 @@ export function TokenIconLink({
 	accountAddress: string;
 	disabled: boolean;
 }) {
+	const { t } = useI18n();
 	const { data: delegatedStake, isPending } = useGetDelegatedStake({
 		address: accountAddress,
 		staleTime: DELEGATED_STAKES_QUERY_STALE_TIME,
@@ -30,12 +32,19 @@ export function TokenIconLink({
 	const totalActivePendingStake = useMemo(() => {
 		if (!delegatedStake) return 0n;
 		return delegatedStake.reduce(
-			(acc, curr) => curr.stakes.reduce((total, { principal }) => total + BigInt(principal), acc),
+			(acc, curr) =>
+				curr.stakes.reduce(
+					(total, { principal }) => total + BigInt(principal),
+					acc,
+				),
 			0n,
 		);
 	}, [delegatedStake]);
 
-	const [formatted, symbol, queryResult] = useFormatCoin(totalActivePendingStake, RTD_TYPE_ARG);
+	const [formatted, symbol, queryResult] = useFormatCoin(
+		totalActivePendingStake,
+		RTD_TYPE_ARG,
+	);
 
 	return (
 		<LargeButton
@@ -55,7 +64,9 @@ export function TokenIconLink({
 		>
 			<div className="flex flex-col">
 				<Text variant="pBody" weight="semibold">
-					{totalActivePendingStake ? 'Currently Staked' : 'Stake and Earn RTD'}
+					{totalActivePendingStake
+						? t('staking.currentlyStaked')
+						: t('staking.stakeAndEarn')}
 				</Text>
 
 				{!!totalActivePendingStake && (

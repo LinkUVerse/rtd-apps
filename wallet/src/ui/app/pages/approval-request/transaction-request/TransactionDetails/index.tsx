@@ -17,15 +17,22 @@ interface Props {
 
 const Tab = (props: TabProps<'div'>) => (
 	<HeadlessTab
-		className="border-0 border-b border-transparent ui-selected:border-hero text-steel-darker p-0 pb-2 -mb-px border-solid ui-selected:text-hero-dark text-body font-semibold bg-transparent outline-none cursor-pointer"
+		className="min-h-11 whitespace-nowrap border-0 border-b border-transparent ui-selected:border-hero text-steel-darker px-1 py-2 -mb-px border-solid ui-selected:text-hero-dark text-body font-semibold bg-transparent outline-none cursor-pointer focus-visible:ring-2 focus-visible:ring-hero/40"
 		{...props}
 	/>
 );
 
 export function TransactionDetails({ sender, transaction }: Props) {
 	const { t } = useI18n();
-	const { data: transactionData, isPending, isError } = useTransactionData(sender, transaction);
-	if (transactionData?.commands.length === 0 && transactionData.inputs.length === 0) {
+	const {
+		data: transactionData,
+		isPending,
+		isError,
+	} = useTransactionData(sender, transaction);
+	if (
+		transactionData?.commands.length === 0 &&
+		transactionData.inputs.length === 0
+	) {
 		return null;
 	}
 	return (
@@ -38,8 +45,12 @@ export function TransactionDetails({ sender, transaction }: Props) {
 				<div>
 					<HeadlessTab.Group>
 						<HeadlessTab.List className="flex gap-6 border-0 border-b border-solid border-gray-45 mb-6">
-							{!!transactionData.commands.length && <Tab>{t('approval.commands')}</Tab>}
-							{!!transactionData.inputs.length && <Tab>{t('approval.inputs')}</Tab>}
+							{!!transactionData.commands.length && (
+								<Tab>{t('approval.commands')}</Tab>
+							)}
+							{!!transactionData.inputs.length && (
+								<Tab>{t('approval.inputs')}</Tab>
+							)}
 						</HeadlessTab.List>
 						<HeadlessTab.Panels>
 							{!!transactionData.commands.length && (

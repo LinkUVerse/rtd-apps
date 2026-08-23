@@ -2,21 +2,29 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Button } from '_app/shared/ButtonUI';
-import { useI18n } from '_app/i18n';
+import {
+	useI18n,
+	type Locale,
+	type MessageKey,
+	type MessageValues,
+} from '_app/i18n';
 import { ToS_LINK } from '_src/shared/constants';
 import { useZodForm } from 'rtd-apps-core';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { type SubmitHandler } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import zxcvbn from 'zxcvbn';
 
-import { parseAutoLock, useAutoLockMinutes } from '../../hooks/useAutoLockMinutes';
+import {
+	parseAutoLock,
+	useAutoLockMinutes,
+} from '../../hooks/useAutoLockMinutes';
 import { CheckboxField } from '../../shared/forms/CheckboxField';
 import { Form } from '../../shared/forms/Form';
 import { TextField } from '../../shared/forms/TextField';
 import { Link } from '../../shared/Link';
-import { AutoLockSelector, zodSchema } from './AutoLockSelector';
+import { AutoLockSelector, createAutoLockSchema } from './AutoLockSelector';
 
 function addDot(str: string | undefined) {
 	if (str && !str.endsWith('.')) {
@@ -25,40 +33,50 @@ function addDot(str: string | undefined) {
 	return str;
 }
 
-const formSchema = z
-	.object({
-		password: z
-			.object({
-				input: z
-					.string()
-					.min(1, 'Required')
-					.superRefine((val, ctx) => {
-						const {
-							score,
-							feedback: { warning, suggestions },
-						} = zxcvbn(val);
-						if (score <= 2) {
-							ctx.addIssue({
-								code: z.ZodIssueCode.custom,
-								message: `${addDot(warning) || 'Password is not strong enough.'}${
-									suggestions ? ` ${suggestions.join(' ')}` : ''
-								}`,
-							});
-						}
-					}),
-				confirmation: z.string().min(1, 'Required'),
-			})
-			.refine(({ input, confirmation }) => input && confirmation && input === confirmation, {
-				path: ['confirmation'],
-				message: "Passwords don't match",
-			}),
-		acceptedTos: z.literal(true).refine((val) => val === true, {
-			message: 'Please accept Terms of Service to continue',
-		}),
-	})
-	.merge(zodSchema) as any;
+type Translate = (key: MessageKey, values?: MessageValues) => string;
 
-export type FormValues = z.infer<typeof formSchema>;
+const createFormSchema = (t: Translate, locale: Locale) =>
+	z
+		.object({
+			password: z
+				.object({
+					input: z
+						.string()
+						.min(1, t('accounts.required'))
+						.superRefine((val, ctx) => {
+							const {
+								score,
+								feedback: { warning, suggestions },
+							} = zxcvbn(val);
+							if (score <= 2) {
+								ctx.addIssue({
+									code: z.ZodIssueCode.custom,
+									message:
+										locale === 'zh-CN'
+											? t('accounts.passwordWeak')
+											: `${addDot(warning) || t('accounts.passwordWeak')}${
+													suggestions ? ` ${suggestions.join(' ')}` : ''
+												}`,
+								});
+							}
+						}),
+					confirmation: z.string().min(1, t('accounts.required')),
+				})
+				.refine(
+					({ input, confirmation }) =>
+						input && confirmation && input === confirmation,
+					{
+						path: ['confirmation'],
+						message: t('accounts.passwordMismatch'),
+					},
+				),
+			acceptedTos: z.literal(true).refine((val) => val === true, {
+				message: t('accounts.acceptTerms'),
+			}),
+		})
+		.merge(createAutoLockSchema(t)) as any;
+
+export type FormValues = z.infer<ReturnType<typeof createFormSchema>>;
 
 type ProtectAccountFormProps = {
 	submitButtonText: string;
@@ -73,7 +91,8 @@ export function ProtectAccountForm({
 	onSubmit,
 	displayToS,
 }: ProtectAccountFormProps) {
-	const { t } = useI18n();
+	const { locale, t } = useI18n();
+	const formSchema = useMemo(() => createFormSchema(t, locale), [locale, t]);
 	const autoLock = useAutoLockMinutes();
 	const form = useZodForm({
 		mode: 'all',
@@ -94,14 +113,22 @@ export function ProtectAccountForm({
 	const navigate = useNavigate();
 	useEffect(() => {
 		const { unsubscribe } = watch((_, { name, type }) => {
-			if (name === 'password.input' && type === 'change' && getValues('password.confirmation')) {
+			if (
+				name === 'password.input' &&
+				type === 'change' &&
+				getValues('password.confirmation')
+			) {
 				trigger('password.confirmation');
 			}
 		});
 		return unsubscribe;
 	}, [watch, trigger, getValues]);
 	return (
-		<Form className="flex flex-col gap-6 h-full" form={form} onSubmit={onSubmit}>
+		<Form
+			className="flex flex-col gap-6 h-full"
+			form={form}
+			onSubmit={onSubmit}
+		>
 			<TextField
 				autoFocus
 				type="password"
@@ -120,7 +147,7 @@ export function ProtectAccountForm({
 					<CheckboxField
 						name="acceptedTos"
 						label={
-							<div className="text-bodySmall whitespace-nowrap">
+							<div className="text-bodySmall leading-5">
 								{t('accounts.termsAgreement')}{' '}
 								<span className="inline-block">
 									<Link

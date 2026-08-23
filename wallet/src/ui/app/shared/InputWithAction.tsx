@@ -15,10 +15,8 @@ import { Pill, type PillProps } from './Pill';
 
 const styles = cva(
 	[
-		'transition flex flex-row items-center p-3 bg-white text-body font-semibold',
-		'placeholder:text-gray-60 w-full pr-[calc(20%_+_24px)] shadow-button',
-		'border-solid border border-gray-45 text-steel-darker hover:border-steel focus:border-steel',
-		'disabled:border-gray-40 disabled:text-gray-55',
+		'nova-input flex flex-row items-center font-semibold',
+		'w-full pr-[calc(20%_+_24px)]',
 	],
 	{
 		variants: {
@@ -124,10 +122,8 @@ export function InputWithAction({
 
 const inputWithActionZodFormStyles = cva(
 	[
-		'transition flex flex-row items-center px-3 py-2 text-body font-semibold overflow-hidden',
-		'placeholder:text-gray-60 w-full pr-[calc(20%_+_24px)]',
-		'border-solid border text-steel-darker',
-		'relative',
+		'nova-input flex flex-row items-center overflow-hidden font-semibold',
+		'w-full pr-[calc(20%_+_24px)] relative',
 	],
 	{
 		variants: {
@@ -140,8 +136,8 @@ const inputWithActionZodFormStyles = cva(
 				false: '',
 			},
 			disabled: {
-				true: 'bg-gray-40',
-				false: 'bg-white hover:border-steel focus:border-steel',
+				true: 'opacity-50',
+				false: '',
 			},
 		},
 		defaultVariants: {
@@ -152,18 +148,20 @@ const inputWithActionZodFormStyles = cva(
 			{
 				noBorder: false,
 				disabled: true,
-				class: 'border-hero-darkest/10',
+				class: 'border-transparent',
 			},
 			{
 				noBorder: false,
 				disabled: false,
-				class: 'border-steel',
+				class: '',
 			},
 		],
 	},
 );
 
-type InputWithActionZodFormProps = VariantProps<typeof inputWithActionZodFormStyles> &
+type InputWithActionZodFormProps = VariantProps<
+	typeof inputWithActionZodFormStyles
+> &
 	(Omit<ComponentProps<'input'>, 'className' | 'type'> & {
 		type?: 'text' | 'number' | 'password' | 'email';
 	}) &
@@ -178,7 +176,10 @@ type InputWithActionZodFormProps = VariantProps<typeof inputWithActionZodFormSty
 		actionDisabled?: boolean;
 	};
 
-export const InputWithActionButton = forwardRef<HTMLInputElement, InputWithActionZodFormProps>(
+export const InputWithActionButton = forwardRef<
+	HTMLInputElement,
+	InputWithActionZodFormProps
+>(
 	(
 		{
 			actionText,
@@ -210,7 +211,13 @@ export const InputWithActionButton = forwardRef<HTMLInputElement, InputWithActio
 
 		return (
 			<>
-				<div className={inputWithActionZodFormStyles({ rounded, noBorder, disabled })}>
+				<div
+					className={inputWithActionZodFormStyles({
+						rounded,
+						noBorder,
+						disabled,
+					})}
+				>
 					{prefixContent}
 					<input
 						{...props}
@@ -218,7 +225,7 @@ export const InputWithActionButton = forwardRef<HTMLInputElement, InputWithActio
 						autoFocus
 						type={type}
 						className={clsx(
-							'bg-transparent z-10 border-none p-0 text-heading5 text-steel-darker font-semibold h-6 caret-hero',
+							'bg-transparent z-10 min-w-0 flex-1 border-none p-0 text-heading5 text-steel-darker font-semibold h-6 caret-hero',
 							loading && 'text-transparent',
 						)}
 						disabled={disabled}
@@ -244,13 +251,17 @@ export const InputWithActionButton = forwardRef<HTMLInputElement, InputWithActio
 							)}
 						>
 							{prefixContent}
-							<span className="invisible max-w-full text-heading5">{value}</span>
-							<span className="ml-2 font-medium text-body text-steel">{suffix}</span>
+							<span className="invisible max-w-full text-heading5">
+								{value}
+							</span>
+							<span className="ml-2 font-medium text-body text-steel">
+								{suffix}
+							</span>
 						</div>
 					)}
 
 					{(onActionClicked || info) && (
-						<div className="z-10 flex gap-2 items-center justify-end absolute mx-2 right-0 overflow-hidden bg-white">
+						<div className="z-10 flex gap-2 items-center justify-end absolute mx-2 right-0 overflow-hidden theme-surface">
 							{info}
 							{onActionClicked && (
 								<Pill

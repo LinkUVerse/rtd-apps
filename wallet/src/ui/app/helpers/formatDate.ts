@@ -5,7 +5,11 @@
 // Wed Aug 05
 //
 type Show = 'year' | 'month' | 'day' | 'hour' | 'minute' | 'second' | 'weekday';
-export default function formatDate(timeStamp: number, show: Show[]): string {
+export default function formatDate(
+	timeStamp: number,
+	show: Show[],
+	locale = 'zh-CN',
+): string {
 	const date = new Date(timeStamp);
 	if (!(date instanceof Date) || !show.length) return '';
 
@@ -27,5 +31,5 @@ export default function formatDate(timeStamp: number, show: Show[]): string {
 		return responseObj;
 	}, {});
 
-	return new Intl.DateTimeFormat('en-US', formatOptions).format(date);
+	return new Intl.DateTimeFormat(locale, formatOptions).format(date);
 }

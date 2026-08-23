@@ -28,13 +28,13 @@ function PageTitle({ title = '', back, after }: PageTitleProps) {
 			: undefined;
 	return (
 		<div className="flex items-center relative gap-5 w-full">
-			{after && !back ? <div className="basis-8" /> : null}
+			{after && !back ? <div className="basis-10" /> : null}
 			{back ? (
-				<div className="flex h-8 items-center">
+				<div className="flex h-10 items-center">
 					<Button
 						to={typeof back === 'string' ? back : undefined}
 						onClick={backOnClick}
-						size="xs"
+						size="icon"
 						before={<ArrowLeft16 className="text-base leading-none" />}
 						variant="plain"
 					/>
@@ -45,7 +45,7 @@ function PageTitle({ title = '', back, after }: PageTitleProps) {
 					{title}
 				</Heading>
 			</div>
-			{back ? <div className="basis-8">{after}</div> : after}
+			{back ? <div className="basis-10">{after}</div> : after}
 		</div>
 	);
 }

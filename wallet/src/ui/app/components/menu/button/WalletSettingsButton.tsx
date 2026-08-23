@@ -3,7 +3,10 @@
 
 import { ButtonOrLink } from '_src/ui/app/shared/utils/ButtonOrLink';
 import { useI18n } from '_app/i18n';
-import { HamburgerOpen24 as HamburgerOpenIcon, Settings24 as SettingsIcon } from 'rtd-apps-icons';
+import {
+	HamburgerOpen24 as HamburgerOpenIcon,
+	Settings24 as SettingsIcon,
+} from 'rtd-apps-icons';
 import { cx } from 'class-variance-authority';
 
 import { useMenuIsOpen, useNextMenuUrl } from '../hooks';
@@ -17,7 +20,7 @@ export function WalletSettingsButton() {
 	return (
 		<ButtonOrLink
 			className={cx(
-				'appearance-none bg-transparent border-none cursor-pointer hover:text-hero-dark ml-auto flex items-center justify-center',
+				'appearance-none min-h-11 min-w-11 rounded-[10px] bg-transparent border-none cursor-pointer hover:bg-white/10 hover:text-hero-dark ml-auto flex items-center justify-center',
 				{ 'text-steel': !isOpen, 'text-gray-90': isOpen },
 			)}
 			aria-label={isOpen ? t('settings.close') : t('settings.open')}

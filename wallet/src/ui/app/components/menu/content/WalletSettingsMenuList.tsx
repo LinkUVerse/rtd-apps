@@ -3,11 +3,14 @@
 
 import { API_ENV_TO_INFO } from '_app/ApiProvider';
 import { useI18n, type MessageKey } from '_app/i18n';
-import { useTheme } from '_app/theme';
+import { useTheme, type WalletTheme } from '_app/theme';
 import { useNextMenuUrl } from '_components/menu/hooks';
 import { useAppSelector } from '_hooks';
 import { DISCORD_LINK, FAQ_LINK, ToS_LINK } from '_src/shared/constants';
-import { parseAutoLock, useAutoLockMinutes } from '_src/ui/app/hooks/useAutoLockMinutes';
+import {
+	parseAutoLock,
+	useAutoLockMinutes,
+} from '_src/ui/app/hooks/useAutoLockMinutes';
 import FaucetRequestButton from '_src/ui/app/shared/faucet/FaucetRequestButton';
 import { Link } from '_src/ui/app/shared/Link';
 import { Text } from '_src/ui/app/shared/text';
@@ -25,6 +28,13 @@ import Browser from 'webextension-polyfill';
 import Loading from '../../loading';
 import { MenuLayout } from './MenuLayout';
 import MenuListItem from './MenuListItem';
+
+const themeLabelKeys: Record<WalletTheme, MessageKey> = {
+	passion: 'theme.passion',
+	calm: 'theme.calm',
+	professional: 'theme.professional',
+	'red-thread': 'theme.redThread',
+};
 
 function MenuList() {
 	const { locale, t } = useI18n();
@@ -49,6 +59,7 @@ function MenuList() {
 			count: timer,
 		});
 	})();
+	const themeLabelKey = themeLabelKeys[theme];
 
 	return (
 		<MenuLayout title={t('settings.title')}>
@@ -74,16 +85,28 @@ function MenuList() {
 					to={themeUrl}
 					icon={<span className="settings-theme-icon" aria-hidden="true" />}
 					title={t('settings.appearance')}
-					subtitle={t(theme === 'passion' ? 'theme.passion' : 'theme.calm')}
+					subtitle={t(themeLabelKey)}
 				/>
 				<MenuListItem
 					to={languageUrl}
 					icon={<Globe16 className="h-6 w-6" />}
 					title={t('settings.language')}
-					subtitle={t(locale === 'en' ? 'language.englishNative' : 'language.chineseNative')}
+					subtitle={t(
+						locale === 'en'
+							? 'language.englishNative'
+							: 'language.chineseNative',
+					)}
 				/>
-				<MenuListItem icon={<Clipboard24 />} title={t('settings.faq')} href={FAQ_LINK} />
-				<MenuListItem icon={<SvgAccount24 />} title={t('settings.support')} href={DISCORD_LINK} />
+				<MenuListItem
+					icon={<Clipboard24 />}
+					title={t('settings.faq')}
+					href={FAQ_LINK}
+				/>
+				<MenuListItem
+					icon={<SvgAccount24 />}
+					title={t('settings.support')}
+					href={DISCORD_LINK}
+				/>
 				<MenuListItem
 					icon={<More24 className="text-steel-darker" />}
 					title={t('settings.moreOptions')}

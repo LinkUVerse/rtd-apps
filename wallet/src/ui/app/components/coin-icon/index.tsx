@@ -18,19 +18,19 @@ const imageStyle = cva(['rounded-full flex'], {
 			xl: 'md:w-31.5 md:h-31.5 w-16 h-16 ',
 		},
 		fill: {
-			rtd: 'bg-rtd',
-			rtdPrimary2023: 'bg-rtd-primaryBlue2023',
+			rtd: 'bg-rtd/10 text-rtd',
+			rtdPrimary2023: 'bg-rtd-primaryBlue2023 text-white',
 		},
 	},
 	defaultVariants: {
 		size: 'md',
-		fill: 'rtdPrimary2023',
+		fill: 'rtd',
 	},
 });
 
 function RtdCoin() {
 	return (
-		<Rtd className="flex items-center w-full h-full justify-center text-white p-1.5 text-body rounded-full" />
+		<Rtd className="flex items-center w-full h-full justify-center p-1.5 text-body rounded-full" />
 	);
 }
 

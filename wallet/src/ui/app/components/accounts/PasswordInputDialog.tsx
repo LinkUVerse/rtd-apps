@@ -24,10 +24,6 @@ import { Form } from '../../shared/forms/Form';
 import FormField from '../../shared/forms/FormField';
 import { Link } from '../../shared/Link';
 
-const formSchema = z.object({
-	password: z.string().min(1, 'Required'),
-}) as any;
-
 export type PasswordModalDialogProps = {
 	onClose: () => void;
 	open: boolean;
@@ -52,6 +48,9 @@ export function PasswordModalDialog({
 	cancelText,
 }: PasswordModalDialogProps) {
 	const { t } = useI18n();
+	const formSchema = z.object({
+		password: z.string().min(1, t('validation.required')),
+	}) as any;
 	const form = useZodForm({
 		mode: 'all',
 		schema: formSchema,
@@ -112,7 +111,12 @@ export function PasswordModalDialog({
 				<DialogFooter>
 					<div className="flex flex-col gap-3">
 						<div className="flex gap-2.5">
-							<Button variant="outline" size="tall" text={cancelText} onClick={onClose} />
+							<Button
+								variant="outline"
+								size="tall"
+								text={cancelText}
+								onClick={onClose}
+							/>
 							<Button
 								type="submit"
 								form={formID}

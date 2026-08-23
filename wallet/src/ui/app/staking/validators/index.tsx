@@ -4,6 +4,7 @@
 import Alert from '_components/alert';
 import Loading from '_components/loading';
 import Overlay from '_components/overlay';
+import { useI18n } from '_app/i18n';
 import {
 	DELEGATED_STAKES_QUERY_REFETCH_INTERVAL,
 	DELEGATED_STAKES_QUERY_STALE_TIME,
@@ -16,6 +17,7 @@ import { SelectValidatorCard } from './SelectValidatorCard';
 import { ValidatorsCard } from './ValidatorsCard';
 
 export function Validators() {
+	const { t } = useI18n();
 	const accountAddress = useActiveAddress();
 	const {
 		data: stakedValidators,
@@ -30,10 +32,16 @@ export function Validators() {
 
 	const navigate = useNavigate();
 
-	const pageTitle = stakedValidators?.length ? 'Stake & Earn RTD' : 'Select a Validator';
+	const pageTitle = stakedValidators?.length
+		? t('staking.stakeAndEarnTitle')
+		: t('staking.selectValidatorTitle');
 
 	return (
-		<Overlay showModal title={isPending ? 'Loading' : pageTitle} closeOverlay={() => navigate('/')}>
+		<Overlay
+			showModal
+			title={isPending ? t('common.loading') : pageTitle}
+			closeOverlay={() => navigate('/')}
+		>
 			<div className="w-full h-full flex flex-col flex-nowrap">
 				<Loading loading={isPending}>
 					{isError ? (
@@ -44,7 +52,11 @@ export function Validators() {
 						</div>
 					) : null}
 
-					{stakedValidators?.length ? <ValidatorsCard /> : <SelectValidatorCard />}
+					{stakedValidators?.length ? (
+						<ValidatorsCard />
+					) : (
+						<SelectValidatorCard />
+					)}
 				</Loading>
 			</div>
 		</Overlay>

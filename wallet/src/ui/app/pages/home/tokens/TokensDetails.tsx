@@ -11,7 +11,11 @@ import Alert from '_components/alert';
 import { CoinIcon } from '_components/coin-icon';
 import Loading from '_components/loading';
 import { filterAndSortTokenBalances } from '_helpers';
-import { useAppSelector, useCoinsReFetchingConfig, useSortedCoinsByCategories } from '_hooks';
+import {
+	useAppSelector,
+	useCoinsReFetchingConfig,
+	useSortedCoinsByCategories,
+} from '_hooks';
 import { UsdcPromoBanner } from '_pages/home/usdc-promo/UsdcPromoBanner';
 import {
 	DELEGATED_STAKES_QUERY_REFETCH_INTERVAL,
@@ -39,7 +43,11 @@ import {
 import { useRtdClientQuery } from 'rtd-dapp-kit';
 import { Info12, Pin16, Unpin16 } from 'rtd-apps-icons';
 import { type CoinBalance as CoinBalanceType } from 'rtd-typescript/client';
-import { formatAddress, parseStructTag, RTD_TYPE_ARG } from 'rtd-typescript/utils';
+import {
+	formatAddress,
+	parseStructTag,
+	RTD_TYPE_ARG,
+} from 'rtd-typescript/utils';
 import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import { useEffect, useState, type ReactNode } from 'react';
@@ -56,7 +64,13 @@ type TokenDetailsProps = {
 	coinType?: string;
 };
 
-function PinButton({ unpin, onClick }: { unpin?: boolean; onClick: () => void }) {
+function PinButton({
+	unpin,
+	onClick,
+}: {
+	unpin?: boolean;
+	onClick: () => void;
+}) {
 	const { t } = useI18n();
 	return (
 		<button
@@ -109,13 +123,19 @@ export function TokenRow({
 	const { locale, t } = useI18n();
 	const coinType = coinBalance.coinType;
 	const balance = BigInt(coinBalance.totalBalance);
-	const [formatted, symbol, { data: coinMeta }] = useFormatCoin(balance, coinType);
+	const [formatted, symbol, { data: coinMeta }] = useFormatCoin(
+		balance,
+		coinType,
+	);
 	const Tag = onClick ? 'button' : 'div';
 	const params = new URLSearchParams({
 		type: coinBalance.coinType,
 	});
 
-	const balanceInUsd = useBalanceInUSD(coinBalance.coinType, coinBalance.totalBalance);
+	const balanceInUsd = useBalanceInUSD(
+		coinBalance.coinType,
+		coinBalance.totalBalance,
+	);
 
 	const coinMetadataOverrides = useCoinMetadataOverrides();
 	return (
@@ -130,7 +150,9 @@ export function TokenRow({
 				<CoinIcon coinType={coinType} size="md" />
 				<div className="flex flex-col gap-1 items-start">
 					<Text variant="body" color="gray-90" weight="semibold" truncate>
-						{coinMetadataOverrides[coinBalance.coinType]?.name || coinMeta?.name || symbol}
+						{coinMetadataOverrides[coinBalance.coinType]?.name ||
+							coinMeta?.name ||
+							symbol}
 					</Text>
 
 					{renderActions && (
@@ -185,7 +207,12 @@ export function TokenRow({
 
 			<div className="ml-auto flex flex-col items-end gap-1">
 				{balance > 0n && (
-					<Text variant="body" color="gray-90" weight="medium" className="text-end">
+					<Text
+						variant="body"
+						color="gray-90"
+						weight="medium"
+						className="text-end"
+					>
 						{formatted} {symbol}
 					</Text>
 				)}
@@ -218,7 +245,8 @@ export function MyTokens({
 
 	const [_, { pinCoinType, unpinCoinType }] = usePinnedCoinTypes();
 
-	const { recognized, pinned, unrecognized } = useSortedCoinsByCategories(coinBalances);
+	const { recognized, pinned, unrecognized } =
+		useSortedCoinsByCategories(coinBalances);
 
 	// Avoid perpetual loading state when fetching and retry keeps failing; add isFetched check.
 	const isFirstTimeLoading = isLoading && !isFetched;
@@ -229,7 +257,11 @@ export function MyTokens({
 				<TokenList title={t('tokens.myCoins')} defaultOpen>
 					{recognized.map((coinBalance) =>
 						isDefiWalletEnabled ? (
-							<TokenRow renderActions key={coinBalance.coinType} coinBalance={coinBalance} />
+							<TokenRow
+								renderActions
+								key={coinBalance.coinType}
+								coinBalance={coinBalance}
+							/>
 						) : (
 							<TokenLink key={coinBalance.coinType} coinBalance={coinBalance} />
 						),
@@ -307,7 +339,8 @@ function getFallbackSymbol(coinType: string) {
 function TokenDetails({ coinType }: TokenDetailsProps) {
 	const { t } = useI18n();
 	const isDefiWalletEnabled = useIsWalletDefiEnabled();
-	const [interstitialDismissed, setInterstitialDismissed] = useState<boolean>(false);
+	const [interstitialDismissed, setInterstitialDismissed] =
+		useState<boolean>(false);
 	const activeCoinType = coinType || RTD_TYPE_ARG;
 	const activeAccount = useActiveAccount();
 	const activeAccountAddress = activeAccount?.address;
@@ -371,7 +404,9 @@ function TokenDetails({ coinType }: TokenDetailsProps) {
 	const [formatted] = useFormatCoin(tokenBalance, activeCoinType);
 
 	const { data: coinMetadata } = useCoinMetadata(activeCoinType);
-	const coinSymbol = coinMetadata ? coinMetadata.symbol : getFallbackSymbol(activeCoinType);
+	const coinSymbol = coinMetadata
+		? coinMetadata.symbol
+		: getFallbackSymbol(activeCoinType);
 
 	// Avoid perpetual loading state when fetching and retry keeps failing add isFetched check
 	const isFirstTimeLoading = isPending && !isFetched;
@@ -397,7 +432,9 @@ function TokenDetails({ coinType }: TokenDetailsProps) {
 			/>
 		);
 	}
-	const accountHasRtd = coinBalances?.some(({ coinType }) => coinType === RTD_TYPE_ARG);
+	const accountHasRtd = coinBalances?.some(
+		({ coinType }) => coinType === RTD_TYPE_ARG,
+	);
 
 	if (!activeAccountAddress) {
 		return null;
@@ -428,7 +465,11 @@ function TokenDetails({ coinType }: TokenDetailsProps) {
 
 					<div className="flex flex-col w-full">
 						<PortfolioName
-							name={activeAccount.nickname ?? domainName ?? formatAddress(activeAccountAddress)}
+							name={
+								activeAccount.nickname ??
+								domainName ??
+								formatAddress(activeAccountAddress)
+							}
 						/>
 						{activeAccount.isLocked ? null : (
 							<>
@@ -436,7 +477,9 @@ function TokenDetails({ coinType }: TokenDetailsProps) {
 									data-testid="coin-balance"
 									className={clsx(
 										'rounded-2xl py-5 px-4 flex flex-col w-full gap-3 items-center mt-4',
-										isDefiWalletEnabled ? 'bg-gradients-graph-cards' : 'bg-hero/5',
+										isDefiWalletEnabled
+											? 'bg-gradients-graph-cards'
+											: 'bg-hero/5',
 									)}
 								>
 									<div className="flex flex-col gap-1 items-center">
@@ -446,7 +489,11 @@ function TokenDetails({ coinType }: TokenDetailsProps) {
 									{!accountHasRtd ? (
 										<div className="flex flex-col gap-5">
 											<div className="flex flex-col flex-nowrap justify-center items-center text-center px-2.5">
-												<Text variant="pBodySmall" color="gray-80" weight="normal">
+												<Text
+													variant="pBodySmall"
+													color="gray-80"
+													weight="normal"
+												>
 													{isMainnet ? t('tokens.buyRtd') : t('tokens.needRtd')}
 												</Text>
 											</div>
@@ -460,17 +507,22 @@ function TokenDetails({ coinType }: TokenDetailsProps) {
 											</div>
 										</Alert>
 									) : null}
-									<div className="grid grid-cols-3 gap-3 w-full">
+									<div className="grid w-full auto-rows-fr grid-cols-3 gap-2 [&>*]:min-w-0">
 										{isMainnet ? (
 											<LargeButton
 												spacing="sm"
 												className={
-													!accountHasRtd && isMainnet ? 'col-span-3 !bg-hero-dark !text-white' : ''
+													!accountHasRtd && isMainnet
+														? 'col-span-3 !bg-hero-dark !text-white'
+														: ''
 												}
 												primary={!accountHasRtd}
 												center
 												to="/onramp"
-												disabled={(coinType && coinType !== RTD_TYPE_ARG) || !providers?.length}
+												disabled={
+													(coinType && coinType !== RTD_TYPE_ARG) ||
+													!providers?.length
+												}
 											>
 												{t('tokens.buy')}
 											</LargeButton>

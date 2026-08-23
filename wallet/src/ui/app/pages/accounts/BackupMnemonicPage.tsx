@@ -10,7 +10,12 @@ import Loading from '_components/loading';
 import { HideShowDisplayBox } from '_src/ui/app/components/HideShowDisplayBox';
 import { ArrowLeft16, Check12 } from 'rtd-apps-icons';
 import { useEffect, useMemo, useState } from 'react';
-import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom';
+import {
+	Navigate,
+	useLocation,
+	useNavigate,
+	useParams,
+} from 'react-router-dom';
 
 import { VerifyPasswordModal } from '../../components/accounts/VerifyPasswordModal';
 import { useAccountSources } from '../../hooks/useAccountSources';
@@ -74,7 +79,11 @@ export function BackupMnemonicPage() {
 			) : (
 				<CardLayout
 					icon={isOnboardingFlow ? 'success' : undefined}
-					title={isOnboardingFlow ? t('accounts.walletCreated') : t('accounts.backupRecovery')}
+					title={
+						isOnboardingFlow
+							? t('accounts.walletCreated')
+							: t('accounts.backupRecovery')
+					}
 				>
 					<div className="flex flex-col flex-nowrap flex-grow h-full w-full">
 						<div className="flex flex-col flex-nowrap flex-grow mb-5">
@@ -90,10 +99,14 @@ export function BackupMnemonicPage() {
 							</div>
 							<Loading loading={passphraseMutation.isPending}>
 								{passphraseMutation.data ? (
-									<HideShowDisplayBox value={passphraseMutation.data} hideCopy />
+									<HideShowDisplayBox
+										value={passphraseMutation.data}
+										hideCopy
+									/>
 								) : (
 									<Alert>
-										{(passphraseMutation.error as Error)?.message || t('common.somethingWrong')}
+										{(passphraseMutation.error as Error)?.message ||
+											t('common.somethingWrong')}
 									</Alert>
 								)}
 							</Loading>
@@ -109,22 +122,28 @@ export function BackupMnemonicPage() {
 							</div>
 							<div className="flex-1" />
 							{isOnboardingFlow ? (
-								<div className="w-full text-left flex mt-5 mb-">
-									<label className="flex items-center justify-center h-5 mb-0 mr-5 text-rtd-dark gap-1.25 relative cursor-pointer">
+								<div className="mt-5 flex w-full text-left">
+									<label className="flex min-h-11 w-full cursor-pointer items-center gap-2.5 text-rtd-dark">
 										<input
 											type="checkbox"
 											name="agree"
 											id="agree"
-											className="peer/agree invisible ml-2"
+											className="peer/agree sr-only"
 											onChange={() => setPasswordCopied(!passwordCopied)}
 										/>
-										<span className="absolute top-0 left-0 h-5 w-5 bg-white peer-checked/agree:bg-success peer-checked/agree:shadow-none border-gray-50 border rounded shadow-button flex justify-center items-center">
+										<span className="theme-input flex h-5 w-5 shrink-0 items-center justify-center rounded border border-gray-50 peer-checked/agree:border-success peer-checked/agree:bg-success">
 											<Check12 className="text-white text-body font-semibold" />
 										</span>
 
-										<Text variant="bodySmall" color="steel-dark" weight="normal">
-											{t('accounts.recoverySaved')}
-										</Text>
+										<span className="min-w-0 flex-1 leading-5">
+											<Text
+												variant="bodySmall"
+												color="steel-dark"
+												weight="normal"
+											>
+												{t('accounts.recoverySaved')}
+											</Text>
+										</span>
 									</label>
 								</div>
 							) : null}
@@ -136,7 +155,9 @@ export function BackupMnemonicPage() {
 							disabled={!passwordCopied && isOnboardingFlow}
 							to="/"
 							text={t('accounts.openWallet')}
-							after={<ArrowLeft16 className="text-pBodySmall font-normal rotate-135" />}
+							after={
+								<ArrowLeft16 className="text-pBodySmall font-normal rotate-135" />
+							}
 						/>
 					</div>
 				</CardLayout>

@@ -2,7 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { type SerializedUIAccount } from '_src/background/accounts/Account';
-import React, { createContext, useCallback, useContext, useState, type ReactNode } from 'react';
+import { useI18n } from '_app/i18n';
+import React, {
+	createContext,
+	useCallback,
+	useContext,
+	useState,
+	type ReactNode,
+} from 'react';
 import { toast } from 'react-hot-toast';
 
 import { useBackgroundClient } from '../../hooks/useBackgroundClient';
@@ -18,11 +25,19 @@ interface UnlockAccountContextType {
 	hideUnlockModal: () => void;
 }
 
-const UnlockAccountContext = createContext<UnlockAccountContextType | null>(null);
+const UnlockAccountContext = createContext<UnlockAccountContextType | null>(
+	null,
+);
 
-export const UnlockAccountProvider = ({ children }: { children: ReactNode }) => {
+export const UnlockAccountProvider = ({
+	children,
+}: {
+	children: ReactNode;
+}) => {
+	const { t } = useI18n();
 	const [isUnlockModalOpen, setIsUnlockModalOpen] = useState(false);
-	const [accountToUnlock, setAccountToUnlock] = useState<SerializedUIAccount | null>(null);
+	const [accountToUnlock, setAccountToUnlock] =
+		useState<SerializedUIAccount | null>(null);
 	const unlockAccountMutation = useUnlockMutation();
 	const backgroundClient = useBackgroundClient();
 	const hideUnlockModal = useCallback(() => {
@@ -43,26 +58,26 @@ export const UnlockAccountProvider = ({ children }: { children: ReactNode }) => 
 						setAccountToUnlock(account);
 						await unlockAccountMutation.mutateAsync({ id: account.id });
 						setAccountToUnlock(null);
-						toast.success('Account unlocked');
+						toast.success(t('accounts.unlocked'));
 					} catch (e) {
-						toast.error((e as Error).message || 'Failed to unlock account');
+						toast.error((e as Error).message || t('common.failed'));
 					}
 				}
 			}
 		},
-		[unlockAccountMutation],
+		[unlockAccountMutation, t],
 	);
 
 	const lockAccount = useCallback(
 		async (account: SerializedUIAccount) => {
 			try {
 				await backgroundClient.lockAccountSourceOrAccount({ id: account.id });
-				toast.success('Account locked');
+				toast.success(t('accounts.locked'));
 			} catch (e) {
-				toast.error((e as Error).message || 'Failed to lock account');
+				toast.error((e as Error).message || t('common.failed'));
 			}
 		},
-		[backgroundClient],
+		[backgroundClient, t],
 	);
 
 	return (
@@ -90,7 +105,9 @@ export const UnlockAccountProvider = ({ children }: { children: ReactNode }) => 
 export const useUnlockAccount = (): UnlockAccountContextType => {
 	const context = useContext(UnlockAccountContext);
 	if (!context) {
-		throw new Error('useUnlockAccount must be used within an UnlockAccountProvider');
+		throw new Error(
+			'useUnlockAccount must be used within an UnlockAccountProvider',
+		);
 	}
 	return context;
 };

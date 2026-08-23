@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { formatBalance } from 'rtd-apps-core';
+import type { MessageKey, MessageValues } from '_app/i18n';
 import BigNumber from 'bignumber.js';
 import { mixed, object } from 'yup';
 
@@ -11,6 +12,7 @@ export function createValidationSchema(
 	decimals: number,
 	isUnstake: boolean,
 	minimumStake: bigint,
+	t: (key: MessageKey, values?: MessageValues) => string,
 ) {
 	return object({
 		// NOTE: This is an intentional subset of the token validation:
@@ -20,24 +22,32 @@ export function createValidationSchema(
 					.transform((_, original) => {
 						return new BigNumber(original);
 					})
-					.test('required', `\${path} is a required field`, (value) => {
+					.test('required', t('validation.required'), (value) => {
 						return !!value;
 					})
-					.test('valid', 'The value provided is not valid.', (value) => {
+					.test('valid', t('validation.invalidNumber'), (value) => {
 						if (!value || value.isNaN() || !value.isFinite()) {
 							return false;
 						}
 						return true;
 					})
-					.test('min', `\${path} must be greater than 1 ${coinSymbol}`, (amount) =>
-						amount ? amount.shiftedBy(decimals).gte(minimumStake.toString()) : false,
+					.test(
+						'min',
+						t('validation.minimumAmount', {
+							amount: formatBalance(minimumStake, decimals),
+							symbol: coinSymbol,
+						}),
+						(amount) =>
+							amount
+								? amount.shiftedBy(decimals).gte(minimumStake.toString())
+								: false,
 					)
 					.test('max', (amount, ctx) => {
 						const gasBudget = ctx.parent.gasBudget || 0n;
 						const availableBalance = coinBalance - gasBudget;
 						if (availableBalance < 0) {
 							return ctx.createError({
-								message: 'Insufficient funds',
+								message: t('validation.insufficientFunds'),
 							});
 						}
 						const enoughBalance = amount
@@ -47,19 +57,19 @@ export function createValidationSchema(
 							return true;
 						}
 						return ctx.createError({
-							message: `\${path} must be less than ${formatBalance(
-								availableBalance,
-								decimals,
-							)} ${coinSymbol}`,
+							message: t('validation.maximumAmount', {
+								amount: formatBalance(availableBalance, decimals),
+								symbol: coinSymbol,
+							}),
 						});
 					})
 					.test(
 						'max-decimals',
-						`The value exceeds the maximum decimals (${decimals}).`,
+						t('validation.maximumDecimals', { count: decimals }),
 						(amount) => {
 							return amount ? amount.shiftedBy(decimals).isInteger() : false;
 						},
 					)
-					.label('Amount'),
+					.label(t('transfer.selectAmount')),
 	});
 }

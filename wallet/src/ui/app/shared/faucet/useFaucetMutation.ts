@@ -1,10 +1,18 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { getFaucetRequestStatus, requestRtdFromFaucetV1 } from 'rtd-typescript/faucet';
-import { useIsMutating, useMutation, type UseMutationOptions } from '@tanstack/react-query';
+import {
+	getFaucetRequestStatus,
+	requestRtdFromFaucetV1,
+} from 'rtd-typescript/faucet';
+import {
+	useIsMutating,
+	useMutation,
+	type UseMutationOptions,
+} from '@tanstack/react-query';
 
 import { useActiveAccount } from '../../hooks/useActiveAccount';
+import { useI18n } from '../../i18n';
 
 type UseFaucetMutationOptions = Pick<UseMutationOptions, 'onError'> & {
 	host: string | null;
@@ -15,6 +23,7 @@ const MAX_FAUCET_REQUESTS_STATUS = 20;
 const FAUCET_REQUEST_DELAY = 1500;
 
 export function useFaucetMutation(options?: UseFaucetMutationOptions) {
+	const { t } = useI18n();
 	const activeAccount = useActiveAccount();
 	const activeAddress = activeAccount?.address || null;
 	const addressToTopUp = options?.address || activeAddress;
@@ -23,10 +32,10 @@ export function useFaucetMutation(options?: UseFaucetMutationOptions) {
 		mutationKey,
 		mutationFn: async () => {
 			if (!addressToTopUp) {
-				throw new Error('Failed, wallet address not found.');
+				throw new Error(t('faucet.walletMissing'));
 			}
 			if (!options?.host) {
-				throw new Error('Failed, faucet host not found.');
+				throw new Error(t('faucet.hostMissing'));
 			}
 
 			const { error, task: taskId } = await requestRtdFromFaucetV1({
@@ -35,7 +44,7 @@ export function useFaucetMutation(options?: UseFaucetMutationOptions) {
 			});
 
 			if (error || !taskId) {
-				throw new Error(error ?? 'Failed, task id not found.');
+				throw new Error(error ?? t('faucet.taskMissing'));
 			}
 
 			let currentStatus = 'INPROGRESS';
@@ -56,17 +65,22 @@ export function useFaucetMutation(options?: UseFaucetMutationOptions) {
 					error ||
 					requestStatusCount > MAX_FAUCET_REQUESTS_STATUS
 				) {
-					throw new Error(error ?? status ?? 'Something went wrong');
+					throw new Error(error ?? t('common.somethingWrong'));
 				}
 
 				if (currentStatus === 'SUCCEEDED') {
-					return transferred_gas_objects?.sent.reduce((total, { amount }) => total + amount, 0);
+					return transferred_gas_objects?.sent.reduce(
+						(total, { amount }) => total + amount,
+						0,
+					);
 				}
 				requestStatusCount += 1;
-				await new Promise((resolve) => setTimeout(resolve, FAUCET_REQUEST_DELAY));
+				await new Promise((resolve) =>
+					setTimeout(resolve, FAUCET_REQUEST_DELAY),
+				);
 			}
 
-			throw new Error('Something went wrong');
+			throw new Error(t('common.somethingWrong'));
 		},
 		...options,
 	});

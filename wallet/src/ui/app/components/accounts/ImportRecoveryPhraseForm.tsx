@@ -2,11 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Button } from '_app/shared/ButtonUI';
+import { useI18n } from '_app/i18n';
 import { normalizeMnemonics, validateMnemonics } from '_src/shared/utils/bip39';
 import { PasswordInput } from '_src/ui/app/shared/forms/controls/PasswordInput';
 import { Text } from '_src/ui/app/shared/text';
 import { useZodForm } from 'rtd-apps-core';
 import { type SubmitHandler } from 'react-hook-form';
+import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
@@ -14,17 +16,20 @@ import Alert from '../alert';
 
 const RECOVERY_PHRASE_WORD_COUNT = 12;
 
-const formSchema = z.object({
-	recoveryPhrase: z
-		.array(z.string().trim())
-		.length(RECOVERY_PHRASE_WORD_COUNT)
-		.transform((recoveryPhrase) => normalizeMnemonics(recoveryPhrase.join(' ')).split(' '))
-		.refine((recoveryPhrase) => validateMnemonics(recoveryPhrase.join(' ')), {
-			message: 'Recovery Passphrase is invalid',
-		}),
-}) as any;
+const createFormSchema = (invalidMessage: string) =>
+	z.object({
+		recoveryPhrase: z
+			.array(z.string().trim())
+			.length(RECOVERY_PHRASE_WORD_COUNT)
+			.transform((recoveryPhrase) =>
+				normalizeMnemonics(recoveryPhrase.join(' ')).split(' '),
+			)
+			.refine((recoveryPhrase) => validateMnemonics(recoveryPhrase.join(' ')), {
+				message: invalidMessage,
+			}),
+	}) as any;
 
-export type FormValues = z.infer<typeof formSchema>;
+export type FormValues = z.infer<ReturnType<typeof createFormSchema>>;
 
 type ImportRecoveryPhraseFormProps = {
 	submitButtonText: string;
@@ -37,6 +42,11 @@ export function ImportRecoveryPhraseForm({
 	cancelButtonText,
 	onSubmit,
 }: ImportRecoveryPhraseFormProps) {
+	const { t } = useI18n();
+	const formSchema = useMemo(
+		() => createFormSchema(t('accounts.recoveryInvalid')),
+		[t],
+	);
 	const {
 		register,
 		formState: { errors, isSubmitting, isValid, touchedFields },
@@ -49,7 +59,10 @@ export function ImportRecoveryPhraseForm({
 		reValidateMode: 'onChange',
 		schema: formSchema,
 		defaultValues: {
-			recoveryPhrase: Array.from({ length: RECOVERY_PHRASE_WORD_COUNT }, () => ''),
+			recoveryPhrase: Array.from(
+				{ length: RECOVERY_PHRASE_WORD_COUNT },
+				() => '',
+			),
 		},
 	});
 	const navigate = useNavigate();
@@ -73,7 +86,9 @@ export function ImportRecoveryPhraseForm({
 								onKeyDown={(e) => {
 									if (e.key === ' ') {
 										e.preventDefault();
-										const nextInput = document.getElementsByName(`recoveryPhrase.${index + 1}`)[0];
+										const nextInput = document.getElementsByName(
+											`recoveryPhrase.${index + 1}`,
+										)[0];
 										nextInput?.focus();
 									}
 								}}
@@ -87,8 +102,12 @@ export function ImportRecoveryPhraseForm({
 
 									if (words.length > 1) {
 										e.preventDefault();
-										const pasteIndex = words.length === recoveryPhrase.length ? 0 : index;
-										const wordsToPaste = words.slice(0, recoveryPhrase.length - pasteIndex);
+										const pasteIndex =
+											words.length === recoveryPhrase.length ? 0 : index;
+										const wordsToPaste = words.slice(
+											0,
+											recoveryPhrase.length - pasteIndex,
+										);
 										const newRecoveryPhrase = [...recoveryPhrase];
 										newRecoveryPhrase.splice(
 											pasteIndex,

@@ -5,9 +5,10 @@ import { toUtf8OrB64 } from '_src/shared/utils';
 import LoadingIndicator from '_src/ui/app/components/loading/LoadingIndicator';
 import { TxnIcon } from '_src/ui/app/components/transactions-card/TxnIcon';
 import { useGetQredoTransaction } from '_src/ui/app/hooks/useGetQredoTransaction';
-import { useI18n } from '_src/ui/app/i18n';
+import { useI18n, type MessageKey } from '_src/ui/app/i18n';
 import { Text } from '_src/ui/app/shared/text';
-import { formatDate, useOnScreen } from 'rtd-apps-core';
+import { formatDate } from '_src/ui/app/helpers';
+import { useOnScreen } from 'rtd-apps-core';
 import { bcs } from 'rtd-typescript/bcs';
 import { fromBase64 } from 'rtd-typescript/utils';
 import { useMemo, useRef } from 'react';
@@ -17,8 +18,11 @@ export type QredoTransactionProps = {
 	qredoTransactionID?: string;
 };
 
-export function QredoTransaction({ qredoID, qredoTransactionID }: QredoTransactionProps) {
-	const { t } = useI18n();
+export function QredoTransaction({
+	qredoID,
+	qredoTransactionID,
+}: QredoTransactionProps) {
+	const { locale, t } = useI18n();
 	const transactionElementRef = useRef<HTMLDivElement>(null);
 	const { isIntersecting } = useOnScreen(transactionElementRef);
 	const { data, isPending, error } = useGetQredoTransaction({
@@ -37,7 +41,10 @@ export function QredoTransaction({ qredoID, qredoTransactionID }: QredoTransacti
 		? bcs.IntentScope.parse(messageWithIntent).PersonalMessage
 		: false;
 
-	const transactionBytes = useMemo(() => messageWithIntent?.slice(3) || null, [messageWithIntent]);
+	const transactionBytes = useMemo(
+		() => messageWithIntent?.slice(3) || null,
+		[messageWithIntent],
+	);
 	const messageToSign =
 		useMemo(
 			() => transactionBytes && toUtf8OrB64(transactionBytes),
@@ -48,7 +55,9 @@ export function QredoTransaction({ qredoID, qredoTransactionID }: QredoTransacti
 			<div>
 				<TxnIcon
 					txnFailed={!!error}
-					variant={isPending ? 'Loading' : isSignMessage ? 'PersonalMessage' : 'Send'}
+					variant={
+						isPending ? 'Loading' : isSignMessage ? 'PersonalMessage' : 'Send'
+					}
 				/>
 			</div>
 			<div className="flex flex-col gap-1 overflow-hidden">
@@ -61,10 +70,12 @@ export function QredoTransaction({ qredoID, qredoTransactionID }: QredoTransacti
 					<>
 						<div className="flex flex-nowrap gap-1 item-center">
 							<Text color="gray-90" weight="semibold">
-								{isSignMessage ? t('qredo.signPersonalMessage') : t('receipt.transaction')}
+								{isSignMessage
+									? t('qredo.signPersonalMessage')
+									: t('receipt.transaction')}
 							</Text>
 							<Text color="gray-90" variant="bodySmall">
-								({data.status})
+								({t(`qredo.status.${data.status}` as MessageKey)})
 							</Text>
 						</div>
 						<Text color="gray-80" mono variant="bodySmall">
@@ -78,8 +89,16 @@ export function QredoTransaction({ qredoID, qredoTransactionID }: QredoTransacti
 							</div>
 						) : null}
 						{data.timestamps.created ? (
-							<Text color="steel-dark" variant="subtitleSmallExtra" weight="medium">
-								{formatDate(data.timestamps.created * 1000, ['month', 'day', 'hour', 'minute'])}
+							<Text
+								color="steel-dark"
+								variant="subtitleSmallExtra"
+								weight="medium"
+							>
+								{formatDate(
+									data.timestamps.created * 1000,
+									['month', 'day', 'hour', 'minute'],
+									locale,
+								)}
 							</Text>
 						) : null}
 						<div className="flex items-center gap-1.5 text-issue">

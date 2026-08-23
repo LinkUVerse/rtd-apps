@@ -36,12 +36,15 @@ export function Collapsible({
 			open={isOpen ?? open}
 			onOpenChange={handleOpenChange}
 		>
-			<CollapsiblePrimitive.Trigger className="flex items-center gap-2 w-full bg-transparent border-none p-0 cursor-pointer group">
+			<CollapsiblePrimitive.Trigger className="group -mx-2 flex min-h-10 w-[calc(100%+16px)] cursor-pointer items-center gap-2 rounded-[10px] border-none bg-transparent px-2 py-0 hover:bg-rtd/5 focus-visible:ring-2 focus-visible:ring-hero/40">
 				<div
-					className={cn('text-captionSmall font-semibold uppercase group-hover:text-hero', {
-						'text-steel': shade === 'lighter',
-						'text-steel-darker': shade === 'darker',
-					})}
+					className={cn(
+						'text-captionSmall font-semibold uppercase group-hover:text-hero',
+						{
+							'text-steel': shade === 'lighter',
+							'text-steel-darker': shade === 'darker',
+						},
+					)}
 				>
 					{title}
 				</div>

@@ -1,7 +1,10 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import BottomMenuLayout, { Content, Menu } from '_app/shared/bottom-menu-layout';
+import BottomMenuLayout, {
+	Content,
+	Menu,
+} from '_app/shared/bottom-menu-layout';
 import { Button } from '_app/shared/ButtonUI';
 import { useI18n } from '_app/i18n';
 import { Text } from '_app/shared/text';
@@ -10,7 +13,10 @@ import Overlay from '_components/overlay';
 import { ampli } from '_src/shared/analytics/ampli';
 import { getSignerOperationErrorMessage } from '_src/ui/app/helpers/errorMessages';
 import { useActiveAccount } from '_src/ui/app/hooks/useActiveAccount';
-import { fetchAllCoins, getAllCoinsQueryKey } from '_src/ui/app/hooks/useGetAllCoins';
+import {
+	fetchAllCoins,
+	getAllCoinsQueryKey,
+} from '_src/ui/app/hooks/useGetAllCoins';
 import { useQredoTransaction } from '_src/ui/app/hooks/useQredoTransaction';
 import { useSigner } from '_src/ui/app/hooks/useSigner';
 import { useUnlockedGuard } from '_src/ui/app/hooks/useUnlockedGuard';
@@ -47,7 +53,8 @@ function TransferCoinPage() {
 	const { t } = useI18n();
 	const [searchParams] = useSearchParams();
 	const coinType = searchParams.get('type');
-	const [showTransactionPreview, setShowTransactionPreview] = useState<boolean>(false);
+	const [showTransactionPreview, setShowTransactionPreview] =
+		useState<boolean>(false);
 	const [formData, setFormData] = useState<SubmitProps>();
 	const navigate = useNavigate();
 	const { data: coinMetadata } = useCoinMetadata(coinType);
@@ -78,7 +85,7 @@ function TransferCoinPage() {
 	const executeTransfer = useMutation({
 		mutationFn: async () => {
 			if (!transaction || !signer || !formData || !coinType || !address) {
-				throw new Error('Missing data');
+				throw new Error(t('transfer.missingData'));
 			}
 
 			return await Sentry.startSpan(
@@ -100,14 +107,20 @@ function TransferCoinPage() {
 								coinType: coin.coinType,
 							})),
 						});
-						queryClient.setQueryData(getAllCoinsQueryKey(coinType, address), latestCoins);
+						queryClient.setQueryData(
+							getAllCoinsQueryKey(coinType, address),
+							latestCoins,
+						);
 						const freshTransaction = createTokenTransferTransaction({
 							coinType,
 							coinDecimals: coinMetadata?.decimals ?? 0,
 							...formData,
 							coins: latestCoins,
 						});
-						logTransferDebug('transaction data before sdk build', freshTransaction.getData());
+						logTransferDebug(
+							'transaction data before sdk build',
+							freshTransaction.getData(),
+						);
 						return signer.signAndExecuteTransactionBlock(
 							{
 								transactionBlock: freshTransaction,
@@ -181,7 +194,11 @@ function TransferCoinPage() {
 	return (
 		<Overlay
 			showModal={true}
-			title={showTransactionPreview ? t('transfer.reviewAndSend') : t('transfer.sendCoins')}
+			title={
+				showTransactionPreview
+					? t('transfer.reviewAndSend')
+					: t('transfer.sendCoins')
+			}
 			closeOverlay={() => navigate('/')}
 		>
 			<div className="flex flex-col w-full h-full">
@@ -196,7 +213,10 @@ function TransferCoinPage() {
 								gasBudget={formData.gasBudgetEst}
 							/>
 						</Content>
-						<Menu stuckClass="sendCoin-cta" className="w-full px-0 pb-0 mx-0 gap-2.5">
+						<Menu
+							stuckClass="sendCoin-cta"
+							className="w-full px-0 pb-0 mx-0 gap-2.5"
+						>
 							<Button
 								type="button"
 								variant="secondary"

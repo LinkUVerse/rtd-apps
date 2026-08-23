@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { useZodForm } from 'rtd-apps-core';
+import { useI18n } from '_app/i18n';
 import { forwardRef, useRef, type ComponentProps } from 'react';
 import toast from 'react-hot-toast';
 import { z } from 'zod';
@@ -11,19 +12,28 @@ import { Form } from '../../shared/forms/Form';
 
 type InputProps = Omit<ComponentProps<'input'>, 'className'>;
 
-export const Input = forwardRef<HTMLInputElement, InputProps>((props, forwardedRef) => (
-	<input
-		className="transition peer items-center border-none outline-none bg-transparent hover:text-hero rounded-sm text-pBody text-steel-darker font-semibold p-0 focus:bg-transparent"
-		ref={forwardedRef}
-		{...props}
-	/>
-));
+export const Input = forwardRef<HTMLInputElement, InputProps>(
+	(props, forwardedRef) => (
+		<input
+			className="transition peer items-center border-none outline-none bg-transparent hover:text-hero rounded-sm text-pBody text-steel-darker font-semibold p-0 focus:bg-transparent"
+			ref={forwardedRef}
+			{...props}
+		/>
+	),
+);
 
 const formSchema = z.object({
 	nickname: z.string().trim(),
 }) as any;
 
-export function EditableAccountName({ accountID, name }: { accountID: string; name: string }) {
+export function EditableAccountName({
+	accountID,
+	name,
+}: {
+	accountID: string;
+	name: string;
+}) {
+	const { t } = useI18n();
 	const backgroundClient = useBackgroundClient();
 	const form = useZodForm({
 		mode: 'all',
@@ -43,7 +53,7 @@ export function EditableAccountName({ accountID, name }: { accountID: string; na
 				const activeElement = document.activeElement as HTMLElement;
 				activeElement?.blur();
 			} catch (e) {
-				toast.error((e as Error).message || 'Failed to set nickname');
+				toast.error((e as Error).message || t('accounts.nicknameFailed'));
 			}
 		}
 	};

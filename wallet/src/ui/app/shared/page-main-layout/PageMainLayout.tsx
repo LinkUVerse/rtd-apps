@@ -32,22 +32,29 @@ export function PageMainLayout({
 	const networkName = useAppSelector(({ app: { apiEnv } }) => apiEnv);
 	const appType = useAppSelector((state) => state.app.appType);
 	const isFullScreen = appType === AppType.fullscreen;
-	const [titlePortalContainer, setTitlePortalContainer] = useState<HTMLDivElement | null>(null);
+	const [titlePortalContainer, setTitlePortalContainer] =
+		useState<HTMLDivElement | null>(null);
 
 	return (
 		<div
 			className={cn(
 				'wallet-shell flex flex-col flex-nowrap items-stretch justify-center flex-1 w-full max-h-full overflow-hidden',
-				isFullScreen ? 'rounded-xl' : '',
+				isFullScreen ? 'rounded-[10px]' : '',
 			)}
 		>
 			<Header
 				networkName={networkName}
-				middleContent={dappStatusEnabled ? <DappStatus /> : <div ref={setTitlePortalContainer} />}
+				middleContent={
+					dappStatusEnabled ? (
+						<DappStatus />
+					) : (
+						<div ref={setTitlePortalContainer} />
+					)
+				}
 				rightContent={topNavMenuEnabled ? <WalletSettingsButton /> : undefined}
 			/>
-			<div className="wallet-content relative flex flex-col flex-nowrap flex-grow overflow-hidden rounded-t-3xl shadow-wallet-content">
-				<div className="wallet-content__surface flex flex-col flex-nowrap flex-grow overflow-y-auto overflow-x-hidden rounded-t-3xl">
+			<div className="wallet-content relative flex flex-col flex-nowrap flex-grow overflow-hidden rounded-t-[10px] shadow-wallet-content">
+				<div className="wallet-content__surface flex flex-col flex-nowrap flex-grow overflow-y-auto overflow-x-hidden rounded-t-[10px]">
 					<main
 						className={cn('flex flex-col flex-grow w-full', {
 							'p-5': bottomNavEnabled,

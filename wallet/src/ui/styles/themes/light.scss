@@ -3,18 +3,18 @@
 @use '_values/colors' as c-val;
 
 $values: (
-	c-var.$background: linear-gradient(145deg, #faeeff 0%, #ffeaf4 58%, #fff 100%),
-	c-var.$background-color: #faeeff,
+	c-var.$background: #fff7fa,
+	c-var.$background-color: #fff7fa,
 	c-var.$text-on-background: #222,
-	c-var.$main-content-background: rgb(255 255 255 / 88%),
+	c-var.$main-content-background: #fff,
 	c-var.$text-on-main-content-background: c-val.$gray-100,
-	shadows.$main-content: 0 -8px 32px rgb(217 70 239 / 14%),
-	shadows.$message-content: 0 12px 32px rgb(194 0 201 / 16%),
-	c-var.$nav-background-color: rgb(255 255 255 / 78%),
-	c-var.$nav-background-filter: blur(24px),
+	shadows.$main-content: 0 -4px 18px rgb(136 19 55 / 8%),
+	shadows.$message-content: 0 12px 32px rgb(136 19 55 / 12%),
+	c-var.$nav-background-color: rgb(255 255 255 / 96%),
+	c-var.$nav-background-filter: blur(18px),
 	c-var.$nav-item-color: #9b6ba8,
 	c-var.$nav-item-highlighted-color: #764e82,
-	c-var.$nav-item-active-color: #d946ef,
-	c-var.$nav-item-active-highlighted-color: #c200c9,
+	c-var.$nav-item-active-color: #be185d,
+	c-var.$nav-item-active-highlighted-color: #9d174d,
 	c-var.$menu-btn-color: c-val.$white,
 );

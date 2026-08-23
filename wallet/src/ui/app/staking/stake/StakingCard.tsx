@@ -1,7 +1,10 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import BottomMenuLayout, { Content, Menu } from '_app/shared/bottom-menu-layout';
+import BottomMenuLayout, {
+	Content,
+	Menu,
+} from '_app/shared/bottom-menu-layout';
 import { Button } from '_app/shared/ButtonUI';
 import { Collapsible } from '_app/shared/collapse';
 import { Text } from '_app/shared/text';
@@ -41,7 +44,10 @@ import { getDelegationDataByStakeId } from '../getDelegationByStakeId';
 import { getStakeRtdByRtdId } from '../getStakeRtdByRtdId';
 import StakeForm from './StakeForm';
 import { UnStakeForm } from './UnstakeForm';
-import { createStakeTransaction, createUnstakeTransaction } from './utils/transaction';
+import {
+	createStakeTransaction,
+	createUnstakeTransaction,
+} from './utils/transaction';
 import { createValidationSchema } from './utils/validation';
 import { ValidatorFormDetail } from './ValidatorFormDetail';
 
@@ -76,8 +82,9 @@ function StakingCard() {
 		FEATURES.WALLET_EFFECTS_ONLY_SHARED_TRANSACTION as string,
 	);
 
-	const { data: system, isPending: validatorsisPending } =
-		useRtdClientQuery('getLatestRtdSystemState');
+	const { data: system, isPending: validatorsisPending } = useRtdClientQuery(
+		'getLatestRtdSystemState',
+	);
 
 	const totalTokenBalance = useMemo(() => {
 		if (!allDelegation) return 0n;
@@ -91,19 +98,34 @@ function StakingCard() {
 		return getDelegationDataByStakeId(allDelegation, stakeRtdIdParams);
 	}, [allDelegation, stakeRtdIdParams]);
 
-	const coinSymbol = useMemo(() => (coinType && Coin.getCoinSymbol(coinType)) || '', [coinType]);
+	const coinSymbol = useMemo(
+		() => (coinType && Coin.getCoinSymbol(coinType)) || '',
+		[coinType],
+	);
 
 	const rtdEarned =
-		(stakeData as Extract<StakeObject, { estimatedReward: string }>)?.estimatedReward || '0';
+		(stakeData as Extract<StakeObject, { estimatedReward: string }>)
+			?.estimatedReward || '0';
 
 	const { data: metadata } = useCoinMetadata(coinType);
 	const coinDecimals = metadata?.decimals ?? 0;
 	// set minimum stake amount to 1 RTD
-	const minimumStake = parseAmount(MIN_NUMBER_RTD_TO_STAKE.toString(), coinDecimals);
+	const minimumStake = parseAmount(
+		MIN_NUMBER_RTD_TO_STAKE.toString(),
+		coinDecimals,
+	);
 
 	const validationSchema = useMemo(
-		() => createValidationSchema(coinBalance, coinSymbol, coinDecimals, unstake, minimumStake),
-		[coinBalance, coinSymbol, coinDecimals, unstake, minimumStake],
+		() =>
+			createValidationSchema(
+				coinBalance,
+				coinSymbol,
+				coinDecimals,
+				unstake,
+				minimumStake,
+				t,
+			),
+		[coinBalance, coinSymbol, coinDecimals, unstake, minimumStake, t],
 	);
 
 	const queryClient = useQueryClient();
@@ -135,7 +157,10 @@ function StakingCard() {
 					name: 'stake',
 				},
 				async () => {
-					const transactionBlock = createStakeTransaction(amount, validatorAddress);
+					const transactionBlock = createStakeTransaction(
+						amount,
+						validatorAddress,
+					);
 					return await signer.signAndExecuteTransactionBlock(
 						{
 							transactionBlock,
@@ -198,7 +223,10 @@ function StakingCard() {
 	});
 
 	const onHandleSubmit = useCallback(
-		async ({ amount }: FormValues, { resetForm }: FormikHelpers<FormValues>) => {
+		async (
+			{ amount }: FormValues,
+			{ resetForm }: FormikHelpers<FormValues>,
+		) => {
 			if (coinType === null || validatorAddress === null) {
 				return;
 			}
@@ -208,7 +236,11 @@ function StakingCard() {
 				let txDigest;
 				if (unstake) {
 					// check for delegation data
-					if (!stakeData || !stakeRtdIdParams || stakeData.status === 'Pending') {
+					if (
+						!stakeData ||
+						!stakeRtdIdParams ||
+						stakeData.status === 'Pending'
+					) {
 						return;
 					}
 					response = await unStakeToken.mutateAsync({
@@ -256,7 +288,8 @@ function StakingCard() {
 					toast.error(
 						<div className="max-w-xs overflow-hidden flex flex-col">
 							<strong>
-								{unstake ? t('staking.unstakeRtd') : t('staking.stakeRtd')} {t('common.failed')}
+								{unstake ? t('staking.unstakeRtd') : t('staking.stakeRtd')}{' '}
+								{t('common.failed')}
 							</strong>
 							<small className="text-ellipsis overflow-hidden">
 								{getSignerOperationErrorMessage(error)}
@@ -297,7 +330,10 @@ function StakingCard() {
 						<BottomMenuLayout>
 							<Content>
 								<div className="mb-4">
-									<ValidatorFormDetail validatorAddress={validatorAddress} unstake={unstake} />
+									<ValidatorFormDetail
+										validatorAddress={validatorAddress}
+										unstake={unstake}
+									/>
 								</div>
 
 								{unstake ? (
@@ -326,7 +362,11 @@ function StakingCard() {
 								{!unstake && (
 									<div className="flex-1 mt-7.5">
 										<Collapsible title={t('staking.rewards')} defaultOpen>
-											<Text variant="pSubtitle" color="steel-dark" weight="normal">
+											<Text
+												variant="pSubtitle"
+												color="steel-dark"
+												weight="normal"
+											>
 												{t('staking.rewardsDescription')}
 											</Text>
 										</Collapsible>
@@ -347,9 +387,13 @@ function StakingCard() {
 									size="tall"
 									variant="primary"
 									onClick={submitForm}
-									disabled={!isValid || isSubmitting || (unstake && !delegationId)}
+									disabled={
+										!isValid || isSubmitting || (unstake && !delegationId)
+									}
 									loading={isSubmitting}
-									text={unstake ? t('staking.unstakeNow') : t('staking.stakeNow')}
+									text={
+										unstake ? t('staking.unstakeNow') : t('staking.stakeNow')
+									}
 								/>
 							</Menu>
 						</BottomMenuLayout>

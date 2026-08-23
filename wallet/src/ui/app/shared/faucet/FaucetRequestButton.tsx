@@ -1,8 +1,8 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { API_ENV_TO_INFO } from '_app/ApiProvider';
 import { Button, type ButtonProps } from '_app/shared/ButtonUI';
+import { useI18n, type MessageKey } from '_app/i18n';
 import { useAppSelector } from '_hooks';
 import { API_ENV } from '_src/shared/api-env';
 import { FaucetRateLimitError, getFaucetHost } from 'rtd-typescript/faucet';
@@ -23,13 +23,20 @@ export const FAUCET_HOSTS = {
 	[API_ENV.testNet]: getFaucetHost('testnet'),
 };
 
-function FaucetRequestButton({ variant = 'primary', size = 'narrow' }: FaucetRequestButtonProps) {
+function FaucetRequestButton({
+	variant = 'primary',
+	size = 'narrow',
+}: FaucetRequestButtonProps) {
+	const { t } = useI18n();
 	const network = useAppSelector(({ app }) => app.apiEnv);
-	const networkName = API_ENV_TO_INFO[network].name.replace(/rtd\s*/gi, '');
+	const networkName = t(`network.${network}` as MessageKey);
 	const [isRateLimited, rateLimit] = useFaucetRateLimiter();
 
 	const mutation = useFaucetMutation({
-		host: network in FAUCET_HOSTS ? FAUCET_HOSTS[network as keyof typeof FAUCET_HOSTS] : null,
+		host:
+			network in FAUCET_HOSTS
+				? FAUCET_HOSTS[network as keyof typeof FAUCET_HOSTS]
+				: null,
 		onError: (error) => {
 			if (error instanceof FaucetRateLimitError) {
 				rateLimit();
@@ -46,12 +53,14 @@ function FaucetRequestButton({ variant = 'primary', size = 'narrow' }: FaucetReq
 			onClick={() => {
 				toast.promise(mutation.mutateAsync(), {
 					loading: <FaucetMessageInfo loading />,
-					success: (totalReceived) => <FaucetMessageInfo totalReceived={totalReceived} />,
+					success: (totalReceived) => (
+						<FaucetMessageInfo totalReceived={totalReceived} />
+					),
 					error: (error) => <FaucetMessageInfo error={error.message} />,
 				});
 			}}
 			loading={mutation.isMutating}
-			text={`Request ${networkName} RTD Tokens`}
+			text={t('faucet.requestTokens', { network: networkName })}
 		/>
 	) : null;
 }

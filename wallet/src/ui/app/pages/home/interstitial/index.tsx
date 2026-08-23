@@ -5,6 +5,7 @@ import { ButtonOrLink } from '_app/shared/utils/ButtonOrLink';
 import { ampli } from '_src/shared/analytics/ampli';
 import ExternalLink from '_src/ui/app/components/external-link';
 import { Text } from '_src/ui/app/shared/text';
+import { useI18n } from '_app/i18n';
 import { X32 } from 'rtd-apps-icons';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -23,7 +24,8 @@ interface InterstitialProps extends InterstitialConfig {
 	onClose: () => void;
 }
 
-const setInterstitialDismissed = (dismissKey: string) => localStorage.setItem(dismissKey, 'true');
+const setInterstitialDismissed = (dismissKey: string) =>
+	localStorage.setItem(dismissKey, 'true');
 
 function Interstitial({
 	enabled,
@@ -33,6 +35,7 @@ function Interstitial({
 	buttonText,
 	onClose,
 }: InterstitialProps) {
+	const { t } = useI18n();
 	const navigate = useNavigate();
 
 	useEffect(() => {
@@ -68,8 +71,16 @@ function Interstitial({
 					<X32 className="text-white h-8 w-8" />
 				</button>
 				{bannerUrl && (
-					<ExternalLink href={bannerUrl} onClick={onClick} className="w-full text-center">
-						<img className="rounded-2xl w-full p-2" src={imageUrl} alt="interstitial-banner" />
+					<ExternalLink
+						href={bannerUrl}
+						onClick={onClick}
+						className="w-full text-center"
+					>
+						<img
+							className="rounded-[10px] w-full p-2"
+							src={imageUrl}
+							alt={t('promo.bannerAlt')}
+						/>
 					</ExternalLink>
 				)}
 				<ButtonOrLink
@@ -80,7 +91,7 @@ function Interstitial({
 					rel="noreferrer noopener"
 				>
 					<Text variant="body" weight="semibold" color="white">
-						{buttonText || 'Join for a chance to win'}
+						{buttonText || t('promo.joinToWin')}
 					</Text>
 				</ButtonOrLink>
 			</div>

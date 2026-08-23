@@ -7,12 +7,18 @@ import { forwardRef, type ReactNode, type Ref } from 'react';
 
 import { ButtonOrLink, type ButtonOrLinkProps } from './utils/ButtonOrLink';
 
-function Decorator({ disabled, children }: { disabled?: boolean; children: ReactNode }) {
+function Decorator({
+	disabled,
+	children,
+}: {
+	disabled?: boolean;
+	children: ReactNode;
+}) {
 	return (
 		<div
 			className={clsx(
-				'text-heading2 bg-transparent text-center flex justify-center',
-				disabled ? 'text-steel' : 'text-hero-dark group-hover:text-hero',
+				'text-heading2 bg-transparent text-center flex shrink-0 justify-center text-inherit',
+				disabled && 'opacity-60',
 			)}
 		>
 			{children}
@@ -52,11 +58,11 @@ export const LargeButton = forwardRef(
 		return (
 			<ButtonOrLink
 				ref={ref}
+				disabled={disabled}
 				{...otherProps}
 				className={clsx(
-					'group border border-solid border-transparent flex rounded-md items-center py-2 px-8 justify-between no-underline',
-					disabled ? 'bg-hero-darkest/5 pointer-events-none' : 'bg-white/80 hover:border-rtd/10',
-					primary ? '!bg-rtd-primaryBlue2023' : '',
+					'nova-action-card group justify-between',
+					primary && 'nova-action-card--primary',
 					spacing === 'sm' && '!p-3',
 					className,
 				)}
@@ -67,15 +73,19 @@ export const LargeButton = forwardRef(
 					</div>
 				)}
 				{!loading && (
-					<div className={clsx('flex items-center w-full gap-2.5', center && 'justify-center')}>
+					<div
+						className={clsx(
+							'flex min-w-0 items-center w-full gap-2.5',
+							center && 'justify-center',
+						)}
+					>
 						{before && <Decorator disabled={disabled}>{before}</Decorator>}
-						<div className="flex flex-col">
+						<div className="flex min-w-0 flex-col">
 							{top && <Decorator disabled={disabled}>{top}</Decorator>}
 							<div
 								className={clsx(
-									'text-bodySmall font-semibold',
-									disabled ? 'text-steel' : 'text-hero-dark group-hover:text-hero',
-									primary ? '!text-white' : '',
+									'nova-action-card__label',
+									disabled && 'opacity-60',
 								)}
 							>
 								{children}

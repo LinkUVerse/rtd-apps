@@ -3,19 +3,14 @@
 
 import { cva, type VariantProps } from 'class-variance-authority';
 
-const badgeStyle = cva(
-	[
-		'text-captionSmallExtra flex uppercase font-medium px-1 py-0.5 rounded w-fit-content h-3.5 w-max justify-center items-center',
-	],
-	{
-		variants: {
-			variant: {
-				warning: 'bg-issue-light text-issue-dark',
-				success: 'bg-rtd/30 text-hero-dark',
-			},
+const badgeStyle = cva(['nova-badge w-max'], {
+	variants: {
+		variant: {
+			warning: 'nova-badge--warning',
+			success: 'nova-badge--success',
 		},
 	},
-);
+});
 
 export interface BadgeProps extends VariantProps<typeof badgeStyle> {
 	label: string;

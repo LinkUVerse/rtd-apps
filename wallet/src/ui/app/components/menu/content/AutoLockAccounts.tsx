@@ -15,7 +15,10 @@ import { useZodForm } from 'rtd-apps-core';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
-import { AutoLockSelector, zodSchema } from '../../accounts/AutoLockSelector';
+import {
+	AutoLockSelector,
+	createAutoLockSchema,
+} from '../../accounts/AutoLockSelector';
 import Loading from '../../loading';
 import Overlay from '../../overlay';
 
@@ -27,7 +30,7 @@ export function AutoLockAccounts() {
 	const savedAutoLockData = parseAutoLock(autoLock.data || null);
 	const form = useZodForm({
 		mode: 'all',
-		schema: zodSchema as any,
+		schema: createAutoLockSchema(t) as any,
 		values: {
 			autoLock: savedAutoLockData,
 		},

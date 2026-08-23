@@ -1,0 +1,19 @@
+@use '_variables/colors' as c-var;
+@use '_variables/shadows';
+
+$values: (
+	c-var.$background: #0a0a0a,
+	c-var.$background-color: #0a0a0a,
+	c-var.$text-on-background: #fafafa,
+	c-var.$main-content-background: #0f0f0f,
+	c-var.$text-on-main-content-background: #fafafa,
+	shadows.$main-content: 0 1px 0 rgb(255 255 255 / 6%),
+	shadows.$message-content: 0 12px 32px rgb(0 0 0 / 36%),
+	c-var.$nav-background-color: rgb(10 10 10 / 96%),
+	c-var.$nav-background-filter: blur(18px),
+	c-var.$nav-item-color: #a3a3a3,
+	c-var.$nav-item-highlighted-color: #d4d4d4,
+	c-var.$nav-item-active-color: #fafafa,
+	c-var.$nav-item-active-highlighted-color: #fff,
+	c-var.$menu-btn-color: #fafafa,
+);

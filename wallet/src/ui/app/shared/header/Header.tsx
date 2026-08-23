@@ -17,16 +17,24 @@ type HeaderProps = {
  * General page header that can render arbitrary content where the content
  * located in the middle of the header is centered and has a capped width
  */
-export function Header({ networkName, middleContent, rightContent }: HeaderProps) {
+export function Header({
+	networkName,
+	middleContent,
+	rightContent,
+}: HeaderProps) {
 	return (
 		<header className="wallet-header grid grid-cols-header items-center gap-3 px-4 py-2.5">
 			<div>
-				<Link to="/" className="no-underline">
+				<Link to="/" className="inline-flex min-h-11 items-center no-underline">
 					<Logo networkName={networkName} />
 				</Link>
 			</div>
-			{middleContent && <div className="col-start-2 overflow-hidden">{middleContent}</div>}
-			{rightContent && <div className="col-start-3 mr-1 justify-self-end">{rightContent}</div>}
+			{middleContent && (
+				<div className="col-start-2 overflow-hidden">{middleContent}</div>
+			)}
+			{rightContent && (
+				<div className="col-start-3 mr-1 justify-self-end">{rightContent}</div>
+			)}
 		</header>
 	);
 }

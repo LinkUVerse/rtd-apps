@@ -14,7 +14,10 @@ interface ExpandableListProps {
 	defaultItemsToShow: number;
 }
 
-export function ExpandableList({ items, defaultItemsToShow }: ExpandableListProps) {
+export function ExpandableList({
+	items,
+	defaultItemsToShow,
+}: ExpandableListProps) {
 	const { t } = useI18n();
 	const [showAll, setShowAll] = useState(false);
 
@@ -23,7 +26,8 @@ export function ExpandableList({ items, defaultItemsToShow }: ExpandableListProp
 		[showAll, items, defaultItemsToShow],
 	);
 
-	const handleShowAllClick = () => setShowAll((prevShowAll: boolean) => !prevShowAll);
+	const handleShowAllClick = () =>
+		setShowAll((prevShowAll: boolean) => !prevShowAll);
 
 	return (
 		<>
@@ -31,7 +35,7 @@ export function ExpandableList({ items, defaultItemsToShow }: ExpandableListProp
 				<div key={index}>{item}</div>
 			))}
 			{items.length > defaultItemsToShow && (
-				<div className="flex cursor-pointer items-center w-full">
+				<div className="flex min-h-10 cursor-pointer items-center w-full">
 					<Link
 						onClick={handleShowAllClick}
 						after={
@@ -44,7 +48,9 @@ export function ExpandableList({ items, defaultItemsToShow }: ExpandableListProp
 							/>
 						}
 					>
-						<Text variant="bodySmall">{showAll ? t('common.showLess') : t('common.showAll')}</Text>
+						<Text variant="bodySmall">
+							{showAll ? t('common.showLess') : t('common.showAll')}
+						</Text>
 					</Link>
 				</div>
 			)}

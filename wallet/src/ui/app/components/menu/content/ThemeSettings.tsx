@@ -23,6 +23,16 @@ const themeOptions: {
 		titleKey: 'theme.calm',
 		descriptionKey: 'theme.calmDescription',
 	},
+	{
+		theme: 'professional',
+		titleKey: 'theme.professional',
+		descriptionKey: 'theme.professionalDescription',
+	},
+	{
+		theme: 'red-thread',
+		titleKey: 'theme.redThread',
+		descriptionKey: 'theme.redThreadDescription',
+	},
 ];
 
 export function ThemeSettings() {
@@ -33,14 +43,21 @@ export function ThemeSettings() {
 	return (
 		<MenuLayout title={t('theme.title')} back={mainMenuUrl}>
 			<p className="preferences-description">{t('theme.description')}</p>
-			<div className="preferences-grid" role="radiogroup" aria-label={t('theme.title')}>
+			<div
+				className="preferences-grid"
+				role="radiogroup"
+				aria-label={t('theme.title')}
+			>
 				{themeOptions.map((option) => (
 					<PreferenceOption
 						key={option.theme}
 						title={t(option.titleKey)}
 						description={t(option.descriptionKey)}
 						preview={
-							<span className={`theme-preview theme-preview--${option.theme}`} aria-hidden="true">
+							<span
+								className={`theme-preview theme-preview--${option.theme}`}
+								aria-hidden="true"
+							>
 								<span />
 								<span />
 								<span />

@@ -7,9 +7,8 @@ import { forwardRef, type ComponentProps, type ReactNode } from 'react';
 
 const styles = cva(
 	[
-		'cursor-pointer outline-0 flex flex-row items-center py-1 px-2 gap-1 rounded-2xl',
-		'transition text-body-small font-medium border border-solid w-full min-w-0',
-		'border-1 border-gray-45 bg-transparent group',
+		'nova-pill outline-0 flex flex-row items-center gap-1.5 group',
+		'w-full min-w-0 normal-case',
 		'hover:text-hero hover:bg-rtd-light hover:border-rtd',
 		'focus:text-hero focus:bg-rtd-light focus:border-rtd',
 		'active:text-steel active:bg-gray-45 active:border-transparent',
@@ -29,7 +28,8 @@ const styles = cva(
 );
 
 export interface ButtonConnectedToProps
-	extends VariantProps<typeof styles>,
+	extends
+		VariantProps<typeof styles>,
 		Omit<ComponentProps<'button'>, 'ref' | 'className'> {
 	iconBefore?: ReactNode;
 	text?: ReactNode;
@@ -37,23 +37,31 @@ export interface ButtonConnectedToProps
 	truncate?: boolean;
 }
 
-export const ButtonConnectedTo = forwardRef<HTMLButtonElement, ButtonConnectedToProps>(
-	({ bgOnHover, iconBefore, iconAfter, text, truncate, ...rest }, ref) => {
-		return (
-			<button {...rest} ref={ref} className={styles({ bgOnHover })}>
-				<div className="flex">{iconBefore}</div>
-				<div className={clsx('overflow-hidden', truncate && 'truncate')}>{text}</div>
-				<div
-					className={cx(
-						'flex',
-						bgOnHover === 'grey'
-							? 'text-steel group-hover:text-inherit group-focus:text-inherit group-active::text-inherit'
-							: null,
-					)}
-				>
-					{iconAfter}
-				</div>
-			</button>
-		);
-	},
-);
+export const ButtonConnectedTo = forwardRef<
+	HTMLButtonElement,
+	ButtonConnectedToProps
+>(({ bgOnHover, iconBefore, iconAfter, text, truncate, ...rest }, ref) => {
+	return (
+		<button {...rest} ref={ref} className={styles({ bgOnHover })}>
+			<div className="flex">{iconBefore}</div>
+			<div
+				className={clsx(
+					'min-w-0 overflow-hidden whitespace-nowrap',
+					truncate && 'truncate',
+				)}
+			>
+				{text}
+			</div>
+			<div
+				className={cx(
+					'flex',
+					bgOnHover === 'grey'
+						? 'text-steel group-hover:text-inherit group-focus:text-inherit group-active::text-inherit'
+						: null,
+				)}
+			>
+				{iconAfter}
+			</div>
+		</button>
+	);
+});

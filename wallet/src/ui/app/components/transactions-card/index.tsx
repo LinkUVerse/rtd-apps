@@ -48,6 +48,12 @@ export function TransactionCard({
 	const showRtdSymbol = false;
 
 	const timestamp = txn.timestampMs;
+	const summaryLabel =
+		summary?.label === 'Receive'
+			? t('transaction.receive')
+			: summary?.label === 'Transaction'
+				? t('receipt.transaction')
+				: summary?.label;
 
 	return (
 		<Link
@@ -55,7 +61,7 @@ export function TransactionCard({
 			to={`/receipt?${new URLSearchParams({
 				txdigest: txn.digest,
 			}).toString()}`}
-			className="flex items-center w-full flex-col gap-2 py-4 no-underline"
+			className="flex min-w-0 items-center w-full flex-col gap-2 py-4 no-underline"
 		>
 			<div className="flex items-start w-full justify-between gap-3">
 				<div className="w-7.5">
@@ -86,10 +92,14 @@ export function TransactionCard({
 							<div className="flex w-full justify-between">
 								<div className="flex gap-1 align-middle items-baseline">
 									<Text color="gray-90" weight="semibold">
-										{summary?.label}
+										{summaryLabel}
 									</Text>
 									{showRtdSymbol && (
-										<Text color="gray-90" weight="normal" variant="subtitleSmall">
+										<Text
+											color="gray-90"
+											weight="normal"
+											variant="subtitleSmall"
+										>
 											RTD
 										</Text>
 									)}
@@ -98,7 +108,11 @@ export function TransactionCard({
 							</div>
 
 							{/* TODO: Support programmable tx: */}
-							<TxnTypeLabel address={recipientAddress!} isSender={isSender} isTransfer={false} />
+							<TxnTypeLabel
+								address={recipientAddress!}
+								isSender={isSender}
+								isTransfer={false}
+							/>
 							{/* {objectId && <TxnImage id={objectId} />} */}
 						</>
 					)}

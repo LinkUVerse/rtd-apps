@@ -73,17 +73,17 @@
 
 	&:hover {
 		color: v.use(v.$colors-nav-item-highlighted-color);
-		background: rgb(var(--rtd-primary-subtle-rgb) / 70%);
+		background: var(--rtd-nav-hover-background);
 	}
 
 	&.active {
 		color: v.use(v.$colors-nav-item-active-color);
-		border-bottom-color: v.use(v.$colors-nav-item-active-color);
-		background: linear-gradient(180deg, transparent, rgb(var(--rtd-primary-soft-rgb) / 52%));
+		border-bottom-color: var(--rtd-nav-active-indicator);
+		background: var(--rtd-nav-active-background);
 
 		&:hover {
 			color: v.use(v.$colors-nav-item-active-highlighted-color);
-			border-bottom-color: v.use(v.$colors-nav-item-active-highlighted-color);
+			border-bottom-color: var(--rtd-nav-active-indicator);
 		}
 	}
 

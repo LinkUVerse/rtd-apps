@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AccountItemApproveConnection } from '_components/accounts/AccountItemApproveConnection';
+import { useI18n } from '_app/i18n';
 import { type SerializedUIAccount } from '_src/background/accounts/Account';
 import * as ToggleGroup from '@radix-ui/react-toggle-group';
 import { useState } from 'react';
@@ -46,7 +47,10 @@ export function AccountMultiSelectWithControls({
 	accounts,
 	onChange: onChangeFromProps,
 }: AccountMultiSelectProps) {
-	const [selectedAccountIds, setSelectedAccountsIds] = useState(selectedAccountsFromProps);
+	const { t } = useI18n();
+	const [selectedAccountIds, setSelectedAccountsIds] = useState(
+		selectedAccountsFromProps,
+	);
 	const onChange = (value: string[]) => {
 		setSelectedAccountsIds(value);
 		onChangeFromProps(value);
@@ -74,8 +78,8 @@ export function AccountMultiSelectWithControls({
 					size="xs"
 					text={
 						selectedAccountIds.length < accounts.length
-							? 'Select All Accounts'
-							: 'Deselect All Accounts'
+							? t('common.selectAll')
+							: t('common.deselectAll')
 					}
 				/>
 			) : null}

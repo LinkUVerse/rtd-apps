@@ -46,7 +46,7 @@ export function AccountsList() {
 	return (
 		<div
 			className={cn(
-				'flex flex-col rounded-xl p-4 gap-5 border border-solid border-hero/10 w-full select-none',
+				'account-list-card flex flex-col rounded-xl p-4 gap-5 border border-solid border-hero/10 w-full select-none',
 				getAccountBackgroundByType(activeAccount),
 			)}
 		>
@@ -79,7 +79,11 @@ export function AccountsList() {
 							<div className="flex flex-col gap-3">
 								{otherAccounts.map((account) => {
 									return (
-										<ToggleGroup.Item asChild key={account.id} value={account.id}>
+										<ToggleGroup.Item
+											asChild
+											key={account.id}
+											value={account.id}
+										>
 											<div>
 												<AccountListItem account={account} showLock />
 											</div>

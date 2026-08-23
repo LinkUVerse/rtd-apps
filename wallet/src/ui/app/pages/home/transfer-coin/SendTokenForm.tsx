@@ -3,7 +3,10 @@
 
 import { useActiveAddress } from '_app/hooks/useActiveAddress';
 import { useI18n } from '_app/i18n';
-import BottomMenuLayout, { Content, Menu } from '_app/shared/bottom-menu-layout';
+import BottomMenuLayout, {
+	Content,
+	Menu,
+} from '_app/shared/bottom-menu-layout';
 import { Button } from '_app/shared/ButtonUI';
 import { Text } from '_app/shared/text';
 import { AddressInput } from '_components/address-input';
@@ -13,7 +16,12 @@ import { parseAmount } from '_helpers';
 import { useGetAllCoins } from '_hooks';
 import { GAS_SYMBOL } from '_src/ui/app/redux/slices/rtd-objects/Coin';
 import { InputWithAction } from '_src/ui/app/shared/InputWithAction';
-import { CoinFormat, useCoinMetadata, useFormatCoin, useRtdNSEnabled } from 'rtd-apps-core';
+import {
+	CoinFormat,
+	useCoinMetadata,
+	useFormatCoin,
+	useRtdNSEnabled,
+} from 'rtd-apps-core';
 import { useRtdClient } from 'rtd-dapp-kit';
 import { ArrowRight16 } from 'rtd-apps-icons';
 import { type CoinStruct } from 'rtd-typescript/client';
@@ -51,7 +59,10 @@ export type SendTokenFormProps = {
 };
 
 function totalBalance(coins: CoinStruct[]): bigint {
-	return coins.reduce((partialSum, c) => partialSum + getBalanceFromCoinStruct(c), BigInt(0));
+	return coins.reduce(
+		(partialSum, c) => partialSum + getBalanceFromCoinStruct(c),
+		BigInt(0),
+	);
 }
 function getBalanceFromCoinStruct(coin: CoinStruct): bigint {
 	return BigInt(coin.balance);
@@ -93,7 +104,7 @@ function GasBudgetEstimation({
 					name: values.to,
 				});
 				if (!address) {
-					throw new Error('RtdNS name not found.');
+					throw new Error(t('transfer.nameNotFound'));
 				}
 				to = address;
 			}
@@ -148,7 +159,10 @@ export function SendTokenForm({
 	const client = useRtdClient();
 	const activeAddress = useActiveAddress();
 	// Get all coins of the type
-	const { data: coinsData, isPending: coinsIsPending } = useGetAllCoins(coinType, activeAddress!);
+	const { data: coinsData, isPending: coinsIsPending } = useGetAllCoins(
+		coinType,
+		activeAddress!,
+	);
 
 	const { data: rtdCoinsData, isPending: rtdCoinsIsPending } = useGetAllCoins(
 		RTD_TYPE_ARG,
@@ -163,12 +177,24 @@ export function SendTokenForm({
 	const coinMetadata = useCoinMetadata(coinType);
 	const coinDecimals = coinMetadata.data?.decimals ?? 0;
 
-	const [tokenBalance, symbol, queryResult] = useFormatCoin(coinBalance, coinType, CoinFormat.FULL);
+	const [tokenBalance, symbol, queryResult] = useFormatCoin(
+		coinBalance,
+		coinType,
+		CoinFormat.FULL,
+	);
 	const rtdNSEnabled = useRtdNSEnabled();
 
 	const validationSchemaStepOne = useMemo(
-		() => createValidationSchemaStepOne(client, rtdNSEnabled, coinBalance, symbol, coinDecimals),
-		[client, coinBalance, symbol, coinDecimals, rtdNSEnabled],
+		() =>
+			createValidationSchemaStepOne(
+				client,
+				rtdNSEnabled,
+				coinBalance,
+				symbol,
+				coinDecimals,
+				t,
+			),
+		[client, coinBalance, symbol, coinDecimals, rtdNSEnabled, t],
 	);
 
 	// remove the comma from the token balance
@@ -178,7 +204,10 @@ export function SendTokenForm({
 	return (
 		<Loading
 			loading={
-				queryResult.isPending || coinMetadata.isPending || rtdCoinsIsPending || coinsIsPending
+				queryResult.isPending ||
+				coinMetadata.isPending ||
+				rtdCoinsIsPending ||
+				coinsIsPending
 			}
 		>
 			<Formik
@@ -186,14 +215,21 @@ export function SendTokenForm({
 					amount: initialAmount,
 					to: initialTo,
 					isPayAllRtd:
-						!!initAmountBig && initAmountBig === coinBalance && coinType === RTD_TYPE_ARG,
+						!!initAmountBig &&
+						initAmountBig === coinBalance &&
+						coinType === RTD_TYPE_ARG,
 					gasBudgetEst: '',
 				}}
 				validationSchema={validationSchemaStepOne}
 				enableReinitialize
 				validateOnMount
 				validateOnChange
-				onSubmit={async ({ to, amount, isPayAllRtd, gasBudgetEst }: FormValues) => {
+				onSubmit={async ({
+					to,
+					amount,
+					isPayAllRtd,
+					gasBudgetEst,
+				}: FormValues) => {
 					if (!coins || !rtdCoins) return;
 					const coinsIDs = [...coins]
 						.sort((a, b) => Number(b.balance) - Number(a.balance))
@@ -204,7 +240,7 @@ export function SendTokenForm({
 							name: to,
 						});
 						if (!address) {
-							throw new Error('RtdNS name not found.');
+							throw new Error(t('transfer.nameNotFound'));
 						}
 						to = address;
 					}
@@ -220,9 +256,17 @@ export function SendTokenForm({
 					onSubmit(data);
 				}}
 			>
-				{({ isValid, isSubmitting, setFieldValue, values, submitForm, validateField }) => {
+				{({
+					isValid,
+					isSubmitting,
+					setFieldValue,
+					values,
+					submitForm,
+					validateField,
+				}) => {
 					const newPayRtdAll =
-						parseAmount(values.amount, coinDecimals) === coinBalance && coinType === RTD_TYPE_ARG;
+						parseAmount(values.amount, coinDecimals) === coinBalance &&
+						coinType === RTD_TYPE_ARG;
 					if (values.isPayAllRtd !== newPayRtdAll) {
 						setFieldValue('isPayAllRtd', newPayRtdAll);
 					}
@@ -231,7 +275,10 @@ export function SendTokenForm({
 						values.isPayAllRtd ||
 						rtdBalance >
 							parseAmount(values.gasBudgetEst, coinDecimals) +
-								parseAmount(coinType === RTD_TYPE_ARG ? values.amount : '0', coinDecimals);
+								parseAmount(
+									coinType === RTD_TYPE_ARG ? values.amount : '0',
+									coinDecimals,
+								);
 
 					return (
 						<BottomMenuLayout>
@@ -263,7 +310,8 @@ export function SendTokenForm({
 												validateField('amount');
 											}}
 											actionDisabled={
-												parseAmount(values?.amount, coinDecimals) === coinBalance ||
+												parseAmount(values?.amount, coinDecimals) ===
+													coinBalance ||
 												queryResult.isPending ||
 												!coinBalance
 											}
@@ -275,7 +323,12 @@ export function SendTokenForm({
 										</div>
 									) : null}
 
-									{coins ? <GasBudgetEstimation coinDecimals={coinDecimals} coins={coins} /> : null}
+									{coins ? (
+										<GasBudgetEstimation
+											coinDecimals={coinDecimals}
+											coins={coins}
+										/>
+									) : null}
 
 									<div className="w-full flex gap-2.5 flex-col mt-7.5">
 										<div className="px-2 tracking-wider">
@@ -293,14 +346,20 @@ export function SendTokenForm({
 									</div>
 								</Form>
 							</Content>
-							<Menu stuckClass="sendCoin-cta" className="w-full px-0 pb-0 mx-0 gap-2.5">
+							<Menu
+								stuckClass="sendCoin-cta"
+								className="w-full px-0 pb-0 mx-0 gap-2.5"
+							>
 								<Button
 									type="submit"
 									onClick={submitForm}
 									variant="primary"
 									loading={isSubmitting}
 									disabled={
-										!isValid || isSubmitting || !hasEnoughBalance || values.gasBudgetEst === ''
+										!isValid ||
+										isSubmitting ||
+										!hasEnoughBalance ||
+										values.gasBudgetEst === ''
 									}
 									size="tall"
 									text={t('common.review')}

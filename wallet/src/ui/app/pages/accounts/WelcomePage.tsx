@@ -28,9 +28,9 @@ export function WelcomePage() {
 	const navigate = useNavigate();
 	return (
 		<Loading loading={isInitializedLoading || isFullscreenGuardLoading}>
-			<div className="onboarding-surface rounded-20 flex h-full flex-col items-center overflow-auto px-7 py-6 shadow-wallet-content">
+			<div className="onboarding-surface flex h-full flex-col items-center overflow-auto rounded-[10px] px-7 py-6 shadow-wallet-content">
 				<div className="shrink-0">
-					<Logo />
+					<Logo variant="welcome" />
 				</div>
 				<div className="text-center mx-auto mt-2">
 					<Heading variant="heading2" color="gray-90" as="h1" weight="bold">
@@ -64,7 +64,9 @@ export function WelcomePage() {
 										navigate('/tokens');
 									},
 									onError: (error) => {
-										toast.error((error as Error)?.message || t('accounts.createFailed'));
+										toast.error(
+											(error as Error)?.message || t('accounts.createFailed'),
+										);
 									},
 								},
 							);
@@ -75,7 +77,10 @@ export function WelcomePage() {
 						size="tall"
 						variant="secondary"
 						text={t('accounts.moreOptions')}
-						disabled={createAccountsMutation.isPending || createAccountsMutation.isSuccess}
+						disabled={
+							createAccountsMutation.isPending ||
+							createAccountsMutation.isSuccess
+						}
 					/>
 				</div>
 			</div>

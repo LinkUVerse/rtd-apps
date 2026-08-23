@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { type AccountType } from '_src/background/accounts/Account';
+import { useI18n } from '_app/i18n';
 
 import { BadgeLabel } from './BadgeLabel';
 
@@ -9,15 +10,16 @@ type AccountBadgeProps = {
 	accountType: AccountType;
 };
 
-const TYPE_TO_TEXT: Record<AccountType, string | null> = {
-	imported: 'Imported',
-	qredo: 'Qredo',
-	'mnemonic-derived': null,
-	zkLogin: 'zkLogin',
-};
-
 export function AccountBadge({ accountType }: AccountBadgeProps) {
-	const badgeText = TYPE_TO_TEXT[accountType];
+	const { t } = useI18n();
+	const badgeText =
+		accountType === 'imported'
+			? t('accounts.typeImported')
+			: accountType === 'qredo'
+				? 'Qredo'
+				: accountType === 'zkLogin'
+					? 'zkLogin'
+					: null;
 
 	if (!badgeText) return null;
 

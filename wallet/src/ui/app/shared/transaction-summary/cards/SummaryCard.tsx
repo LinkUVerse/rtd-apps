@@ -24,13 +24,13 @@ export function SummaryCard({
 	return (
 		<div
 			className={clsx(
-				'border border-solid rounded-2xl overflow-hidden',
+				'nova-card overflow-hidden',
 				expanded ? 'border-gray-45' : 'border-gray-40',
 			)}
 		>
 			<button
 				onClick={() => setExpanded((expanded) => !expanded)}
-				className="bg-gray-40 px-4 py-2 flex items-center w-full cursor-pointer border-none relative gap-1.5 text-left"
+				className="theme-surface min-h-11 px-4 py-2 flex items-center w-full cursor-pointer border-none relative gap-1.5 text-left"
 			>
 				<div className="flex-1">
 					<Text variant="captionSmall" weight="semibold" color="steel-darker">

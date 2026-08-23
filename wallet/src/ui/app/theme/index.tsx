@@ -11,14 +11,21 @@ import {
 	type ReactNode,
 } from 'react';
 
-export const supportedThemes = ['passion', 'calm'] as const;
+export const supportedThemes = [
+	'passion',
+	'calm',
+	'professional',
+	'red-thread',
+] as const;
 export type WalletTheme = (typeof supportedThemes)[number];
 
 const DEFAULT_THEME: WalletTheme = 'passion';
 const THEME_STORAGE_KEY = 'rtd-wallet.theme';
 
 export function resolveTheme(theme?: string | null): WalletTheme {
-	return supportedThemes.includes(theme as WalletTheme) ? (theme as WalletTheme) : DEFAULT_THEME;
+	return supportedThemes.includes(theme as WalletTheme)
+		? (theme as WalletTheme)
+		: DEFAULT_THEME;
 }
 
 function getInitialTheme(): WalletTheme {
@@ -48,7 +55,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
 	useLayoutEffect(() => {
 		document.documentElement.dataset.rtdTheme = theme;
-		document.documentElement.style.colorScheme = 'light';
+		document.documentElement.style.colorScheme =
+			theme === 'professional' || theme === 'red-thread' ? 'dark' : 'light';
 		try {
 			window.localStorage.setItem(THEME_STORAGE_KEY, theme);
 		} catch {
@@ -58,7 +66,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
 	const value = useMemo(() => ({ theme, setTheme }), [theme, setTheme]);
 
-	return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
+	return (
+		<ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
+	);
 }
 
 export function useTheme() {

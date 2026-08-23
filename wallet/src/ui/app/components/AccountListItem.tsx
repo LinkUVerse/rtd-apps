@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { useResolveRtdNSName } from '_app/hooks/useAppResolveRtdnsName';
+import { useI18n } from '_app/i18n';
 import { type SerializedUIAccount } from '_src/background/accounts/Account';
 import { Check12, Copy12 } from 'rtd-apps-icons';
 import { formatAddress } from 'rtd-typescript/utils';
@@ -16,10 +17,14 @@ export type AccountItemProps = {
 };
 
 /** @deprecated - use AccountListItem from the `accounts` folder **/
-export function AccountListItem({ account, onAccountSelected }: AccountItemProps) {
+export function AccountListItem({
+	account,
+	onAccountSelected,
+}: AccountItemProps) {
+	const { t } = useI18n();
 	const { address, type, selected } = account;
 	const copy = useCopyToClipboard(address, {
-		copySuccessMessage: 'Address Copied',
+		copySuccessMessage: t('common.addressCopied'),
 	});
 	const domainName = useResolveRtdNSName(address);
 

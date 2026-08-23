@@ -22,13 +22,16 @@ export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
 			<div className="flex w-full relative items-center">
 				<Input
 					{...props}
+					style={{ ...props.style, paddingRight: 44 }}
 					type={passwordShown ? 'text' : 'password'}
 					placeholder={placeholder || t('common.password')}
 					ref={forwardedRef}
 				/>
 				<ButtonOrLink
-					tabIndex={-1}
-					className="flex appearance-none bg-transparent border-none cursor-pointer absolute right-3 text-gray-60 peer-focus:text-steel"
+					aria-label={t(
+						passwordShown ? 'common.hidePassword' : 'common.showPassword',
+					)}
+					className="absolute right-0 flex min-h-11 min-w-11 appearance-none items-center justify-center border-none bg-transparent text-gray-60 cursor-pointer peer-focus:text-steel"
 					onClick={() => setPasswordShown((prevState) => !prevState)}
 				>
 					<IconComponent className="w-4 h-4" />

@@ -2,14 +2,52 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Text } from '_src/ui/app/shared/text';
+import { useI18n, type MessageKey, type MessageValues } from '_app/i18n';
 import { ChevronDown12, ChevronRight12 } from 'rtd-apps-icons';
-import { type Argument, type Commands, type TransactionData } from 'rtd-typescript/transactions';
+import {
+	type Argument,
+	type Commands,
+	type TransactionData,
+} from 'rtd-typescript/transactions';
 import { toBase64 } from 'rtd-typescript/utils';
 import { useState } from 'react';
 
 type TransactionType = TransactionData['commands'][0];
 type MakeMoveVecTransaction = ReturnType<(typeof Commands)['MakeMoveVec']>;
 type PublishTransaction = ReturnType<(typeof Commands)['Publish']>;
+type Translate = (key: MessageKey, values?: MessageValues) => string;
+
+const commandLabelKeys: Record<TransactionType['$kind'], MessageKey> = {
+	MoveCall: 'transaction.command.moveCall',
+	MakeMoveVec: 'transaction.command.makeMoveVec',
+	MergeCoins: 'transaction.command.mergeCoins',
+	TransferObjects: 'transaction.command.transferObjects',
+	SplitCoins: 'transaction.command.splitCoins',
+	Publish: 'transaction.command.publish',
+	Upgrade: 'transaction.command.upgrade',
+	$Intent: 'transaction.command.intent',
+};
+
+const fieldLabelKeys: Record<string, MessageKey> = {
+	kind: 'transaction.field.kind',
+	package: 'transaction.field.package',
+	module: 'transaction.field.module',
+	function: 'transaction.field.function',
+	typeArguments: 'transaction.field.typeArguments',
+	arguments: 'transaction.field.arguments',
+	type: 'transaction.field.type',
+	elements: 'transaction.field.elements',
+	destination: 'transaction.field.destination',
+	sources: 'transaction.field.sources',
+	objects: 'transaction.field.objects',
+	address: 'transaction.field.address',
+	coin: 'transaction.field.coin',
+	amounts: 'transaction.field.amounts',
+	modules: 'transaction.field.modules',
+	dependencies: 'transaction.field.dependencies',
+	packageId: 'transaction.field.packageId',
+	ticket: 'transaction.field.ticket',
+};
 
 function convertCommandArgumentToString(
 	arg:
@@ -22,6 +60,7 @@ function convertCommandArgumentToString(
 		| Argument[]
 		| MakeMoveVecTransaction['MakeMoveVec']['type']
 		| PublishTransaction['Publish']['modules'],
+	t: Translate,
 ): string | null {
 	if (!arg) return null;
 
@@ -37,18 +76,18 @@ function convertCommandArgumentToString(
 			return toBase64(new Uint8Array(arg as number[]));
 		}
 
-		return `[${arg.map((argVal) => convertCommandArgumentToString(argVal)).join(', ')}]`;
+		return `[${arg.map((argVal) => convertCommandArgumentToString(argVal, t)).join(', ')}]`;
 	}
 
 	switch (arg.$kind) {
 		case 'GasCoin':
-			return 'GasCoin';
+			return t('transaction.argument.gasCoin');
 		case 'Input':
-			return `Input(${arg.Input})`;
+			return `${t('transaction.argument.input')}(${arg.Input})`;
 		case 'Result':
-			return `Result(${arg.Result})`;
+			return `${t('transaction.argument.result')}(${arg.Result})`;
 		case 'NestedResult':
-			return `NestedResult(${arg.NestedResult[0]}, ${arg.NestedResult[1]})`;
+			return `${t('transaction.argument.nestedResult')}(${arg.NestedResult[0]}, ${arg.NestedResult[1]})`;
 		default:
 			// eslint-disable-next-line no-console
 			console.warn('Unexpected command argument type.', arg);
@@ -56,54 +95,54 @@ function convertCommandArgumentToString(
 	}
 }
 
-function convertCommandToString(command: TransactionType) {
+function convertCommandToString(command: TransactionType, t: Translate) {
 	let normalizedCommand;
 	switch (command.$kind) {
 		case 'MoveCall':
 			normalizedCommand = {
-				kind: 'MoveCall',
+				kind: t('transaction.command.moveCall'),
 				...command.MoveCall,
 				typeArguments: command.MoveCall.typeArguments,
 			};
 			break;
 		case 'MakeMoveVec':
 			normalizedCommand = {
-				kind: 'MakeMoveVec',
+				kind: t('transaction.command.makeMoveVec'),
 				type: command.MakeMoveVec.type,
 				elements: command.MakeMoveVec.elements,
 			};
 			break;
 		case 'MergeCoins':
 			normalizedCommand = {
-				kind: 'MergeCoins',
+				kind: t('transaction.command.mergeCoins'),
 				destination: command.MergeCoins.destination,
 				sources: command.MergeCoins.sources,
 			};
 			break;
 		case 'TransferObjects':
 			normalizedCommand = {
-				kind: 'TransferObjects',
+				kind: t('transaction.command.transferObjects'),
 				objects: command.TransferObjects.objects,
 				address: command.TransferObjects.address,
 			};
 			break;
 		case 'SplitCoins':
 			normalizedCommand = {
-				kind: 'SplitCoins',
+				kind: t('transaction.command.splitCoins'),
 				coin: command.SplitCoins.coin,
 				amounts: command.SplitCoins.amounts,
 			};
 			break;
 		case 'Publish':
 			normalizedCommand = {
-				kind: 'Publish',
+				kind: t('transaction.command.publish'),
 				modules: command.Publish.modules,
 				dependencies: command.Publish.dependencies,
 			};
 			break;
 		case 'Upgrade':
 			normalizedCommand = {
-				kind: 'Upgrade',
+				kind: t('transaction.command.upgrade'),
 				modules: command.Upgrade.modules,
 				dependencies: command.Upgrade.dependencies,
 				packageId: command.Upgrade.package,
@@ -111,18 +150,18 @@ function convertCommandToString(command: TransactionType) {
 			};
 			break;
 		case '$Intent': {
-			throw new Error('TransactionIntent is not supported');
+			throw new Error(t('transaction.intentUnsupported'));
 		}
 	}
 
 	const commandArguments = Object.entries(normalizedCommand);
 	return commandArguments
 		.map(([key, value]) => {
-			const stringValue = convertCommandArgumentToString(value);
+			const stringValue = convertCommandArgumentToString(value, t);
 
 			if (!stringValue) return null;
 
-			return `${key}: ${stringValue}`;
+			return `${fieldLabelKeys[key] ? t(fieldLabelKeys[key]) : key}: ${stringValue}`;
 		})
 		.filter(Boolean)
 		.join(', ');
@@ -133,24 +172,30 @@ interface CommandProps {
 }
 
 export function Command({ command }: CommandProps) {
+	const { t } = useI18n();
 	const [expanded, setExpanded] = useState(true);
 
 	return (
 		<div>
 			<button
 				onClick={() => setExpanded((expanded) => !expanded)}
-				className="flex items-center gap-2 w-full bg-transparent border-none p-0"
+				aria-expanded={expanded}
+				className="flex min-h-11 items-center gap-2 w-full rounded-[10px] bg-transparent border-none px-2 -mx-2 hover:bg-hero/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-hero/40"
 			>
 				<Text variant="body" weight="semibold" color="steel-darker">
-					{command.$kind}
+					<span className="whitespace-nowrap">
+						{t(commandLabelKeys[command.$kind])}
+					</span>
 				</Text>
 				<div className="h-px bg-gray-40 flex-1" />
-				<div className="text-steel">{expanded ? <ChevronDown12 /> : <ChevronRight12 />}</div>
+				<div className="text-steel">
+					{expanded ? <ChevronDown12 /> : <ChevronRight12 />}
+				</div>
 			</button>
 
 			{expanded && (
-				<div className="mt-2 text-pBodySmall font-medium text-steel">
-					({convertCommandToString(command)})
+				<div className="mt-2 break-words text-pBodySmall font-medium text-steel">
+					({convertCommandToString(command, t)})
 				</div>
 			)}
 		</div>

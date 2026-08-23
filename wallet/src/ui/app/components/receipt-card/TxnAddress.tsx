@@ -15,11 +15,13 @@ export function TxnAddress({ address, label }: TxnAddressProps) {
 	const domainName = useResolveRtdNSName(address);
 
 	return (
-		<div className="flex justify-between w-full items-center py-3.5 first:pt-0">
-			<Text variant="body" weight="medium" color="steel-darker">
-				{label}
-			</Text>
-			<div className="flex gap-1 items-center">
+		<div className="flex min-w-0 justify-between w-full items-center gap-4 py-3 first:pt-0">
+			<span className="shrink-0 whitespace-nowrap">
+				<Text variant="body" weight="medium" color="steel-darker">
+					{label}
+				</Text>
+			</span>
+			<div className="flex min-w-0 items-center gap-1 overflow-hidden">
 				<TxnAddressLink address={domainName ?? address} />
 			</div>
 		</div>

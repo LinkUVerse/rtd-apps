@@ -3,6 +3,7 @@
 
 import { Text } from '_app/shared/text';
 import { formatDate } from '_helpers';
+import { useI18n } from '_app/i18n';
 
 type DateCardProps = {
 	timestamp: number;
@@ -10,7 +11,12 @@ type DateCardProps = {
 };
 
 export function DateCard({ timestamp, size }: DateCardProps) {
-	const txnDate = formatDate(timestamp, ['month', 'day', 'hour', 'minute']);
+	const { locale } = useI18n();
+	const txnDate = formatDate(
+		timestamp,
+		['month', 'day', 'hour', 'minute'],
+		locale,
+	);
 
 	return (
 		<Text
@@ -18,7 +24,7 @@ export function DateCard({ timestamp, size }: DateCardProps) {
 			weight={size === 'sm' ? 'medium' : 'normal'}
 			variant={size === 'sm' ? 'subtitleSmallExtra' : 'pBodySmall'}
 		>
-			{txnDate}
+			<span className="whitespace-nowrap tabular-nums">{txnDate}</span>
 		</Text>
 	);
 }

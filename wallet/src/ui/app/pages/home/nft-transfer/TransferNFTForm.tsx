@@ -1,7 +1,10 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import BottomMenuLayout, { Content, Menu } from '_app/shared/bottom-menu-layout';
+import BottomMenuLayout, {
+	Content,
+	Menu,
+} from '_app/shared/bottom-menu-layout';
 import { Button } from '_app/shared/ButtonUI';
 import { Text } from '_app/shared/text';
 import { AddressInput } from '_components/address-input';
@@ -37,7 +40,13 @@ export function TransferNFTForm({
 	const activeAddress = useActiveAddress();
 	const rpc = useRtdClient();
 	const rtdNSEnabled = useRtdNSEnabled();
-	const validationSchema = createValidationSchema(rpc, rtdNSEnabled, activeAddress || '', objectId);
+	const validationSchema = createValidationSchema(
+		rpc,
+		rtdNSEnabled,
+		activeAddress || '',
+		objectId,
+		t,
+	);
 	const activeAccount = useActiveAccount();
 	const signer = useSigner(activeAccount);
 	const queryClient = useQueryClient();
@@ -45,12 +54,14 @@ export function TransferNFTForm({
 	const { clientIdentifier, notificationModal } = useQredoTransaction();
 	const { data: kiosk } = useGetKioskContents(activeAddress);
 	const transferKioskItem = useTransferKioskItem({ objectId, objectType });
-	const isContainedInKiosk = kiosk?.list.some((kioskItem) => kioskItem.data?.objectId === objectId);
+	const isContainedInKiosk = kiosk?.list.some(
+		(kioskItem) => kioskItem.data?.objectId === objectId,
+	);
 
 	const transferNFT = useMutation({
 		mutationFn: async (to: string) => {
 			if (!to || !signer) {
-				throw new Error('Missing data');
+				throw new Error(t('transfer.missingData'));
 			}
 
 			if (rtdNSEnabled && isValidRtdNSName(to)) {
@@ -58,7 +69,7 @@ export function TransferNFTForm({
 					name: to,
 				});
 				if (!address) {
-					throw new Error('RtdNS name not found.');
+					throw new Error(t('transfer.nameNotFound'));
 				}
 				to = address;
 			}
@@ -140,7 +151,10 @@ export function TransferNFTForm({
 								</div>
 							</div>
 						</Content>
-						<Menu stuckClass="sendCoin-cta" className="w-full px-0 pb-0 mx-0 gap-2.5">
+						<Menu
+							stuckClass="sendCoin-cta"
+							className="w-full px-0 pb-0 mx-0 gap-2.5"
+						>
 							<Button
 								type="submit"
 								variant="primary"
