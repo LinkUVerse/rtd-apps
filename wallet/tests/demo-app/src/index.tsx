@@ -4,6 +4,8 @@
 import type { RtdWallet } from '_src/dapp-interface/WalletStandardInterface';
 import { DAppKitProvider, useCurrentAccount, useWalletConnection, useWallets } from 'rtd-dapp-kit-react';
 import { Transaction } from 'rtd-typescript/transactions';
+import { verifyTransactionSignature } from 'rtd-typescript/verify';
+import { fromBase64 } from 'rtd-typescript/utils';
 import { getWallets, ReadonlyWalletAccount } from 'rtd-wallet-standard';
 import { useRef, useState } from 'react';
 import ReactDOM from 'react-dom/client';
@@ -109,7 +111,14 @@ function App({ kit, network, endpoint }: { kit: DemoKit; network: string; endpoi
 		if (wrongAccount) return wrongAccountAction(action, account.address, network);
 		if (wrongChain) return wrongAccountAction(action, account.address, network, true);
 		if (action === 'execute') return kit.signAndExecuteTransaction({ transaction: transaction(account.address) });
-		if (action === 'sign') return kit.signTransaction({ transaction: transaction(account.address) });
+		if (action === 'sign') {
+			const result = await kit.signTransaction({ transaction: transaction(account.address) });
+			const bytes = fromBase64(result.bytes);
+			const signer = await verifyTransactionSignature(bytes, result.signature, { address: account.address });
+			const signed = Transaction.from(bytes);
+			if (signed.getData().sender !== account.address) throw new Error('Signed transaction sender changed');
+			return { verification: { signatureValid: true, address: signer.toRtdAddress(), digest: await signed.getDigest(), submitted: false }, ...result };
+		}
 		return kit.signPersonalMessage({ message: new TextEncoder().encode('Test message') });
 	}
 	return <main>

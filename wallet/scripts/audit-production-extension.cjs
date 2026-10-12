@@ -46,7 +46,7 @@ function flattenModules(rows) {
   return result;
 }
 function methodsFromDoc() {
-  const doc=fs.readFileSync(path.join(wallet,'migrationToGRpcOrGraphQLDoc/08-JSON-RPC全量迁移对照表.md'),'utf8');
+  const doc=fs.readFileSync(path.join(wallet,'docs/migrationToGRpcOrGraphQLDoc/08-JSON-RPC全量迁移对照表.md'),'utf8');
   const section=n=>doc.split(`## ${n}.`)[1].split(`## ${n+1}.`)[0];
   const names=text=>[...text.matchAll(/`((?:rtdx?_[a-zA-Z]+|rpc\.discover))`/g)].map(match=>match[1]);
   const used=names(section(2)),unused=names(section(5));
@@ -60,7 +60,7 @@ function audit(output,buildFile) {
   const sha=file=>crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
   const inputFiles=[__filename,path.join(__dirname,'build-reviewed-production-extension.cjs'),path.join(__dirname,'build-reviewed-local-extension.py'),
     path.join(__dirname,'test-production-extension-audit.cjs'),path.join(__dirname,'lib/verify-extension-local-profile.cjs'),
-    path.join(wallet,'migrationToGRpcOrGraphQLDoc/08-JSON-RPC全量迁移对照表.md'),buildFile];
+    path.join(wallet,'docs/migrationToGRpcOrGraphQLDoc/08-JSON-RPC全量迁移对照表.md'),buildFile];
   const inputsSha256=Object.fromEntries(inputFiles.map(file=>[file,sha(file)]));
   const proof=JSON.parse(fs.readFileSync(buildFile));
   assert(proof.passed && proof.mode==='production');assert.equal(proof.output,output);

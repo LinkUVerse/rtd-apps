@@ -4,47 +4,52 @@
 import { Text } from "_app/shared/text";
 import { useI18n } from "_app/i18n";
 import { TxnAddress } from "_components/receipt-card/TxnAddress";
-import { TxnAmount } from "_components/receipt-card/TxnAmount";
+import { TxnAmountView } from "_components/receipt-card/TxnAmount";
 import { parseAmount } from "_helpers";
-import { useActiveAddress } from "_src/ui/app/hooks/useActiveAddress";
 import { GAS_SYMBOL } from "_src/ui/app/redux/slices/rtd-objects/Coin";
-import { CoinFormat, useCoinMetadata } from "rtd-apps-core/src/rpc/coin";
-import Alert from "_components/alert";
+import { CoinFormat, formatBalance } from "rtd-apps-core/src/rpc/coin";
+import type { PreparedCoinTransfer } from "_src/shared/rpc/coin-transfer-preparation";
 
 export type PreviewTransferProps = {
-  coinType: string;
-  to: string;
-  recipientName?: string;
-  amount: string;
-  approximation?: boolean;
+  prepared: PreparedCoinTransfer;
+  coinSymbol: string;
   gasBudget?: string;
 };
 
 export function PreviewTransfer({
-  coinType,
-  to,
-  recipientName,
-  amount,
-  approximation,
+  prepared,
+  coinSymbol,
   gasBudget,
 }: PreviewTransferProps) {
   const { t } = useI18n();
-  const accountAddress = useActiveAddress();
-  const { data: metadata } = useCoinMetadata(coinType);
-  if (!metadata) return <Alert>{t("common.syncError")}</Alert>;
-  const amountWithoutDecimals = parseAmount(amount, metadata.decimals);
+  // These are the exact draft facts bound to the approved bytes. A later
+  // metadata outage must not erase the user's review or imply dispatch failed.
+  // The signing path independently revalidates the current network and bytes.
+  const { amount, coinDecimals, sender, to, recipientName, isPayAllRtd } =
+    prepared.input;
+  const amountWithoutDecimals = parseAmount(amount, coinDecimals);
 
   return (
     <div className="divide-y divide-solid divide-steel/20 divide-x-0 flex flex-col px-2.5 w-full">
-      <TxnAmount
+      <TxnAmountView
         amount={amountWithoutDecimals.toString()}
         label={t("transfer.sending")}
-        coinType={coinType}
+        formattedAmount={formatBalance(
+          amountWithoutDecimals.toString(),
+          coinDecimals,
+          CoinFormat.FULL,
+        )}
+        symbol={coinSymbol}
         format={CoinFormat.FULL}
-        approximation={approximation}
+        approximation={isPayAllRtd}
       />
-      <TxnAddress address={accountAddress || ""} label={t("transfer.from")} />
-      <TxnAddress address={to} recipientName={recipientName} fullAddress label={t("transfer.to")} />
+      <TxnAddress address={sender} label={t("transfer.from")} />
+      <TxnAddress
+        address={to}
+        recipientName={recipientName}
+        fullAddress
+        label={t("transfer.to")}
+      />
       <div className="pt-3.5 mb-5 flex w-full gap-2 justify-between">
         <div className="flex gap-1">
           <Text variant="body" color="gray-80" weight="medium">

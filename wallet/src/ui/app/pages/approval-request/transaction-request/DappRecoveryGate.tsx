@@ -27,7 +27,11 @@ export function DappRecoveryGate({ accountId, account, requestId, origin, bindin
       signal.throwIfAborted(); return result;
     }),
     retry: false, staleTime: 0, gcTime: 0,
-    refetchInterval: (q) => attempted || q.state.data?.state === 'pending' ? 3000 : false,
+    // A reload can beat the background's commitPending while the approved
+    // execution is still simulating/signing. Null is a local journal check,
+    // not proof that no execution is in flight; keep watching without remounting
+    // a healthy preview. No chain RPC is issued until a journal exists.
+    refetchInterval: (q) => attempted || q.state.data === null || q.state.data?.state === 'pending' ? 3000 : false,
     meta: { skipPersistedCache: true },
   });
   const refreshAfterAttempt = async () => { setAttempted(true); await query.refetch(); };

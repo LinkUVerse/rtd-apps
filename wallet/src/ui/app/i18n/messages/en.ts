@@ -100,6 +100,8 @@ const en = {
   "assets.visual": "Visual Assets",
   "assets.other": "Everything Else",
   "assets.hidden": "Hidden Assets",
+  "assets.hide": "Hide asset",
+  "assets.show": "Show asset",
   "assets.noAssets": "No assets found",
   "assets.viewHidden": "View Hidden Assets",
   "assets.movedTo": "Moved to",

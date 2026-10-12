@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ErrorBoundary } from "_components/error-boundary";
+import { useI18n } from "_app/i18n";
 import { ampli } from "_src/shared/analytics/ampli";
 import { useBuyNLargeAssets } from "_src/ui/app/components/buynlarge/useBuyNLargeAssets";
 import { NFTDisplayCardFromObject } from "_src/ui/app/components/nft-display";
@@ -20,6 +21,7 @@ export default function VisualAssets({
   items: WalletAssetObject[];
 }) {
   const { hideAsset } = useHiddenAssets();
+  const { t } = useI18n();
   const { packages } = useWalletRpc();
   const bnl = useBuyNLargeAssets();
 
@@ -49,10 +51,11 @@ export default function VisualAssets({
             <div className="w-full h-full justify-center z-10 absolute pointer-events-auto text-gray-60 transition-colors duration-200 p-0">
               {!collectibleKioskCap(object, packages) &&
               !bnl.some((item) => item?.objectType === object.type) ? (
-                <div className="absolute top-2 right-3 rounded-md h-8 w-8 opacity-0 group-hover:opacity-100">
+                <div className="absolute top-2 right-3 rounded-md h-8 w-8 opacity-0 group-hover:opacity-100 focus-within:opacity-100">
                   <Button
                     variant="hidden"
                     size="icon"
+                    aria-label={t("assets.hide")}
                     onClick={(event) => {
                       event.preventDefault();
                       event.stopPropagation();

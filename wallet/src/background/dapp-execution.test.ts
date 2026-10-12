@@ -19,12 +19,14 @@ const m = vi.hoisted(() => ({
   captureEgress: vi.fn(),
   runAction: vi.fn(),
   sealEgress: vi.fn(),
+  sealRecovered: vi.fn(),
 }));
 vi.mock("./Transactions", () => ({
   default: {
     captureDappEgress: m.captureEgress,
     runDappAction: m.runAction,
     sealDappEgress: m.sealEgress,
+    sealRecoveredDappExecution: m.sealRecovered,
   },
 }));
 vi.mock("../shared/rpc/transaction-move-dependencies", () => ({
@@ -244,6 +246,14 @@ it("recovers exact pending request by readonly lookup and returns original signa
   expect(m.sign).not.toHaveBeenCalled();
   expect(m.execute).not.toHaveBeenCalled();
   expect(m.consume).not.toHaveBeenCalled();
+  expect(m.captureEgress).not.toHaveBeenCalled();
+  expect(m.sealRecovered).toHaveBeenCalledWith(
+    "r",
+    expect.objectContaining({
+      digest: "digest",
+      signature: "original-signature",
+    }),
+  );
 });
 it("preserves pending when the original receipt is still unknown", async () => {
   m.get.mockResolvedValue(record());

@@ -126,20 +126,7 @@ export async function executeDappPrepared(
           fixed.bytesBase64,
         );
         await authorize();
-        claim = await transactions.captureDappEgress(
-          args.requestId,
-          session.profile,
-          sender,
-          transactionMoveDependencies(
-            session.profile,
-            fixed.bytesBase64,
-            sender,
-          ).areas,
-        );
-        transactions.sealDappEgress(args.requestId, claim, {
-          type: "execute-transaction-response",
-          result,
-        });
+        transactions.sealRecoveredDappExecution(args.requestId, result);
         return { state: "confirmed", ...result };
       }
       await authorize();
@@ -217,16 +204,7 @@ export async function recoverDappExecution(
         sender,
       );
       await authorize();
-      const claim = await transactions.captureDappEgress(
-        args.requestId,
-        session.profile,
-        sender,
-        [],
-      );
-      transactions.sealDappEgress(args.requestId, claim, {
-        type: "execute-transaction-response",
-        result,
-      });
+      transactions.sealRecoveredDappExecution(args.requestId, result);
       return { state: "confirmed", ...result };
     },
     { readOnly: true },

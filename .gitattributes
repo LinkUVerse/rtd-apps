@@ -1,0 +1,2 @@
+# Preserve the published upstream SDL byte-for-byte, including its blank-line tabs.
+wallet/tests/fixtures/graphql/sui-c8601468.graphql whitespace=-blank-at-eol

@@ -75,3 +75,17 @@ it('frontend session replacement retains admitted preview; network change rechec
  expect(f.recover).toHaveBeenCalledTimes(2);expect(host.textContent).not.toContain('preview');
  await act(async()=>{release(null);});
 });
+
+it('reload before commitPending observes the later receipt without preparing again', async()=>{
+ await render();const preview=host.querySelector('span');
+ expect(preview?.textContent).toBe('preview');
+ f.recover.mockResolvedValue({state:'confirmed',digest:'original-after-reload',bytes:'bytes',signature:'sig',effects:'effects'});
+ // The first null result is not permanent: background simulation may commit
+ // the durable record after the fresh approval document's first lookup.
+ await act(async()=>{await new Promise(resolve=>setTimeout(resolve,3100));});
+ expect(f.recover).toHaveBeenCalledTimes(2);
+ expect(host.textContent).toContain('original-after-reload');
+ expect(host.textContent).toContain('返回原执行结果');
+ expect(host.textContent).not.toContain('preview');
+ expect(f.respond).not.toHaveBeenCalled();
+},5000);

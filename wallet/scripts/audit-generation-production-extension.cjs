@@ -46,7 +46,7 @@ function flattenModules(rows) {
   return result;
 }
 function methodsFromDoc() {
-  const doc=fs.readFileSync(path.join(wallet,'migrationToGRpcOrGraphQLDoc/08-JSON-RPC全量迁移对照表.md'),'utf8');
+  const doc=fs.readFileSync(path.join(wallet,'docs/migrationToGRpcOrGraphQLDoc/08-JSON-RPC全量迁移对照表.md'),'utf8');
   const section=n=>doc.split(`## ${n}.`)[1].split(`## ${n+1}.`)[0];
   const names=text=>[...text.matchAll(/`((?:rtdx?_[a-zA-Z]+|rpc\.discover))`/g)].map(match=>match[1]);
   const used=names(section(2)),unused=names(section(5));
@@ -58,15 +58,20 @@ function methodsFromDoc() {
 }
 function audit(output,buildFile) {
   const sha=file=>crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
-  const inputFiles=[__filename,path.join(__dirname,'build-reviewed-generation-production-extension.cjs'),path.join(__dirname,'build-reviewed-local-extension.py'),
-    path.join(__dirname,'test-production-extension-audit.cjs'),path.join(__dirname,'lib/verify-generation-extension-local-profile.cjs'),
-    path.join(wallet,'migrationToGRpcOrGraphQLDoc/08-JSON-RPC全量迁移对照表.md'),buildFile];
-  const inputsSha256=Object.fromEntries(inputFiles.map(file=>[file,sha(file)]));
   const proof=JSON.parse(fs.readFileSync(buildFile));
+  const launchers=['build-reviewed-generation-production-extension.cjs','build-reviewed-canonical-extension.cjs'];
+  const launcher=launchers.map(name=>path.join(__dirname,name)).find(file=>sha(file)===proof.launcherSha256);
+  assert(launcher,'Reviewed build launcher changed or is unknown');
+  const inputFiles=[__filename,launcher,path.join(__dirname,'build-reviewed-local-extension.py'),
+    path.join(__dirname,'test-production-extension-audit.cjs'),path.join(__dirname,'lib/verify-generation-extension-local-profile.cjs'),
+    path.join(wallet,'docs/migrationToGRpcOrGraphQLDoc/08-JSON-RPC全量迁移对照表.md'),buildFile];
+  const inputsSha256=Object.fromEntries(inputFiles.map(file=>[file,sha(file)]));
   assert(proof.passed && proof.mode==='production');assert.equal(proof.output,output);
-  assert.equal(proof.launcherSha256,inputsSha256[path.join(__dirname,'build-reviewed-generation-production-extension.cjs')],'Build launcher changed');
+  assert.equal(proof.launcherSha256,inputsSha256[launcher],'Build launcher changed');
   assert.deepEqual(files(output),proof.artifacts,'Production output changed after build');
-  assert.deepEqual(files(path.join(wallet,'dist')),proof.developmentDist,'Loaded C16 changed');
+  if(proof.developmentDist) assert.deepEqual(files(path.join(wallet,'dist')),proof.developmentDist,'Development output changed');
+  else assert(path.basename(launcher)==='build-reviewed-canonical-extension.cjs' && proof.currentDevelopmentDistUnchanged,
+    'Canonical compiler must verify its before/after development-output hashes');
   assert.deepEqual(productSource(),proof.sourceAfter,'Product source changed after build');
   const graph=JSON.parse(fs.readFileSync(path.join(output,'compilation-graph.json')));
   assert.equal(graph.errors.length,0);

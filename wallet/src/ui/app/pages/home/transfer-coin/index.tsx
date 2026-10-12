@@ -256,13 +256,13 @@ function TransferCoinPage() {
           <BottomMenuLayout>
             <Content>
               <PreviewTransfer
-                coinType={coinType}
-                amount={formData.amount}
-                to={formData.prepared.input.to}
-                recipientName={formData.prepared.input.recipientName}
-                approximation={formData.isPayAllRtd}
+                prepared={formData.prepared}
+                coinSymbol={formData.coinSymbol}
                 gasBudget={formData.gasBudgetEst}
               />
+              {executeTransfer.isPending ? (
+                <p role="status">正在校验并提交已批准的交易，请勿重复发送。交易结果将按下方摘要查询。</p>
+              ) : null}
               <p className="break-all" data-testid="coin-preview-digest">
                 {t("nft.transferDigest")}: {formData.prepared.digest}
               </p>
@@ -278,6 +278,7 @@ function TransferCoinPage() {
                 variant="secondary"
                 onClick={() => setShowTransactionPreview(false)}
                 text={t("common.back")}
+                disabled={executeTransfer.isPending || !!pending}
                 before={<ArrowLeft16 />}
               />
 

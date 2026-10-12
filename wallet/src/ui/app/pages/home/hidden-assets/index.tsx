@@ -127,6 +127,7 @@ function HiddenNftsPage() {
                       <Button
                         variant="secondaryRtd"
                         size="icon"
+                        aria-label={t("assets.show")}
                         onClick={() => {
                           showAsset(objectId);
                         }}

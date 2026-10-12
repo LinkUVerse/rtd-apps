@@ -10,6 +10,7 @@ import {
 /** Private isolated-world channel. Never forward init/challenge/ticket through the public stream. */
 export function createDappEgressClient(): {
   ready: Promise<void>;
+  readonly closed: boolean;
   close: () => void;
   beginRequest: (id: string) => () => void;
   finishRequest: (id: string) => void;
@@ -27,6 +28,7 @@ export function createDappEgressClient(): {
     reject(new Error("页面不支持私有结果通道"));
     return {
       ready,
+      closed: true,
       close: () => undefined,
       finishRequest: () => undefined,
       beginRequest: () => {
@@ -205,5 +207,13 @@ export function createDappEgressClient(): {
       finishRequest(id);
     };
   };
-  return { ready, close, beginRequest, finishRequest };
+  return {
+    ready,
+    get closed() {
+      return closed;
+    },
+    close,
+    beginRequest,
+    finishRequest,
+  };
 }

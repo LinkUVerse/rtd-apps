@@ -92,6 +92,8 @@ const zhCN: Record<keyof typeof en, string> = {
   "assets.visual": "可视化资产",
   "assets.other": "其他资产",
   "assets.hidden": "已隐藏资产",
+  "assets.hide": "隐藏资产",
+  "assets.show": "恢复显示资产",
   "assets.noAssets": "暂无资产",
   "assets.viewHidden": "查看已隐藏资产",
   "assets.movedTo": "已移至",

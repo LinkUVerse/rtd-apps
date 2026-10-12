@@ -442,11 +442,13 @@ export class WalletDappEgressPeerBroker {
     ]);
     signal.throwIfAborted();
     if (peer.closed || gate.closed()) return refuse();
-    const payload = JSON.stringify(
-      validateDappEgressMessage(message, requestId),
-    );
+    const checked = validateDappEgressMessage(message, requestId);
+    const payload = JSON.stringify(checked);
     if (typeof payload !== "string") return refuse();
-    const issued = await this.store.issue(lease, payload);
+    const issued =
+      checked.payload.type === "execute-transaction-response"
+        ? await this.store.issueConfirmedExecution(lease, checked)
+        : await this.store.issue(lease, payload);
     signal.throwIfAborted();
     if (peer.closed || gate.closed()) return refuse();
     let timer: ReturnType<typeof setTimeout> | undefined;

@@ -15,7 +15,10 @@ import {
   WalletNetworkAdmissionBlockedError,
   WalletNetworkAdmissionStateError,
 } from "./network-admission-state";
-import { DAPP_EGRESS_MAX_BYTES } from "./dapp-egress-protocol";
+import {
+  DAPP_EGRESS_MAX_BYTES,
+  validateDappEgressMessage,
+} from "./dapp-egress-protocol";
 import {
   networkBindingKey,
   validateNetworkProfile,
@@ -55,6 +58,7 @@ type Ticket = {
 type LeaseState = {
   admissionTargets: AdmissionTargets;
   started: Set<"sign" | "dispatch">;
+  invoked: Set<"sign" | "dispatch">;
   profile: ValidatedNetworkProfile;
   binding: WalletEgressBinding;
   epoch: string;
@@ -429,6 +433,7 @@ export class WalletDappEgressStore {
         return {
           admissionTargets: selected,
           started: new Set<"sign" | "dispatch">(),
+          invoked: new Set<"sign" | "dispatch">(),
           profile: p,
           binding: b,
           epoch: c.epoch,
@@ -476,6 +481,7 @@ export class WalletDappEgressStore {
           fail();
         let action: Promise<T>;
         try {
+          state.invoked.add(stage);
           action = Promise.resolve(start());
         } catch (error) {
           action = Promise.reject(error);
@@ -487,6 +493,26 @@ export class WalletDappEgressStore {
     return action;
   }
   async issue(lease: WalletEgressLease, payload: string, ttlMs = 10000) {
+    return this.#issue(lease, payload, ttlMs, false);
+  }
+  /** A confirmed execution result is read-only: retain the original context,
+   * but begin its short delivery lifetime now, independently of action expiry.
+   * The producer must already have verified the receipt and sealed the result.
+   * This cannot renew sign/dispatch authority or cross a revoked context. */
+  async issueConfirmedExecution(lease: WalletEgressLease, message: unknown) {
+    const state = this.#leases.get(lease);
+    if (!state) throw new WalletNetworkAdmissionStateError("stale");
+    if (!state.invoked.has("sign") || !state.invoked.has("dispatch")) fail();
+    const checked = validateDappEgressMessage(message, state.binding.requestId);
+    if (checked.payload.type !== "execute-transaction-response") fail();
+    return this.#issue(lease, JSON.stringify(checked), 10000, true);
+  }
+  async #issue(
+    lease: WalletEgressLease,
+    payload: string,
+    ttlMs: number,
+    confirmedExecution: boolean,
+  ) {
     const state = this.#leases.get(lease);
     this.#leases.delete(lease);
     if (!state) throw new WalletNetworkAdmissionStateError("stale");
@@ -517,7 +543,7 @@ export class WalletDappEgressStore {
           c.epoch !== state.epoch ||
           c.revision !== state.revision ||
           now < state.capturedAt ||
-          now >= state.capturedAt + 30000
+          (!confirmedExecution && now >= state.capturedAt + 30000)
         )
           fail();
         stores[2].add(
@@ -529,7 +555,9 @@ export class WalletDappEgressStore {
             epoch: state.epoch,
             revision: state.revision,
             createdAt: now,
-            expiresAt: Math.min(now + ttlMs, state.capturedAt + 30000),
+            expiresAt: confirmedExecution
+              ? now + ttlMs
+              : Math.min(now + ttlMs, state.capturedAt + 30000),
             payload,
           }),
         );

@@ -3,4 +3,6 @@ packages:
   - '!**/node_modules/**'
   - '!**/dist/**'
   - '!**/.next/**'
+  - '!**/docs/**'
+  - '!**/migrationToGRpcOrGraphQLDoc/**'
   - '!./rtd-explorer/src/core/**'

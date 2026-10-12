@@ -57,6 +57,7 @@ class Transactions {
     {
       connection: ContentScriptConnection;
       publicId: string | undefined;
+      mode: "execute" | "sign" | "message";
       claim?: WalletDappEgressClaim;
       capturing: boolean;
       sealed?: DappEgressMessage;
@@ -116,6 +117,35 @@ class Transactions {
         outlet.publicId,
       ),
     );
+  }
+  /** Read-only recovery retains the producer's original grant; never capture a
+   * newer source/account context for an already signed transaction. */
+  public sealRecoveredDappExecution(id: string, result: DappConfirmedResult) {
+    const outlet = this.outlets.get(id);
+    this.getRequestSignal(id).throwIfAborted();
+    if (!outlet?.claim || !outlet.publicId || outlet.mode !== "execute")
+      throw new Error("原交易结果授权已失效");
+    const recovered = validateDappEgressMessage(
+      {
+        id: outlet.publicId,
+        payload: { type: "execute-transaction-response", result },
+      },
+      outlet.publicId,
+    );
+    if (outlet.sealed) {
+      // Recovery polling may rediscover the exact result. Different bytes,
+      // signatures, effects or digest must never replace the producer's result.
+      const original = outlet.sealed.payload;
+      if (
+        original.type !== "execute-transaction-response" ||
+        (Object.keys(result) as (keyof DappConfirmedResult)[]).some(
+          (key) => original.result[key] !== result[key],
+        )
+      )
+        throw new Error("恢复结果与原交易结果不一致");
+      return;
+    }
+    outlet.sealed = structuredClone(recovered);
   }
   private readonly requestSignals = new Map<string, AbortSignal>();
   public getRequestSignal(requestId: string): AbortSignal {
@@ -334,6 +364,12 @@ class Transactions {
       this.outlets.set(txRequest.id, {
         connection,
         publicId: publicRequestId,
+        mode:
+          request.type === "sign-message"
+            ? "message"
+            : request.justSign
+              ? "sign"
+              : "execute",
         capturing: false,
       });
       await this.storeTransactionRequest(txRequest);

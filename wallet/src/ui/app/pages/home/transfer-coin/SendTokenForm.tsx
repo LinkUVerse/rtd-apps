@@ -50,6 +50,7 @@ export type FormValues = typeof initialValues;
 
 export type SubmitProps = {
   requestId: string;
+  coinSymbol: string;
   to: string;
   amount: string;
   isPayAllRtd: boolean;
@@ -314,6 +315,7 @@ export function SendTokenForm({
           });
           const data = {
             requestId: crypto.randomUUID(),
+            coinSymbol: symbol,
             prepared: gasPreview,
             to,
             amount,

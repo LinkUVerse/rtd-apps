@@ -28,6 +28,31 @@ export function TxnAmount({
     coinType,
     format,
   );
+  return (
+    <TxnAmountView
+      amount={amount}
+      label={label}
+      approximation={approximation}
+      format={format}
+      formattedAmount={formatAmount}
+      symbol={symbol}
+    />
+  );
+}
+
+/** Render previously approved facts without starting another metadata read. */
+export function TxnAmountView({
+  amount,
+  label,
+  approximation,
+  format = CoinFormat.ROUNDED,
+  formattedAmount,
+  symbol,
+}: Omit<TxnAmountProps, "coinType"> & {
+  formattedAmount: string;
+  symbol: string;
+}) {
+  const atomic = BigInt(amount);
   return atomic !== 0n ? (
     <div className="flex min-w-0 justify-between w-full items-center gap-4 py-3 first:pt-0">
       <span className="shrink-0 whitespace-nowrap">
@@ -44,7 +69,7 @@ export function TxnAmount({
       >
         <Heading variant="heading2" weight="semibold" color="gray-90">
           {approximation ? "~" : ""}
-          {formatAmount}
+          {formattedAmount}
         </Heading>
         <Text variant="body" weight="medium" color="steel-darker">
           {symbol}

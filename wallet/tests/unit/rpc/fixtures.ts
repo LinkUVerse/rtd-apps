@@ -43,7 +43,7 @@ const suiSchema = graphql.buildSchema(
   readFileSync(
     resolve(
       process.cwd(),
-      "migrationToGRpcOrGraphQLDoc/evidence/official/sui-snapshot-schema.graphql.txt",
+      "tests/fixtures/graphql/sui-c8601468.graphql",
     ),
     "utf8",
   ),

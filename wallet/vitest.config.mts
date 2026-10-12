@@ -13,6 +13,7 @@ export default defineConfig({
       "scripts/**/*.test.cjs",
       // Audit snapshots preserve source names but are not runnable test projects.
       "migrationToGRpcOrGraphQLDoc/**",
+      "docs/migrationToGRpcOrGraphQLDoc/**",
     ],
     // TODO: Create custom extension environment.
     environment: "happy-dom",

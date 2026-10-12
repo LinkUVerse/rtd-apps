@@ -1,8 +1,7 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import ExplorerLink from "_src/ui/app/components/explorer-link";
-import { ExplorerLinkType } from "_src/ui/app/components/explorer-link/ExplorerLinkType";
+import { Link } from "react-router-dom";
 import { Text } from "_src/ui/app/shared/text";
 import { useI18n } from "_app/i18n";
 import type { WalletAssetObject } from "rtd-apps-core/src/rpc/WalletRpcContext";
@@ -22,13 +21,12 @@ export default function NonVisualAssets({
             const { address, module, name } = parseStructTag(item.type!);
             return (
               <div className="grid grid-cols-3 pt-3" key={item.objectId}>
-                <ExplorerLink
+                <Link
                   className="text-hero-dark no-underline"
-                  objectID={item.objectId!}
-                  type={ExplorerLinkType.object}
+                  to={`/nft-details?${new URLSearchParams({ objectId: item.objectId })}`}
                 >
                   <Text variant="pBody">{formatAddress(item.objectId!)}</Text>
-                </ExplorerLink>
+                </Link>
 
                 <div className="break-all col-span-2">
                   <Text

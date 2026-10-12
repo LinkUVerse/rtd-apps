@@ -517,6 +517,108 @@ it("producer ownership cannot be recaptured, borrowed or resealed", async () => 
   await expect(r.promise).rejects.toThrow();
 });
 
+async function recoveryExecutionRequest(seal = true) {
+  const promise = transactions.executeOrSignTransaction(
+    {
+      tx: {
+        type: "transaction",
+        data: new Transaction().serialize(),
+        account: "0x7",
+        chain: "rtd:localnet",
+      },
+    },
+    connection,
+    undefined,
+    "public-execution",
+  );
+  promise.catch(() => undefined);
+  await vi.waitFor(() => expect(mocks.show).toHaveBeenCalledOnce());
+  const id = Object.keys(stored)[0];
+  const profile = (
+    await import("../shared/rpc/profile")
+  ).validateNetworkProfile(profileFixture());
+  const claim = await transactions.captureDappEgress(
+    id,
+    profile,
+    `0x${"0".repeat(63)}7`,
+    [],
+  );
+  const result = {
+    digest: "A".repeat(43),
+    bytes: "AQ==",
+    signature: "AA==",
+    effects: "AQ==",
+  };
+  if (seal)
+    transactions.sealDappEgress(id, claim, {
+      type: "execute-transaction-response",
+      result,
+    });
+  return { promise, id, claim, result };
+}
+it.each([true, false])(
+  "recovery reuses the original execution grant, with prior sealed result=%s",
+  async (sealed) => {
+    const r = await recoveryExecutionRequest(sealed);
+    transactions.sealRecoveredDappExecution(r.id, r.result);
+    transactions.sealRecoveredDappExecution(r.id, { ...r.result });
+    transactions.handleMessage({
+      type: "transaction-request-response",
+      txID: r.id,
+      approved: true,
+    });
+    expect(await r.promise).toEqual(r.result);
+    expect(mocks.captureEgress).toHaveBeenCalledOnce();
+    expect(mocks.publishEgress).toHaveBeenCalledExactlyOnceWith(
+      r.claim,
+      {
+        id: "public-execution",
+        payload: { type: "execute-transaction-response", result: r.result },
+      },
+      expect.any(AbortSignal),
+    );
+  },
+);
+it.each(["digest", "bytes", "signature", "effects"] as const)(
+  "recovery cannot replace original %s",
+  async (field) => {
+    const r = await recoveryExecutionRequest();
+    const changed = {
+      ...r.result,
+      [field]: field === "digest" ? "B".repeat(43) : "Ag==",
+    };
+    expect(() =>
+      transactions.sealRecoveredDappExecution(r.id, changed),
+    ).toThrow("不一致");
+    expect(mocks.captureEgress).toHaveBeenCalledOnce();
+    disconnect.next();
+    await expect(r.promise).rejects.toThrow();
+  },
+);
+it("recovery cannot reuse a message-signing grant", async () => {
+  const r = await sealedMessageRequest();
+  expect(() =>
+    transactions.sealRecoveredDappExecution(r.id, {
+      digest: "A".repeat(43),
+      bytes: "AQ==",
+      signature: "AA==",
+      effects: "AQ==",
+    }),
+  ).toThrow("授权已失效");
+  disconnect.next();
+  await expect(r.promise).rejects.toThrow();
+});
+it("recovery cannot recreate an original grant after caller disconnect", async () => {
+  const r = await recoveryExecutionRequest();
+  disconnect.next();
+  await expect(r.promise).rejects.toThrow();
+  expect(() =>
+    transactions.sealRecoveredDappExecution(r.id, r.result),
+  ).toThrow();
+  expect(mocks.captureEgress).toHaveBeenCalledOnce();
+  expect(mocks.publishEgress).not.toHaveBeenCalled();
+});
+
 // C131: orphan requests restored after their original listener has ended.
 async function restoredOrphanRequest() {
   const promise = execute();
