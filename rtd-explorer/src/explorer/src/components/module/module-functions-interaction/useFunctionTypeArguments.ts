@@ -3,7 +3,7 @@
 
 import { useMemo } from "react";
 
-import type { RtdMoveAbilitySet } from "rtd-typescript/client";
+import type { RtdMoveAbilitySet } from "rtd-typescript/jsonRpc";
 
 export function useFunctionTypeArguments(typeArguments: RtdMoveAbilitySet[]) {
 	return useMemo(

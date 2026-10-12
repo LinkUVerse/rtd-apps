@@ -1,0 +1,15 @@
+// Offline source and exact non-NFT diagnostic request qualification.
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+const base=require('./lib/C117-non-nft-validity-audit.cjs'),{Transaction}=require('rtd-typescript/transactions');
+const sha=require('./lib/C119-non-nft-signing-audit.cjs').sha,read=f=>JSON.parse(fs.readFileSync(f)),wallet=path.resolve(__dirname,'..'),logs=path.join(wallet,'migrationToGRpcOrGraphQLDoc/workLog');
+(async()=>{
+ const output=process.argv[2];assert(output&&!fs.existsSync(output));const sourceFile=path.join(logs,'20261008-C121-stake-signing-failure-source-prepared-01.json'),proof=read(sourceFile);
+ assert(proof.passed&&proof.preparedOnly);assert.equal(proof.completeSourceInverses.length,2);for(const[f,h]of Object.entries(proof.inputsSha256))assert.equal(sha(f),h);
+ for(const row of proof.completeSourceInverses){let s=fs.readFileSync(row.new,'utf8');for(const d of [...row.deltas].reverse()){assert.equal(s.split(d.toText).length-1,d.count);s=s.split(d.toText).join(d.fromText)}assert.equal(s,fs.readFileSync(row.old,'utf8'))}
+ const failedFile=path.join(logs,'20261008-C119-non-nft-signing-ui-01.json'),failed=read(failedFile);assert.equal(failed.passed,false);assert.equal(failed.returnedSignatures,7);
+ const prepared=failed.cases.find(r=>r.kind==='stake').approval.prepared;base.requireNonNft(prepared,'stake',failed.cipherBefore.owner);const want=await base.expected(prepared,'validDuringNoTimestamp');assert(want.approvalEnabled);assert.equal(Buffer.from(await Transaction.from(want.bytesBase64).build()).toString('base64'),want.bytesBase64);
+ const lineage=require('./lib/C109-product-source-lineage.cjs'),q=read(lineage.qualificationFile),source=lineage.validate(q.originalSource,q.buildFile),build=read(q.buildFile);
+ const monitorFile=path.join(__dirname,'lib/C118-signature-delivery-stage-monitor-v2.cjs'),monitor=require(monitorFile).qualify(build.output);assert.equal(monitor.points.length,12);assert.equal(monitor.bundleSha256,build.artifacts['background.js']);assert.equal(monitor.mapSha256,build.artifacts['background.js.map']);
+ const files=[__filename,sourceFile,failedFile,monitorFile,lineage.qualificationFile,q.buildFile];
+ fs.writeFileSync(output,JSON.stringify({passed:true,observedAt:new Date().toISOString(),preparedOnly:true,completeSourceInverses:2,source,diagnosticPoints:monitor.points,actualStakeValidDuringBytesQualified:true,diagnosticOnlyCloseWaitMilliseconds:180000,normalSigningWaitUnchangedMilliseconds:90000,resultLeaseUnchangedMilliseconds:30000,profilesOpened:0,networkRequests:0,signatures:0,executeRequests:0,nftBusinessRequests:0,fullNonNftPhaseAccepted:false,parentCompletion:false,inputsSha256:Object.fromEntries(files.map(f=>[f,sha(f)]))},null,2)+'\n',{flag:'wx',mode:0o600});console.log(JSON.stringify({passed:true,inverses:2,logpoints:12,networkRequests:0}));
+})().catch(error=>{console.error(JSON.stringify({passed:false,message:String(error.message).slice(0,1200)}));process.exitCode=1});

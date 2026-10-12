@@ -7,8 +7,8 @@ import { ButtonOrLink } from '_app/shared/utils/ButtonOrLink';
 import { useActiveAddress } from '_hooks';
 import { useUsdcPromo } from '_pages/home/usdc-promo/useUsdcPromo';
 import { ampli } from '_shared/analytics/ampli';
-import { useCoinMetadata } from 'rtd-apps-core';
-import { type CoinBalance } from 'rtd-typescript/client';
+import { useCoinMetadata } from 'rtd-apps-core/src/rpc/coin';
+import { type RtdClientTypes } from 'rtd-typescript/client';
 import BigNumber from 'bignumber.js';
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -17,18 +17,17 @@ function useUsdcInUserBalance() {
 	const activeAccountAddress = useActiveAddress();
 	const { wrappedUsdcList } = useUsdcPromo();
 
-	const { data: coinBalances } = useGetAllBalances(activeAccountAddress || '');
+	const { data: coinBalances, isError } = useGetAllBalances(activeAccountAddress || '');
+	if (isError) return [];
 
 	return coinBalances
 		? coinBalances.filter(
-				(coin) =>
-					wrappedUsdcList.includes(coin.coinType) &&
-					Number(coin.totalBalance) > 0,
+				(coin) => wrappedUsdcList.includes(coin.coinType) && BigInt(coin.balance) > 0n,
 			)
 		: [];
 }
 
-function BannerImage({ balance }: { balance: CoinBalance }) {
+function BannerImage({ balance }: { balance: RtdClientTypes.Balance }) {
 	const { t } = useI18n();
 	const navigate = useNavigate();
 	const { promoBannerBackground, promoBannerText } = useUsdcPromo();
@@ -36,12 +35,11 @@ function BannerImage({ balance }: { balance: CoinBalance }) {
 	const usdcInUsersBalance = useUsdcInUserBalance();
 
 	const maxBalance = useMemo(() => {
-		const decimals = metadata?.decimals ?? 0;
-		return new BigNumber(balance?.totalBalance || 0)
-			.shiftedBy(-decimals)
-			.decimalPlaces(decimals)
-			.toString();
+		if (!metadata) return null;
+		const decimals = metadata.decimals;
+		return new BigNumber(balance.balance).shiftedBy(-decimals).decimalPlaces(decimals).toString();
 	}, [balance, metadata]);
+	if (maxBalance === null) return null;
 
 	return (
 		<ButtonOrLink
@@ -69,12 +67,7 @@ function BannerImage({ balance }: { balance: CoinBalance }) {
 					src="https://fe-assets.linkuverse.com/wallet_next/usdc_icon.png"
 					className="h-8 w-8"
 				/>
-				<Text
-					variant="bodySmall"
-					weight="medium"
-					color="white"
-					className="text-left"
-				>
+				<Text variant="bodySmall" weight="medium" color="white" className="text-left">
 					{promoBannerText}
 				</Text>
 			</div>

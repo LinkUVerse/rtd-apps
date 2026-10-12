@@ -1,0 +1,9 @@
+# C138 cold03失败记录的控制流程限定审核
+
+cold03确实到达normal second Reject Disconnect relock：正常Unlock、三个正确资金表单durable拒绝、第二真实dApp disabled/实际空闲Web Lock上的trusted prepare拒绝、normalReject/Disconnect/relock全部成立，三持久store和cipher前后相同。215正文/14固定digest查找、forbidden为空。整轮因正常卸载popup时一条WalletSnapshotAdmission（1417字节）GraphQL正文缺失而失败，原记录及原capture-gaps白名单必须保持。
+
+可以独立审核原失败记录中的上述控制流程，但不得投影p.passed=true、不得补入未保存的workerSource/uiSource/计数、不得将缺失的正面正文当成空数据或原白名单里的404。新限定审核须直接要求原actor.passed=false和实际失败stage/断言，核验完整store/cipher、当前secondPopup实际载入字节、原creator/canonical input与当前产品/原运行、实际traffic零sim/Verify/Execute与无签名交付；保存该唯一缺口完整元数据及固定原actor SHA，变异必须拒绝。
+
+初始worker/UI加载证据在失败分支没有序列化，不能声称已经独立读取这些原字节；本轮只有当前第二popup字节可以直接独立检查。没有独立私有signData调用计数，不声称观测到该计数为零。实际新批准/签名交付/网络执行均没有；原creator不得重跑，原5nano pending和旧C133整树保持。
+
+输出若通过只代表actualCurrentColdControlPrefixAccepted，allOriginalHttpBodiesCaptured/fullInitialWorkerUiEvidenceAccepted/fullNonNftM5Accepted/parentCompletion均为false。Task增加P138-3a限定完成，P138-3/4保留开放。审核结束后本批C137query不再使用，可按确切CID及guard正常清理并独立核验，不增加新同用途容器。完整物理/WAL重放和一期其他合同继续，NFT业务后置。

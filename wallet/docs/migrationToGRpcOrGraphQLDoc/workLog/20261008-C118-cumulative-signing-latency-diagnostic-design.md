@@ -1,0 +1,1 @@
+诊断05实测进入签名至原生验证返回87.7秒，返回时仍未做完最后一次authorize；90秒测试清理后收到真实会话取消错误。单次三角色身份只读探测3750ms：fullnode35ms、archive3412ms、GraphQL3707ms。大量连续安全核验的累计耗时已被观察，是否能在不清理干扰下完成结果交付仍待确认。下一次仅诊断把弹窗close等候设180000ms，原正常业务90000ms标准保持未通过；10／20／30／5秒等单操作期限及全部原安全门不变。另纠正诊断工具的VerifySignature路径匹配为实际完整`/rtd.rpc.v2.SignatureVerificationService/VerifySignature`，仍要求恰好一条原生验签帧，不改变计数标准。

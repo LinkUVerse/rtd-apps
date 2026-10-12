@@ -1,9 +1,9 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { type EndOfEpochInfo } from "rtd-typescript/client";
+import { type ExplorerEndOfEpochInfo } from "~/rpc/epoch-schema";
 
-export function getEpochStorageFundFlow(endOfEpochInfo: EndOfEpochInfo | null) {
+export function getEpochStorageFundFlow(endOfEpochInfo: ExplorerEndOfEpochInfo | null) {
 	const fundInflow = endOfEpochInfo
 		? BigInt(endOfEpochInfo.storageFundReinvestment) +
 		  BigInt(endOfEpochInfo.storageCharge) +

@@ -1,0 +1,24 @@
+# Keep the plan, task ledgers and written work logs in Git.
+# Raw acceptance captures and historical input/source snapshots stay local.
+/evidence/*
+!/evidence/*.py
+!/evidence/*.cjs
+!/evidence/*.md
+/workLog/*
+!/workLog/*.md
+!/workLog/current-data-lifecycle-progress.json
+
+# Development screenshots, recordings and network captures.
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.gif
+*.mp4
+*.webm
+*.mov
+*.har
+*.trace
+*.zip
+*.tar
+*.tar.gz

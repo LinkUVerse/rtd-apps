@@ -1,0 +1,19 @@
+# 后台名称授权期限与遗漏分支
+
+## 修复
+
+executeWalletPrepared在checks-enabled模拟后重新解析名称，但原authorize回调只检查账户／网络。名称解析成功后若账户复核、签名或验签耗时，其期限可能在实际提交前耗尽。
+
+现在后台解析拒绝非法／已过期期限，保存本次独立解析的单调时钟截止值；协调器每次authorize完成后复查期限。授权期间到期阻止签名，签名期间到期阻止后续journal提交和dispatch。复用协调器原有持久pending边界，不清除已存在pending、不重新发送。
+
+## 回归
+
+新增授权等待和签名等待分别推进时钟至期限的回归，断言signData分别0／1次、commitPending与dispatch均0。包括原名称目标必须存在于批准TransferObjects及正常路径测试，4文件51项执行／dApp签名测试通过：20261004-background-name-expiry-tests.log。
+
+## 重新打开RPC-21
+
+同一审计发现OriginByte的appendOriginByteTransfer生成p2p_transfer或p2p_transfer_and_create_target_kiosk MoveCall，而后台名称绑定只接受TransferObjects。直接持有、原生和Personal Kiosk构造有TransferObjects，OriginByte没有；名称解析即使成功仍会被后台拒绝。
+
+这是真正未完成的编码分支，不能归为Chrome细节验收。RPC-21由已完成重新打开，之前日志已加更正。下一步需按显式profile执行包和实际ABI校验MoveCall收款参数；已有收款Kiosk分支必须重新核对目标Kiosk当前所有者，不能只认任意Pure地址输入或放宽所有Move调用。OriginByte部署与ABI需继续以link-u-smart-contract为准。
+
+钱包完整tsc、dev Webpack构建和四入口静态审计通过，日志前缀20261004-background-name-expiry；本轮未做实链或Chrome验收。

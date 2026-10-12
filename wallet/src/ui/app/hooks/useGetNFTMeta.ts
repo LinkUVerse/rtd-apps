@@ -1,35 +1,35 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { useGetObject } from 'rtd-apps-core';
-import { useMemo } from 'react';
+import { useGetObject } from "rtd-apps-core/src/rpc/asset-hooks";
+import { displayString, hasDisplayData } from "rtd-apps-core/src/rpc/display";
+import { useMemo } from "react";
 
 export type NFTMetadata = {
-	name: string | null;
-	description: string | null;
-	url: string;
+  name: string | null;
+  description: string | null;
+  imageUrl: string | null;
+  link: string | null;
+  projectUrl: string | null;
+  creator: string | null;
 };
 
 export function useGetNFTMeta(objectID: string) {
-	const resp = useGetObject(objectID);
-	const nftMeta = useMemo(() => {
-		if (!resp.data) return null;
-		const display = resp.data.data?.display?.data;
-		if (!display) {
-			return null;
-		}
-		const { name, description, creator, image_url, link, project_url } = display;
-		return {
-			name: name || null,
-			description: description || null,
-			imageUrl: image_url || null,
-			link: link || null,
-			projectUrl: project_url || null,
-			creator: creator || null,
-		};
-	}, [resp]);
-	return {
-		...resp,
-		data: nftMeta,
-	};
+  const resp = useGetObject(objectID);
+  const nftMeta = useMemo(() => {
+    if (resp.isError || !hasDisplayData(resp.data)) return null;
+    return {
+      name: displayString(resp.data, "name"),
+      description: displayString(resp.data, "description"),
+      imageUrl: displayString(resp.data, "image_url"),
+      link: displayString(resp.data, "link"),
+      projectUrl: displayString(resp.data, "project_url"),
+      creator: displayString(resp.data, "creator"),
+    };
+  }, [resp.data, resp.isError]);
+  return {
+    ...resp,
+    isPending: !!objectID && resp.isPending,
+    data: nftMeta,
+  };
 }

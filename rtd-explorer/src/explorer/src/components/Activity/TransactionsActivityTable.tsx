@@ -1,7 +1,7 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { useRtdClient } from "rtd-dapp-kit";
+import { useExplorerClient } from "~/rpc/explorer-client";
 import { ArrowRight12 } from "rtd-apps-icons";
 import { Text } from "@linku/ui";
 import { useQuery } from "@tanstack/react-query";
@@ -31,7 +31,7 @@ export function TransactionsActivityTable({
 	transactionKindFilter,
 }: Props) {
 	const [limit, setLimit] = useState(initialLimit);
-	const client = useRtdClient();
+	const client = useExplorerClient();
 	const { data: count } = useQuery({
 		queryKey: ["transactions", "count"],
 		queryFn: () => client.getTotalTransactionBlocks(),

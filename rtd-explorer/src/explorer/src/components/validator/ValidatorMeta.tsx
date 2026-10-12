@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ArrowUpRight12 } from "rtd-apps-icons";
-import { type RtdValidatorSummary } from "rtd-typescript/client";
+import type { RtdValidatorSummary } from "rtd-typescript/jsonRpc";
 import { Heading, Text } from "@linku/ui";
 
 import { CopyToClipboard } from "~/ui/CopyToClipboard";

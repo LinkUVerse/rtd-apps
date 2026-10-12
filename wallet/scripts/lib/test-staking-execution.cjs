@@ -1,0 +1,31 @@
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const {expect}=require('@playwright/test');
+const {bcs}=require('rtd-typescript/bcs');
+const {journal}=require('./test-dapp-execution.cjs');
+module.exports=async({page,confirm,preview,evidenceDirectory,accountId,accountAddress,setStage})=>{
+ const digest=preview.digestLine.split(/[:：]/).pop().trim();
+ assert.match(digest,/^[1-9A-HJ-NP-Za-km-z]{40,50}$/);
+ assert.equal((await journal(page)).length,0,'new isolated journal must be empty');
+ const evidence={digest,accountId,accountAddress,preview,startedAt:new Date().toISOString(),state:'about-to-approve'};
+ const write=(name,data)=>{const fd=fs.openSync(path.join(evidenceDirectory,name),'wx',0o600);try{fs.writeFileSync(fd,JSON.stringify(data,null,2)+'\n');fs.fsyncSync(fd);}finally{fs.closeSync(fd);}};
+ write('attempt.json',evidence);
+ setStage('staking: single real UI approval');
+ // One click only. On failure retain the profile and recover the same digest.
+ await confirm.click();
+ setStage('staking: original digest terminal journal');
+ await expect.poll(async()=> (await journal(page)).find(row=>row.digest===digest)?.state,{timeout:90000,intervals:[500,1000,3000]}).toBe('confirmed-success');
+ const records=await journal(page);
+ assert.equal(records.length,1);
+ const record=records[0];assert.equal(record.digest,digest);assert.equal(record.accountAddress,accountAddress);assert.equal(record.receipt.success,true);
+ const effects=bcs.TransactionEffects.parse(Buffer.from(record.receipt.effectsBase64,'base64'));
+ const body=effects.$kind==='V2'?effects.V2:effects.V1;
+ assert.equal(body.transactionDigest,digest);assert.equal(body.status.$kind,'Success');
+ setStage('staking: receipt navigation');
+ await expect.poll(()=>new URL(page.url()).hash,{timeout:30000}).toContain('/receipt?');
+ assert.equal(new URLSearchParams(new URL(page.url()).hash.split('?')[1]).get('txdigest'),digest);
+ const result={...evidence,state:'confirmed-success',passed:true,requestId:record.requestId,receipt:record.receipt,effectsDigestMatches:true,receiptNavigation:true};
+ write('confirmed.json',result);
+ return result;
+};

@@ -1,43 +1,37 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import networkEnv from '_src/background/NetworkEnv';
-import { getFromSessionStorage, setToSessionStorage } from '_src/background/storage-utils';
-import { type NetworkEnvType } from '_src/shared/api-env';
-import { getActiveNetworkRtdClient } from '_src/shared/rtd-client';
+import networkEnv from "_src/background/NetworkEnv";
+import { WalletFullnodeReader } from "_src/shared/rpc/fullnode-reader";
+import { networkBindingKey } from "_src/shared/rpc/profile";
+import { selectNetworkProfile } from "_src/shared/rpc/profile-registry";
+import { WalletReadSession } from "_src/shared/rpc/session";
 
-type EpochCacheInfo = {
-	epoch: number;
-	epochEndTimestamp: number;
-};
-
-function epochCacheKey(network: NetworkEnvType) {
-	return `epoch_cache_${network.env}-${network.customRpcUrl}`;
-}
-
-async function getCurrentEpochRequest(): Promise<EpochCacheInfo> {
-	const rtdClient = await getActiveNetworkRtdClient();
-	const { epoch, epochDurationMs, epochStartTimestampMs } =
-		await rtdClient.getLatestRtdSystemState();
-	return {
-		epoch: Number(epoch),
-		epochEndTimestamp: Number(epochStartTimestampMs) + Number(epochDurationMs),
-	};
-}
-
+/** Always obtain the currently executed epoch from the configured, H0-verified Fullnode. */
 export async function getCurrentEpoch() {
-	const activeNetwork = await networkEnv.getActiveNetwork();
-	const cache = await getFromSessionStorage<EpochCacheInfo>(epochCacheKey(activeNetwork));
-	if (cache && Date.now() <= cache.epochEndTimestamp) {
-		return cache.epoch;
-	}
-	const { epoch, epochEndTimestamp } = await getCurrentEpochRequest();
-	const newCache: EpochCacheInfo = {
-		epoch,
-		epochEndTimestamp:
-			// add some extra time to existing epochEndTimestamp to avoid making repeating requests while epoch is changing
-			cache?.epoch === epoch ? cache.epochEndTimestamp + 5 * 1000 : epochEndTimestamp,
-	};
-	await setToSessionStorage(epochCacheKey(activeNetwork), newCache);
-	return epoch;
+  const selected = selectNetworkProfile(
+    await networkEnv.getActiveNetwork(),
+    process.env.WALLET_NETWORK_PROFILES,
+  );
+  if (selected.state !== "configured") throw new Error(selected.message);
+  const session = new WalletReadSession(selected.profile);
+  const close = () => session.close();
+  networkEnv.on("changed", close);
+  try {
+    const epoch = await new WalletFullnodeReader(session).currentEpoch();
+    const current = selectNetworkProfile(
+      await networkEnv.getActiveNetwork(),
+      process.env.WALLET_NETWORK_PROFILES,
+    );
+    if (
+      current.state !== "configured" ||
+      networkBindingKey(current.profile) !== session.bindingKey
+    )
+      throw new Error("zkLogin 网络配置已改变，请重试");
+    session.assertActive();
+    return epoch;
+  } finally {
+    session.close();
+    networkEnv.off("changed", close);
+  }
 }

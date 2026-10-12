@@ -11,6 +11,7 @@ export interface SignMessageRequest extends BasePayload {
 	args?: {
 		message: string; // base64
 		accountAddress: string;
+  chain?: string;
 	};
 	return?: RtdSignMessageOutput;
 }

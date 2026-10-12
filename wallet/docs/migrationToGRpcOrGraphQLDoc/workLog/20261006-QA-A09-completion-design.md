@@ -1,0 +1,9 @@
+# QA-A09验收收口前合同
+
+依据07表A09及Task.md：最终bytes／批准digest一致，普通／导入签名，成功和FailedTransaction真实链回执；无自动重复dispatch。当前C20普通／导入账户106项、4消息签名／4交易签名及各一次实际成功Execute已通过，独立原摘要只读审核又核对2笔链上BCS／effects／公钥签名，5阶段重启及恢复保留。
+
+失败合同使用既有同H0真实钱包批准失败交易d4kE2koaXQ829UWnhXd8exWawWa37zEuzCfA7WLdkRC（历史钱包只广播一次、返回FailedTransaction、confirmed-failure并锁定恢复）。不重复提交或重置它的Gate。当前C20再按原摘要读取其完整BCS／签名／effects、验签及FailedTransaction投影，并在新产物实际收据UI显示链失败，查看前后journal保持。不把它称为新C20失败提交。
+
+浏览器仅复制本轮成功执行新profile的加密文件至另一个全新测试目录，原新profileSHA保持；不打开旧原七profile、不读取明文key、不注资、不模拟／Execute。当前worker／UI三脚本须逐字匹配候选04；普通CA，HTTPS全部阻止，只放行Fullnode只读协议。已有2条成功journal不得因显示另一笔公开失败而新增或更改，正常退出前所属观察实际结束。
+
+失败回执与当前成功两种链事实、现代dApp终态类型和单次广播计数均证明后才收口QA-A09。完整金额／赞助／expiration／提交后故障／普通HTTPS仍按TX-01、QA-A08/10/19等任务验收，QA-A09不宣称所有交易功能完成。

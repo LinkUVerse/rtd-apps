@@ -1,0 +1,13 @@
+# 现代Wallet Standard执行与页面提交接通
+
+日期2026-10-03；RPC／TX继续推进，未达到真实运行验收。
+
+批准页和redux执行分支现只提交后台批准token，使用executeDappPrepared结果，不再重建Transaction或调用旧signAndExecuteTransactionBlock。pending只报告原digest及恢复提示，不重发。交易页移除useSigner和旧Qredo提交hook；消息签名仍保留自身旧signer，后续迁移。
+
+现代Wallet Standard直接返回本钱包实际签名、批准bytes、digest与effects BCS，删除rawTransaction解码及signatures[0]假设。新增共享DappConfirmedResult，Transactions／ContentScriptConnection／UI通信及批准结果类型移除旧RtdTransactionBlockResponse。交易消息移除旧requestType／options类型；只签名输入改用现代SDK契约。
+
+按已合并方案5.1的未上线modern-only策略，移除deprecated signMessage、signTransactionBlock、signAndExecuteTransactionBlock对外注册及实现；保留标准连接／事件／断开和三个现代能力。SDK本地features/index.ts将旧接口标为Partial且废弃。两侧方案已明确此次选择，旧dApp需升级现代方法。
+
+新增5项测试：2项redux真实执行分支／pending不重试，3项真实RtdWallet类feature注册／消息往返字段／缺effects拒绝。相关6文件31/31通过。随后执行整组合并回归，776/776、64文件通过，见20261003-dapp-modern-bridge-full-tests.log。完整钱包类型仍100条诊断（前107），见同前缀-typecheck.log；不把定向回归当实链／Chrome／构建验收。
+
+仍未完成：持久请求与浏览器连接生命周期绑定、历史终态原始签名查找、多签／Qredo新路径、PersonalMessage独立授权、实际dev核心链及Chrome试用。既有journal可保留pending，但dApp自动恢复结果还需完成。不可试用，目标保持active。

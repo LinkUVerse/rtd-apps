@@ -19,10 +19,6 @@ export type AccountsFormValues =
 	| { type: 'import-mnemonic'; entropy: string }
 	| { type: 'mnemonic-derived'; sourceID: string }
 	| { type: 'imported'; keyPair: string }
-	| {
-			type: 'ledger';
-			accounts: { publicKey: string; derivationPath: string; address: string }[];
-	  }
 	| { type: 'qredo'; accounts: Wallet[]; qredoID: string }
 	| null;
 

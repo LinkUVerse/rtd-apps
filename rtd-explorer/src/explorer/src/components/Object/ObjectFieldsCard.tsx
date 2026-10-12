@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Search24 } from "rtd-apps-icons";
-import { type RtdMoveNormalizedStruct, type RtdObjectResponse } from "rtd-typescript/client";
+import type { RtdMoveNormalizedStruct, RtdObjectResponse } from "rtd-typescript/jsonRpc";
 import { Text, LoadingIndicator, Combobox, ComboboxInput, ComboboxList } from "@linku/ui";
 import clsx from "clsx";
 import { useCallback, useEffect, useState } from "react";

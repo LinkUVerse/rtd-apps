@@ -1,0 +1,9 @@
+# F1d.1–5本轮编码细化（先保存后改动）
+
+按原F1d六阶段设计继续。纯依赖从approvedTransaction的固定BCS／sender合同重解码，精确函数来源绑定作者目录，五个已审核动作族coins／staking／kiosk／personalKiosk／originByteExecution各取本族主模块，避免复制Kiosk descriptor的辅助阅读族扩大依赖。递归目录dependencies，builtin不伪造Move函数，Publish／Upgrade及自定义调用和泛型类型保持opaque；返回仅有限组／计数／范围，无账户或payload。
+
+默认后台Move guard与UI共用compile-captured release selector，但从不消费UI报告。native assertClear按该固定交易依赖前后重检；builtin／opaque无审核Move根时仅负面重检，不发包探测。明确已审核Move根先提交Fullnode身份＋实际probe读取的12 Move族原ticket，再真实SDK probeDeployment＋有界physical-completion transport；缺pin保留unreviewed有限状态，编译registry rejected拒绝相应Move审核操作。全部读取结束才正常complete；typed identity负面可以关闭session并独立保存，partial取消不空决定；ABI负面只在物理完成时落盘，未结束时原pending保留。仅相关依赖ABI／包pin不完整拒绝，不由全report degraded连带否定无关目标。
+
+内部coordinator和dApp execute在确认无原record／scope pending之后的simulate callback中激活门槛，之后authorize回调每次重核。只签名在原pending排除后首次模拟之前开始、后续四次边界重核。外层账户／profile／permissions继续独立；readonly recover及stored receipt不接新Move门槛，personal message不接TransactionData。最终native capture后至授权返回的原子窗口仍独立待，绝不因本guard成功勾完整授权竞态。
+
+业务改动前3份background原字节已保存，122项当前来源及1072产品基线核对保持。新增4来源及修改3实际后台来源，先定向／类型，失败保留原日志与有限诊断，随后全量与新source mapping／双方文档校验。native／当前扩展／真实发布pin与实链属于后续，不以单测代称。父49/98、trial_ready=false暂保持。

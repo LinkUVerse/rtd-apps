@@ -1,0 +1,13 @@
+# 当前生产测试扩展原路径升级
+
+第九轮新构建在新目录中实际Chrome ID为ggghpbigcailolgemaakbkednppfgfki，原测试路径的ID为allmppilngnjjikoeinlmjpfpdemkdal。原来源断言正确拒绝；尚未导入测试账户或批准交易，三私有0、Execute0，Chrome正常关闭。失败报告保留，不算业务通过。
+
+未添加manifest key、不伪造来源、不修改网关允许来源、不关闭CORS/TLS检查。执行正常未打包扩展原路径版本升级：先逐文件核对旧C136和新C188全部产物、确认无Chrome使用原路径，将新产物完整复制到临时路径并核对；再把旧产物目录完整rename归档，把新产物rename安装至原C136路径。新产物与独立编译输出逐字节相同，旧产物在归档目录逐字节保持；原安装路径保留因此ID和数据库namespace不变。没有打开或改写任何已有profile数据库。
+
+原C136报告中的旧物理产物路径现在由C191安装凭据映射至完整归档目录，独立核对原SHA；不得把新产物冒称旧产物未变。C191源码资格保持C188完整差异逆变换、219回归、59定向、类型检查、产物闭包和原positive-pending主体字节不变，并增加实际安装/归档核验。旧报告不改写，新业务报告使用新资格、独立编译来源和实际原路径加载字节核验。
+
+当前完整C167矩阵使用新146000167预算和全新profile；前两次失败均无新批准，历史27份once仍全部排除。C189将对原待恢复记录profile作完整只读复制后，以新构建打开副本验证，原profile字节必须保持。最终签名授权仍11/12，总90/98。
+
+C189首轮打开独立副本时加载旧缓存，工具正常runtime.reload被Chrome禁用（实际disable_reasons=16777216）。[Chromium官方disable_reason.h](https://chromium.googlesource.com/chromium/src/+/main/extensions/browser/disable_reason.h)明确1<<24为DISABLE_UNSUPPORTED_DEVELOPER_EXTENSION。此轮在私有观察器安装前失败，不能声称三私有入口已计数；原profile全字节保持，副本正常关闭。第二轮仅在全新独立副本通过chrome://extensions的实际开发者模式开关正常启用，再正常重载、重新检查实际加载源码；没有直接改Preferences或绕过来源校验。
+
+C189第二轮已正常启用副本开发者模式并加载新源码，四路pending界面/三私有零/原profile保持成立；完整验收仍failed。原因是新增恢复采集调用遗漏fixedDigest/decodeLookup参数，原严格采集器正确地在转发之前拒绝10次GetTransaction，故没有原回执请求完整正文。v3仅补充原真实pending摘要及完整gRPC包解码，保持原严格“只能查该摘要”的规则，旧失败不覆盖。C167第十轮按安装后库存/独立审核/就绪40启动146000167完整矩阵，C189之后串行重验。

@@ -3,7 +3,7 @@
 
 import { Text } from '_app/shared/text';
 import { CoinIcon } from '_components/coin-icon';
-import { useFormatCoin } from 'rtd-apps-core';
+import { useFormatCoin } from 'rtd-apps-core/src/rpc/coin';
 import { type ReactNode } from 'react';
 
 type CoinItemProps = {

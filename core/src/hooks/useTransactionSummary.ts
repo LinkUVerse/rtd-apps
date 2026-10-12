@@ -1,9 +1,9 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
-import {
+import type {
 	DryRunTransactionBlockResponse,
-	type RtdTransactionBlockResponse,
-} from 'rtd-typescript/client';
+	RtdTransactionBlockResponse,
+} from 'rtd-typescript/jsonRpc';
 import { useMemo } from 'react';
 
 import { getBalanceChangeSummary } from '../utils/transaction/getBalanceChangeSummary';

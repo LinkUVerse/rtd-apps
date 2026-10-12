@@ -1,0 +1,25 @@
+import { act, createElement as h } from 'react';
+import { createRoot } from 'react-dom/client';
+import { afterEach, expect, it, vi } from 'vitest';
+import NetworkSelector from './index';
+const state=vi.hoisted(()=>({env:'customRPC',url:'',dispatch:vi.fn()}));
+vi.mock('_hooks',()=>({useAppSelector:(select:any)=>select({app:{apiEnv:state.env,customRPC:state.url}}),useAppDispatch:()=>state.dispatch}));
+vi.mock('_app/ApiProvider',()=>({generateActiveNetworkList:()=>['local','customRPC'],API_ENV_TO_INFO:{local:{env:'local'},customRPC:{env:'customRPC'}}}));
+vi.mock('_app/i18n',()=>({useI18n:()=>({t:(key:string)=>key})}));
+vi.mock('_redux/slices/app',()=>({changeActiveNetwork:vi.fn()}));
+vi.mock('_src/shared/analytics/ampli',()=>({ampli:{switchedNetwork:vi.fn()}}));
+vi.mock('rtd-apps-icons',()=>({Check24:()=>null}));
+vi.mock('./custom-rpc-input',()=>({CustomRPCInput:()=>h('form',{'data-testid':'custom-form'})}));
+vi.mock('framer-motion',()=>({AnimatePresence:({children}:any)=>children,motion:{div:({children}:any)=>h('div',null,children)}}));
+Object.assign(globalThis,{IS_REACT_ACT_ENVIRONMENT:true});
+let root:ReturnType<typeof createRoot>|undefined,host:HTMLDivElement;
+afterEach(async()=>{if(root)await act(async()=>root!.unmount());root=undefined;host?.remove();vi.clearAllMocks();});
+it.each(['','http://old-rpc.invalid'])('legacy custom selection with URL %s keeps repair form available without switching',async url=>{
+ state.env='customRPC';state.url=url;host=document.createElement('div');document.body.append(host);root=createRoot(host);
+ await act(async()=>root!.render(h(NetworkSelector)));
+ expect(host.querySelector('[data-testid="custom-form"]')).not.toBeNull();
+ await act(async()=>Array.from(host.querySelectorAll('button')).find(button=>button.textContent==='network.customRPC')!.click());
+ expect(host.querySelector('[data-testid="custom-form"]')).not.toBeNull();expect(state.dispatch).not.toHaveBeenCalled();
+ state.env='local';state.url='';await act(async()=>root!.render(h(NetworkSelector)));
+ expect(host.querySelector('[data-testid="custom-form"]')).toBeNull();
+});

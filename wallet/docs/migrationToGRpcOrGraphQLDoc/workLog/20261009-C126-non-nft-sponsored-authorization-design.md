@@ -1,0 +1,13 @@
+# C126 非NFT外部费用方与有效期授权
+
+实施前合同：接续C125真实正常签名，先完成一期非NFT，NFT专项排队。原98父项、89已完成、fine权重及9.18%保持；不以本批签名范围宣称赞助双签执行、完整NN-04/05或一期全部通过。
+
+本批完整范围为当前C124 production三内部币/质押/赎回原批准及gas重新授权，和对应十二个真实Wallet Standard外部费用方签名：每路原Window、None、9007199254740993 Epoch、无timestamp的ValidDuring。原90秒等待、30秒结果租约、全部H0/generation/catalog/ABI/快照/BCS/权限门保持。当前1122产品源646bf94f3e257151322f3f28bb943c5423d1b391d33c25d7383d72725cc0f826不改。
+
+先只读盘点当前G3受控dev keystore的公开地址与原生coin，选择不同的已有费用方及真实当前Coin引用。禁止Faucet/Execute或修改原资产；私钥/密码不写公开日志。币与质押原GasCoin分割改为同一sender真实Coin输入，新增规范输入并替换所有GasCoin引用；外部Coin只支付gas。赎回保持原stake/system/kind。除这些显式输入/费用改变及既有有效期变体外，完整TransactionData字段必须保持。生成器与独立审核器分别用SDK/BCS构造和重算，不共享结果作为依据。
+
+实际驱动从C125完整工具派生，全文可逆列明runtime名称/证明路径和赞助准备/审计新增范围；正常Approve/Disconnect/relock及所有原UI/worker、journal/cipher、原1456范围和两链八debug继续核验。每个签名独立验证完整intent/sender/bytes、两次ENABLED规范模拟与effects、实际原生VerifySignature。实际费用方/原sender对象以完整原生Object BCS、规范Coin和类型化digest确认，补充原帧须留存。
+
+运行环境仍由link-u-smart-contract/localDeploy管理：新C126专属三个查询容器和guard，保留TLS/SNI/CA/mTLS/HTTP1.1/方法/来源限制与fresh C119定点catalog门。新鲜C116原524022七门及300秒准入后才能启动正向测试。使用当前C124原build，origin mkihdgajnjcingajgjlkibdiijjkeaef；全部readiness参数使用绝对路径。普通Chrome及系统CA不操作。
+
+结束后正常停止并删除确切自有三查询CID、排空guard子任务；不清理未知容器、卷、镜像或原开发服务。失败文件原样保留，原发布父子工作不打断。十二签名仅是赞助授权当前实机条件，钱包单签赞助提交拒绝、完整双签执行、M5/并发/恢复以及所有剩余NN合同均按原范围继续。

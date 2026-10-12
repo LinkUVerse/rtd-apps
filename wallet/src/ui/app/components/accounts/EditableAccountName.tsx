@@ -1,11 +1,10 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { useZodForm } from 'rtd-apps-core';
+import { useZodForm, z } from 'rtd-apps-core/src/hooks/useZodForm';
 import { useI18n } from '_app/i18n';
 import { forwardRef, useRef, type ComponentProps } from 'react';
 import toast from 'react-hot-toast';
-import { z } from 'zod';
 
 import { useBackgroundClient } from '../../hooks/useBackgroundClient';
 import { Form } from '../../shared/forms/Form';

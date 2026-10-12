@@ -1,10 +1,10 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
-import {
-	type DryRunTransactionBlockResponse,
-	type ObjectOwner,
-	type RtdTransactionBlockResponse,
-} from 'rtd-typescript/client';
+import type {
+	DryRunTransactionBlockResponse,
+	ObjectOwner,
+	RtdTransactionBlockResponse,
+} from 'rtd-typescript/jsonRpc';
 import { normalizeRtdObjectId, parseStructTag } from 'rtd-typescript/utils';
 
 export type BalanceChange = {

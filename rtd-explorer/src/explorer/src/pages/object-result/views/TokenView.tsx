@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { useGetDynamicFields, useGetObject } from "rtd-apps-core";
-import { useRtdClientQuery } from "rtd-dapp-kit";
-import { type RtdObjectResponse } from "rtd-typescript/client";
+import { useExplorerQuery } from "~/rpc/explorer-client";
+import type { RtdObjectResponse } from "rtd-typescript/jsonRpc";
 import { Heading } from "@linku/ui";
 import { useState, type ReactNode } from "react";
 import { DynamicFieldsCard } from "~/components/Object/DynamicFieldsCard";
@@ -40,7 +40,7 @@ function useObjectFieldsCard(id: string) {
 		data: normalizedStructData,
 		isPending: loadingNormalizedStruct,
 		isError: errorNormalizedMoveStruct,
-	} = useRtdClientQuery(
+	} = useExplorerQuery(
 		"getNormalizedMoveStruct",
 		{
 			package: packageId,

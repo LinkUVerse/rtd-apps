@@ -1,0 +1,15 @@
+# C41 后续有界认证区间：G2／G3完成、G4执行中
+
+按[索引前置G1–G5](./20261007-C41-required-index-catchup-design.md)推进，不增加98父项。当前进度84/98、trial_ready=false。
+
+[新计划03](./20261007-C41-followup-interval-plan-03.json)与[独立计划审核01](./20261007-C41-followup-interval-plan-independent-01.json)完成G2：实际writer／consistent／SQL min233391／236923／236930，实际source+replica发布Hi283723，Fullnode311932。有限目标283000、候选可服务起点233191，覆盖原framework281963。原3命令及配置保持，候选仅改变未来remote source与last-checkpoint；原200000控制器已恢复且不重跑。未启动消费者／服务、未更改配置或数据库。
+
+[资格准备01](./20261007-C41-followup-interval-preparation-01.json)477.24秒完成；[独立审核02](./20261007-C41-followup-interval-preparation-independent-02.json)通过。从原可信quorum200000状态续接200001–283000，83000新检查点原生签名／摘要／body SHA逐条匹配；0–283000共283001原SQL／body SHA双阶段核验，独立审核再次读取完整283001 SQL行。独立inode原缓存clone仅是未经授权的输入材料，凭实际原quorum与source+replica权限证明后可服务范围仅233191–283000及205（49811个），不是任意prefix授权。before／after两角色每个可服务成员实际HEAD/version/replication均一致；独立另读取10个sentinel角色与5份新鲜Fullnode原帧，三个实际checkpoint的typed summary／contents digest及原framework摘要JAxX…在281963的contents中一致；原source／8debug／25命令／两core保持。未误写本阶段为SQL27relations或native对象probe等价、newIntervalQualified／installed均false。
+
+[计划失败01](./20261007-C41-followup-interval-plan-failure-01.json)只读工具误假设aggregate progress.json，改为实际已通过的result.json恢复／successor字段。[计划失败02](./20261007-C41-followup-interval-plan-failure-02.json)原目标300000超过实际已发布范围，拒绝后新建实际283000候选；不放宽服务水位、不重建失败当时未保存的精确publishedHi。[独立准备失败01](./20261007-C41-followup-interval-preparation-independent-failure-01.json)tuple／JSON-list形状直接比较失败，独立首行字段完全相同；v2仅归一化外层行形状，仍逐行逐字段严格比较全部283001记录。所有失败保留，无原服务信号／数据库写入／额外consumer或Docker容器。
+
+以上为原生准备阶段记录。后续[0–205探针成员核验01](./20261007-C41-followup-probe-membership-01.json)完成412 SQL／body检查、824双角色HEAD；合并可服务成员50016，206–233190仍不可服务。[资格01](./20261007-C41-followup-interval-qualification-01.json)完成96实际ABBA读取（baseline／candidate各48，全部200／SHA匹配）、7实际空404、同真实mTLS marker／授权；临时当前debug indexer自然exit0，23SQL与4Rocks到205，27业务表及原生产reader五对象／余额等价，Fullnode产品请求0，模拟resolver明确不可用。仅隔离数据库／登记写入，四probe进程精确退出且数据保留，无新增Docker。[独立审核01](./20261007-C41-followup-interval-qualification-independent-01.json)再用实际最低权限只读角色读取全部27表并逐字段对比、保存规范JSON SHA；完整native／source1119／28-14／25命令保持。审核JSON实际列出4个退出进程；沿用的控制台摘要字段仍误打印6，不作为次数证据。G3完成、newIntervalQualified=true，但原准备报告的installed=false与当时范围不被覆盖修改。
+
+[G4新执行计划01](./20261007-C41-finite-catchup-plan-01.json)与[独立前置01](./20261007-C41-finite-catchup-plan-independent-01.json)通过。独立命名`certified-C41-interval-catchup-20261007-01`绑定原已完成200000后继摘要／原三命令及配置、原22查询／两core／两publisher／28容器、实际有限目标283000。8条安全测试拒绝错前驱／错链源码／目标／PID／命令／保护边界，失败finite与准确恢复的authority判断分开。原`wallet_postboot2_ownership.py`和200000控制器字节未改；新versioned loader只允许这一明确第二后继，旧六metadata将各自归档后逐hash核验，不泛化任意后继。
+
+283000控制器已启动，实际独立[finite环境01](./20261007-C41-finite-live-independent-audit-01.json)通过：14HBase／23SQL／4Rocks、28／14、原配置3／归档metadata6和全部保护服务保持；最低244819／248534／248535，inProgress=true、catchupAccepted=false。有限操作尚未自然exit／恢复／达到目标，G4不勾选，G5真实framework indexed／当前名称／Chrome验收未执行。原writer的sequential_committer日志正在更低checkpoint自然重读前进，不能用初期HBase持久min暂时不变推断停滞或重启。所有原摘要仍禁止重发，不放宽名称当前高度约束；父84/98保持。

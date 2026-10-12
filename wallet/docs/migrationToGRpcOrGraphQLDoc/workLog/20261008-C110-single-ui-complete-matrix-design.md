@@ -1,0 +1,7 @@
+# C110 当前构建完整矩阵的测试表面修正
+
+当前C109产品与build不变，单一现有UI的真实staking／freshBalance成功，88原请求均归属该page，81原帧和13原GraphQL正文的离线完整BCS／fold／末验重放独立相等。只说明单页范围成功，不能证明双页超时全部根因或持续可用。
+
+重验原完整三内部coin／stake／withdraw unsigned预览：保留全部12检查、15实际ENABLED模拟、最终BCS／GasData／expiry、source-map克隆GasBudget+1000唯一参数故障、原digest拒绝、Back新requestId、journal及密文和全部原1015保护。创建全新自有C110 fixture；把原newPage改为复用该profile实际自动创建的唯一UI并记录，仍进行原各次goto／正常读准入，不清记录、不注入响应，不改任何业务断言或期限。旧失败及所有原工具不变；只绑定fresh C110网关，新fixture及自有单页来源。
+
+三内部原完整独立审核通过后，再测试原十二只读页和Wallet Standard连接／重载／断开，保持原完整browser＋worker网络及page consumer响应／trailers／原取消和failed记录。核心UI同样复用启动现有页；dapp演示页及原授权popup正常创建不删减。完整三服务及当前源码／build原门都保留。只有这些当前限定范围真正通过才记P110-4，原九父全部NFT／name／ordinary Chrome／TLS／所有入口等范围不改变。临时网关结束后精确正常清理。

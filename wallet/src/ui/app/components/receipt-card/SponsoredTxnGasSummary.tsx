@@ -4,7 +4,7 @@
 import { GAS_SYMBOL, GAS_TYPE_ARG } from '_redux/slices/rtd-objects/Coin';
 import { useI18n } from '_app/i18n';
 import { Text } from '_src/ui/app/shared/text';
-import { useFormatCoin } from 'rtd-apps-core';
+import { useFormatCoin } from 'rtd-apps-core/src/rpc/coin';
 
 import { TxnAddressLink } from './TxnAddressLink';
 

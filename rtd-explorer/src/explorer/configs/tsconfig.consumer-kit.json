@@ -1,0 +1,9 @@
+{
+  "extends": "../tsconfig.json",
+  "include": [
+    "../src/rpc/**/*",
+    "../src/utils/api/DefaultRpcClient.ts",
+    "../src/components/module/module-functions-interaction/bcs-argument*.ts"
+  ],
+  "compilerOptions": { "noEmit": true }
+}

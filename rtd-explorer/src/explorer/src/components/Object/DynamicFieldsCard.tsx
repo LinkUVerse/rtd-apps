@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { useGetDynamicFields, useOnScreen } from "rtd-apps-core";
-import { type DynamicFieldInfo } from "rtd-typescript/client";
+import type { DynamicFieldInfo } from "rtd-typescript/jsonRpc";
 import { LoadingIndicator } from "@linku/ui";
 import { useRef, useEffect, useState, useMemo } from "react";
 

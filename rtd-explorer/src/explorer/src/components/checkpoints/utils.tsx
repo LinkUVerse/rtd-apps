@@ -1,7 +1,7 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { type CheckpointPage } from "rtd-typescript/client";
+import type { CheckpointPage } from "rtd-typescript/jsonRpc";
 import { Text } from "@linku/ui";
 
 import { TxTimeType } from "../tx-time/TxTimeType";

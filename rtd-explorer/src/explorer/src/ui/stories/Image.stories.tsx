@@ -1,7 +1,9 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { RtdClientProvider } from "rtd-dapp-kit";
+import { ExplorerRpcBridge } from "~/components/ExplorerRpcBridge";
+
+import { ExplorerClientProvider } from "~/rpc/explorer-client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter } from "react-router-dom";
 
@@ -16,9 +18,11 @@ export default {
 		(Story) => (
 			<MemoryRouter>
 				<QueryClientProvider client={new QueryClient()}>
-					<RtdClientProvider>
-						<Story />
-					</RtdClientProvider>
+					<ExplorerClientProvider>
+						<ExplorerRpcBridge>
+							<Story />
+						</ExplorerRpcBridge>
+					</ExplorerClientProvider>
 				</QueryClientProvider>
 			</MemoryRouter>
 		),

@@ -1,12 +1,12 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { RtdHTTPTransport } from 'rtd-typescript/client';
+import { JsonRpcHTTPTransport } from 'rtd-typescript/jsonRpc';
 import * as Sentry from '@sentry/react';
 
 const IGNORED_METHODS = ['rtdx_resolveNameServiceNames', 'rtdx_resolveNameServiceAddresses'];
 
-export class SentryHttpTransport extends RtdHTTPTransport {
+export class SentryHttpTransport extends JsonRpcHTTPTransport {
 	#url: string;
 	constructor(url: string) {
 		super({ url });

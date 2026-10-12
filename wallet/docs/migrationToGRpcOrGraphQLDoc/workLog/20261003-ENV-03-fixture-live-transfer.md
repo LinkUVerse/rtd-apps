@@ -1,0 +1,17 @@
+# ENV-03：受控NFT部署与OriginByte两条实链转移
+
+2026-10-03，generation=dev-20261003-01，H0=3tEPxLxUysGx4gfr8UEycvH7xohMWuwKVbTX5np4TCYj。继续使用已编译当前RTD源码debug产物和独立39400端口，未操作原归档链。包／部署者／交易摘要完整清单见evidence/20261003-wallet-fixture-manifest.json。
+
+指定link-u-smart-contract仓库新增wallet-fixtures/sources/migration_nft.move及prepare_wallet_nft_fixture.py，生成显式本地RTD与已发布OriginByte依赖。seed创建两个可登记NFT、源Kiosk及预先存在目标Kiosk；mint_direct另供直接持有测试，尚未执行。受控合约发布摘要2i8VF4FALsYCtsokX2a6JnniueLUy7iJWzXvJ95LzsRT成功，seed摘要5Js36GeVQnTn2Tptb6FGAbzUGrDqnjbwvWRSkbjagYvT成功。
+
+build_wallet_fixture_seed.mjs、build_wallet_fixture_p2p.mjs只解析构建unsigned bytes。execute_wallet_fixture.py核验绑定debug CLI／endpoint／完整H0，正式精确bytes模拟，签名验签、fsync原交易记录、仅一次dispatch，按原摘要匹配回执。4项执行守卫与5项发布守卫全部通过，包括pending拒重发、错链阻断、模拟失败不签名、超时保留已记录交易。
+
+实际部署描述与固定源码一致：p2p_transfer<T:key+store>是private entry，参数&mut Kiosk／&mut Kiosk／ID／&mut TxContext；create路径第二参数address并返回两个ID。直接PTB调用无需public，不能从普通合约调用private入口。钱包现有参数顺序与此一致。
+
+实链结果：
+- 已有目标：6LRRb5jxe5r8LaDrYgdL854fwZytHj81Avyeg2v9KxPb成功，NFT转至0xaaa的既有Kiosk。
+- 新建目标：8VjFPeYbVXCfcu5TjGGT92u4y5Y1i1b8fAHxWPMfXDWn成功，NFT转至新建Kiosk，OwnerToken交给0xbbb。
+
+scripts/verify-originbyte-live.ts使用实际WalletFullnodeReader严格对象BCS读取、originByteOwnerToken与KIOSK_BCS，核验目标所有者、各1件藏品、NFT的ObjectOwner等于deriveDynamicFieldID推导wrapper。两条均通过，完整对象ID见evidence/20261003-originbyte-live-transfers.json。该验证不是仅凭提交回执status成功。
+
+ENV-03定义的同链受控合约／fixture部署及H0、generation、包与地址记录已完成。RPC-22保持未勾：这两次通过指定部署仓库低层SDK构建执行，尚未经过GraphQL快照发现、实际wallet appendOriginByteTransfer完整调用链或Chrome批准／恢复。核心试用门槛仍未达到；后续继续三入口服务与钱包端到端验收。未重新运行钱包全量测试，源码业务本批未改，新增实链验证器已实际运行通过。

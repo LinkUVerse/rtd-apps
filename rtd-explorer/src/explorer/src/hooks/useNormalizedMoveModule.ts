@@ -1,18 +1,20 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { useRtdClient } from "rtd-dapp-kit";
-import { useQuery } from "@tanstack/react-query";
+import { useExplorerQuery } from "~/rpc/explorer-client";
 
-export function useNormalizedMoveModule(packageId?: string | null, moduleName?: string | null) {
-	const client = useRtdClient();
-	return useQuery({
-		queryKey: ["normalized-module", packageId, moduleName],
-		queryFn: async () =>
-			await client.getNormalizedMoveModule({
-				package: packageId!,
-				module: moduleName!,
-			}),
-		enabled: !!(packageId && moduleName),
-	});
+export function useNormalizedMoveModule(
+  packageId?: string | null,
+  moduleName?: string | null,
+) {
+  return useExplorerQuery(
+    "getNormalizedMoveModule",
+    {
+      package: packageId!,
+      module: moduleName!,
+    },
+    {
+      enabled: !!(packageId && moduleName),
+    },
+  );
 }

@@ -3,10 +3,9 @@
 
 import { Button } from '_app/shared/ButtonUI';
 import { useI18n } from '_app/i18n';
-import { useZodForm } from 'rtd-apps-core';
+import { useZodForm, z } from 'rtd-apps-core/src/hooks/useZodForm';
 import { type SubmitHandler } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import { z } from 'zod';
 
 import { privateKeyValidation } from '../../helpers/validation/privateKeyValidation';
 import { Form } from '../../shared/forms/Form';

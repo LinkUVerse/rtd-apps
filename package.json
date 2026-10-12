@@ -33,7 +33,16 @@
 			"rtd-utils": "file:../rtd-ts-sdk/packages/utils",
 			"rtd-bcs": "file:../rtd-ts-sdk/packages/bcs",
 			"rtd-window-wallet-core": "file:../rtd-ts-sdk/packages/window-wallet-core",
-			"rtd-build-scripts": "file:../rtd-ts-sdk/packages/build-scripts"
+			"rtd-build-scripts": "file:../rtd-ts-sdk/packages/build-scripts",
+			"rtd-dapp-kit-core": "file:../rtd-ts-sdk/packages/dapp-kit/packages/dapp-kit-core",
+			"rtd-dapp-kit-react": "file:../rtd-ts-sdk/packages/dapp-kit/packages/dapp-kit-react"
+		},
+		"packageExtensions": {
+			"@hookform/resolvers@3.10.0": {
+				"dependencies": {
+					"zod": "3.25.76"
+				}
+			}
 		}
 	},
 	"engines": {

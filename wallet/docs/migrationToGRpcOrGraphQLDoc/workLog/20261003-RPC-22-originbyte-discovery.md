@@ -1,0 +1,13 @@
+# RPC-22：OriginByte双包配置与独立发现基础
+
+2026-10-03。继续处理尚未迁移分支，未以禁用或删除OriginByte作为迁移完成。
+
+固定官方源码e8e8efd77ab15d7b2cf30958fd748dbb3afbdaab再次在线核对，证据文件仍为evidence/official/originbyte-ob-kiosk-0.move.txt。OwnerToken明确只是发现用标识；框架Kiosk的owner和OriginByte内部登记／权限另有检查。类型起源包与升级执行包必须独立绑定，不能以历史两个地址相同用途处理。
+
+profile.ts新增packages.originByte.discoveryPackage／executionPackage，必须成对提供并严格验证、复制冻结。存在配置时两者进入networkBindingKey；缺省时不改变旧key格式。同链执行锁仍独立于端点／包配置，以免配置变化绕开pending。core WalletRpc的packages同步类型；自定义配置已有JSON编辑入口可承载新字段，但不代表部署通过。
+
+originbyte-kiosk.ts新增严格BCS OwnerToken解析器与discoverOriginByteKiosks。只对配置类型匹配的对象解码，核对UID、内部owner及外层AddressOwner／ConsensusAddressOwner；非规范或带尾字节拒绝。使用同一reader读取完整账户集合及对应Shared framework Kiosk，检查重复发现、数量预算、对象UID、类型、完整BCS和owner；末尾重新验证S。结果明确为发现记录，不含ownerCap，不直接参与签名。
+
+验证：3文件61项通过，包括新增23项、profile29项、custom-profile-review9项；20261003-originbyte-binding-tests.log。完整TypeScript通过：20261003-originbyte-binding-typecheck.log。测试对OwnerToken使用真实SDK BCS；发现整组使用受控reader，不能冒充真实GraphQL或已部署OriginByte证据。初次新增测试的mock参数类型错误已修正并复验类型检查。
+
+当前未接通OriginByte Item／扩展表、展示页面和p2p准备；尚无指定RTD链受控OriginByte部署或ABI验证。本次属于RPC-22基础编码，RPC-22及相关验收维持未完成。下一步沿同reader补内容与扩展登记，再贯通页面及转移；原生OwnerCap路径不能被发现token替代。

@@ -1,7 +1,7 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { type DisplayFieldsResponse } from "rtd-typescript/client";
+import type { DisplayFieldsResponse } from "rtd-typescript/jsonRpc";
 import { useState } from "react";
 
 import { ObjectLink } from "~/ui/InternalLink";
@@ -17,7 +17,9 @@ export function ObjectDisplay({
 }) {
 	const [open, handleOpen] = useState(false);
 	if (!display.data) return null;
-	const { description, name, image_url: imageUrl } = display.data ?? {};
+	const description = typeof display.data.description === "string" ? display.data.description : undefined;
+	const name = typeof display.data.name === "string" ? display.data.name : undefined;
+	const imageUrl = typeof display.data.image_url === "string" ? display.data.image_url : undefined;
 	return (
 		<div className="group relative w-32">
 			<ObjectModal

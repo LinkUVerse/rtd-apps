@@ -1,0 +1,5 @@
+# NET-10 M4/M5：Explorer统计消费者实际缺口收口设计
+
+保留7份当前源文件与原7条完整类型诊断，SDK／RTD只读。当前SDK不提供getNetworkMetrics/getAddressMetrics/getAllEpochAddressMetrics/getMoveCallMetrics；本地ExtendedApi仅有声明，无注册实现，不添加伪SDK方法、模拟数据或另造JSON-RPC调用。统计能力应显式不可用，不能将缺能力渲染为零账户、空历史、无限loading或空排行榜。
+
+A1：独立应用统计不可用状态，没有IO／重试／缓存正值；保留hook入口，替换不存在的SDK类型为局部展示类型。A2：Accounts和Popular Packages展示明确不可用，Checkpoint改用既有真实getLatestCheckpointSequenceNumber并保留错误展示。A3：真实消费者测试覆盖不发查询、不可用而非空数据、Checkpoint真实调用与失败；完整Explorer类型／全部测试／生产构建。A4：实际浏览器本地构建页面核验及消费者import/export清单、钱包源码／SDK哈希不变；保存失败并修复。全部成立后按NET-10原合同评估父任务，不升级统计服务功能、钱包normal CA／核心试用或其它父任务。

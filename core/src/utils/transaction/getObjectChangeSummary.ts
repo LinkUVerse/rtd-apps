@@ -1,6 +1,6 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
-import {
+import type {
 	DisplayFieldsResponse,
 	RtdObjectChange,
 	RtdObjectChangeCreated,
@@ -9,7 +9,7 @@ import {
 	RtdObjectChangePublished,
 	RtdObjectChangeTransferred,
 	RtdObjectChangeWrapped,
-} from 'rtd-typescript/client';
+} from 'rtd-typescript/jsonRpc';
 
 import { groupByOwner } from './groupByOwner';
 import { RtdObjectChangeTypes } from './types';

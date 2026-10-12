@@ -1,6 +1,6 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
-import { type RtdArgument } from "rtd-typescript/client";
+import type { RtdArgument } from "rtd-typescript/jsonRpc";
 
 export function flattenRtdArguments(data: (RtdArgument | RtdArgument[])[]): string {
 	if (!data) {

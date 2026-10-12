@@ -19,12 +19,19 @@ export const networkNames: Record<API_ENV, string> = {
 
 export type NetworkEnvType =
 	| { env: Exclude<API_ENV, API_ENV.customRPC>; customRpcUrl: null }
-	| { env: API_ENV.customRPC; customRpcUrl: string };
+	| { env: API_ENV.customRPC; customRpcUrl: string; walletStandardChain?: `rtd:${string}`; profile?: import('./rpc/profile').WalletNetworkProfile };
 
-export const ENV_TO_API: Record<API_ENV, string | null> = {
-	[API_ENV.customRPC]: null,
-	[API_ENV.local]: process.env.API_ENDPOINT_LOCAL_FULLNODE || '',
-	[API_ENV.devNet]: process.env.API_ENDPOINT_DEV_NET_FULLNODE || '',
-	[API_ENV.testNet]: process.env.API_ENDPOINT_TEST_NET_FULLNODE || '',
-	[API_ENV.mainnet]: process.env.API_ENDPOINT_MAINNET_FULLNODE || '',
-};
+/** Page-facing wallet status exposes its chain label, not private service deployment details. */
+export function toPublicNetwork(network: NetworkEnvType): NetworkEnvType {
+  return network.env === API_ENV.customRPC
+    ? { env: network.env, customRpcUrl: '', walletStandardChain: network.profile?.walletStandardChain }
+    : { env: network.env, customRpcUrl: null };
+}
+
+/** The same advertised chain label is used by page discovery and background authorization. */
+export function walletStandardChain(network: NetworkEnvType): `rtd:${string}` {
+  if (network.env === API_ENV.customRPC)
+    return network.profile?.walletStandardChain ?? network.walletStandardChain ?? 'rtd:unknown';
+  return { [API_ENV.local]: 'rtd:localnet', [API_ENV.devNet]: 'rtd:devnet',
+    [API_ENV.testNet]: 'rtd:testnet', [API_ENV.mainnet]: 'rtd:mainnet' }[network.env] as `rtd:${string}`;
+}

@@ -1,0 +1,13 @@
+# 交易显式 chain 合同修复
+
+2026-10-04。现代signTransaction／signAndExecuteTransaction要求显式chain；PersonalMessage 1.1的chain仍可选。
+
+页面在toJSON之前校验交易chain格式与长度，后台bindDappRequest无条件要求chain等于当前已审核profile标签，旧undefined继承当前链回退已移除。交易批准存储类型仍容许读取历史缺chain对象，但重新绑定会拒绝，不能将旧记录转换成新授权；已提交journal的原摘要恢复不经过新请求绑定，不清除它。
+
+先以20261004-explicit-chain-before.log复现缺链合同失败，随后修改实现。第一轮全量1293项中的DappRecoveryGate测试因15ms固定等待未见异步预览而失败；已改为等待真实preview状态，生产恢复门逻辑未变，原失败日志保留。最终121文件1293项通过：20261004-explicit-chain-full-tests-final.log。钱包tsc通过：20261004-explicit-chain-typecheck.log。
+
+最终dev构建成功57422ms，保留Local profile03 revision2，20261004-explicit-chain-build.log；新四入口审计通过，20261004-explicit-chain-static-audit.json。
+
+实际扩展20261004-explicit-chain-extension.log退出0：两个交易方法缺chain零弹窗／零结果，省略chain的PersonalMessage原文一致且验签成功，正常带chain消息、错链拒绝、三个方法缺account拒绝均通过。交易只签名摘要8mKuMarmMyCg3RpMUSkwogZjmmKBXknyRtmPnxN3VB4B与预览一致，签名有效；整轮5模拟／0提交。两次启动CDP实际worker源码均与磁盘SHA256 3694703c3a233d81731bf0a472d50b54f05678a8fea210a914caae2c6a871407一致。仍使用精确SPKI例外和编译Local，未验正常CA。
+
+未领币、部署、重启dev链或提交交易，保留四条journal与一次性尝试。该合同缺口闭合后，TX-09按专门完成核验标记，TX-10等完整授权矩阵不随之勾选。

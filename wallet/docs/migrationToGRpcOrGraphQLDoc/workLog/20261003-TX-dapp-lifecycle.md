@@ -1,0 +1,13 @@
+# dApp连接生命周期与多窗口请求存储
+
+日期2026-10-03；TX增量，真实故障验收未完成。
+
+Transactions在异步请求创建前订阅发起ContentScriptConnection的disconnect，并为每个requestId持有活连接AbortSignal。拒绝、完成、弹窗关闭和断连均结束signal、移除订阅、清理临时请求、撤销批准凭据并关闭窗口；不删除journal。后台重启后旧存储请求没有live signal，不能继续签名。
+
+withAuthorizedDappRequest在读取和授权边界检查lifetime，操作期间监听abort关闭对应WalletReadSession，finally移除监听。准备中断连拒绝迟到结果；相同wrapper覆盖签名及执行。登记singleton移到独立dapp-state以避免Transactions与准备器循环依赖。
+
+request storage.local的新增、删除和stale清理共用串行队列，解决原有并发读改写丢失另一请求的问题；单次失败不会卡死后续队列。窗口关闭不等于清空已提交journal，pending仍按原摘要恢复。
+
+新增6项测试：连接断开／异步创建期间断开／worker旧请求失效／准备中取消／监听释放／并发弹窗独立存活。相关4文件42/42通过，完整钱包仍100条类型诊断。测试受控浏览器storage／Window／连接Subject，不是实际Chrome导航或worker崩溃验收。见20261003-dapp-lifecycle-tests.log及typecheck.log。
+
+后续继续补历史终态签名与dApp恢复、PersonalMessage授权、新Qredo／多签，并完成指定debug环境下核心链及Chrome试用。当前不可试用。

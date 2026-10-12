@@ -1,0 +1,1 @@
+首次刷新总进度失败：原始watermark证明使用fixedRange，而总进度读取range。原始证明不改；仅派生current-C139进度视图添加经断言一致的range别名及源证明SHA，再重新生成。未改变任何水位或验收状态。

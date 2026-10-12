@@ -1,0 +1,11 @@
+# NET-10共享Kiosk网络类型兼容
+
+日期：2026-10-04。
+
+复查core完整类型检查原19项错误，其中KioskClientProvider和utils/kiosk引用新版SDK已删除的Network枚举。当前SDK KioskClientOptions.network声明为RtdClientTypes.Network字符串类型；改为引用该公开类型，provider仍保留原mainnet／testnet／custom选择语义，未改变Explorer的网络路由或给钱包新增默认包。
+
+isKioskOwnerToken同时修复未配置personal package时拼出undefined::personal_kiosk::PersonalKioskCap的假类型；仅在SDK存在对应包地址时比较PersonalKiosk类型。保留旧DTO辅助函数给既有Explorer消费者，本改动不是钱包新Kiosk读取器，也未把旧JSON-RPC接回钱包。
+
+两项SDK真实导出／辅助函数测试通过，覆盖三类既有token与未知网络不存在personal package；钱包完整tsc通过。core完整tsc仍失败，但错误由19降为17，两个Network错误消失。证据20261004-core-kiosk-network-tests.log、20261004-core-kiosk-wallet-typecheck.log、20261004-core-kiosk-network-final.log。起始core-kiosk-network-typecheck.log为未修改基线：首次编辑命令cwd不匹配没有写入文件，随后已修正路径。
+
+未重新构建Explorer或钱包产物，不宣称运行验收。剩余旧Kit缺失、FetchKioskOptions和对象结果格式仍需完成，NET-10不勾选。不能仅删除objectOptions来隐瞒Explorer依赖的display/content缺失。

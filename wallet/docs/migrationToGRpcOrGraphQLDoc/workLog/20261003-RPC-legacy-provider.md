@@ -1,0 +1,11 @@
+# 移除钱包启动的旧Provider与预检重建
+
+日期2026-10-03；RPC迁移增量，非零RPC或功能完成证明。
+
+当前调用审计确认useTransferKioskItem无调用，useSigner仅被该旧hook引用。移除两者；OriginByte新服务功能保持未完成，未把删除不可达实现视为功能迁移。ApiProvider类已无必要使用者，保留网络常量和默认环境，移除旧client／signer缓存；根组件去RtdClientProvider与KioskClientProvider。Redux切网清理QueryClient，不再setNewJsonRpcProvider。后台NetworkEnv导入默认环境常量不再间接初始化旧客户端依赖。
+
+反诈骗预检使用usePreparedTransaction的后台批准bytes，不二次build。query key增加profile／读会话／request／network／digest，设置禁止持久化、取消与错误不沿用旧结果。连接预检不依赖交易准备。
+
+新增4项React Query测试：使用批准字节、缺准备不发送、连接独立、网络隔离。相关5文件30/30通过；完整钱包95条类型诊断（前100）。源码搜索钱包UI生产代码已无RtdClientProvider、KioskClientProvider、walletApiProvider、useRtdClient；这不是完整依赖／打包产物零JSON-RPC证明。
+
+日志：20261003-legacy-provider-tests.log、typecheck.log。剩余zkLogin历史地址检测仍用旧getRtdClient，Qredo旧类仍被事件／错误类型导入，faucet旧SDK契约、OriginByte及真实环境验收继续处理。当前不可试用。

@@ -111,10 +111,15 @@ const ONRAMP_PROVIDER: OnrampProvider[] = [
 	},
 ];
 
+// No provider currently has a verified RTD chain/asset/settlement integration.
+// A remote feature flag alone cannot establish that support.
+const RTD_ONRAMP_VERIFIED = false;
+
 const PREFERRED_ONRAMP_PROVIDER_KEY = 'preferred-onramp-provider';
 
 export function useOnrampProviders() {
-	const onrampEnabled = useFeatureIsOn('wallet-onramp');
+	const enabledByFeature = useFeatureIsOn('wallet-onramp');
+	const onrampEnabled = RTD_ONRAMP_VERIFIED && enabledByFeature;
 	const [preferredProviderKey, setPreferredProviderKey] = useState(() =>
 		localStorage.getItem(PREFERRED_ONRAMP_PROVIDER_KEY),
 	);
@@ -151,7 +156,8 @@ export function useOnrampProviders() {
 	});
 
 	return {
-		providers: data,
+		providers: onrampEnabled ? data : [],
+		unavailable: !onrampEnabled,
 		setPreferredProvider(key: string) {
 			localStorage.setItem(PREFERRED_ONRAMP_PROVIDER_KEY, key);
 			setPreferredProviderKey(key);

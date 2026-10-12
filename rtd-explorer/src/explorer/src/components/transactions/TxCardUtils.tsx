@@ -3,7 +3,8 @@
 
 import { getTotalGasUsed } from "rtd-apps-core";
 import { X12, Dot12 } from "rtd-apps-icons";
-import { type RtdClient, type RtdTransactionBlockResponse } from "rtd-typescript/client";
+import { type RtdJsonRpcClient as RtdClient } from "rtd-typescript/jsonRpc";
+import type { RtdTransactionBlockResponse } from "rtd-typescript/jsonRpc";
 
 import { RtdAmount } from "../Table/RtdAmount";
 import { TxTimeType } from "../tx-time/TxTimeType";

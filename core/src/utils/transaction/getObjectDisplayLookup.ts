@@ -1,6 +1,6 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
-import { DisplayFieldsResponse, RtdObjectResponse } from 'rtd-typescript/client';
+import type { DisplayFieldsResponse, RtdObjectResponse } from 'rtd-typescript/jsonRpc';
 
 import { hasDisplayData } from '../hasDisplayData';
 

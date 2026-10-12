@@ -1,0 +1,5 @@
+# 当前debug原生节点的历史赞助收据只读复查
+
+当前C136来源、C148实际归属和archive必要依赖均保持，先复核原16独立报告/107关联JSON SHA。仅对已成功的coin/stake/withdraw三摘要用原read mask读取当前debug节点收据；前后实际H0一致，当前完整TransactionData/Effects BCS、checkpoint与原件逐字相同，两条原签名按sender/gas owner重新本地验签。所有原帧保留，5次只读RPC，无批准、签名或Execute。
+
+这只确认已成功交易的当前原生持久恢复事实；不是重放旧批准，也不称归档写后覆盖、当前UI批准或完整TX父验收。后续结合当前C148 cold/C149 live/C150普通与导入授权/C153内部再次授权和完整来源边界汇总，原NFT和一期外部条件仍按原要求推进。

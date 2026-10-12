@@ -1,0 +1,11 @@
+# C139 原生查询传输实查接续
+
+首次审计使用SDK的fetch传输直接访问原生Ledger端口42885，实际报fetch failed，未取得响应，失败源和记录保留。该原生端口按现有部署和原生查询工具使用HTTP/2 gRPC；不能以HTTP/1 fetch失败推断业务数据缺失，也不能算真实查询验收。
+
+v2对Ledger的GetServiceInfo/GetCheckpoint和consistent的AvailableRange使用Node标准http2完成原生gRPC调用，保存原请求帧、响应头/尾及完整响应帧，要求grpc-status=0、完整单一未压缩frame，再通过现有SDK生成的Ledger消息解码。consistent沿源码proto字段核对完整32字节H0、stride1、zero lower和范围。GraphQL继续原生POST，全部十个依赖范围与genesis/H0必须真实成功。
+
+此处没有浏览器、TLS代理或普通Chrome验收，也不更改查询服务或原认证摄取配置。四个只读请求不签名、不广播、不执行NFT业务；全量回放、两账户、物理归档/WAL和完整父项仍未完成。
+
+原生v2第一次真实HTTP/2响应为200/grpc-status0，生成消息解码H0正确、height277；审计错误地要求原生Ledger提供入口代理添加的x-rtd-chain-id头，因此拒绝。rtd-kv-rpc的v2消息源码和实际原生响应均表明H0由GetServiceInfo消息返回。v3保留完整frame和grpc-status合同，以原生消息H0及checkpoint0摘要共同核验身份，仅撤销这一无源码依据的代理头预期；原失败源和记录保留。
+
+v3在第二请求编码前因原生GetCheckpointRequest的checkpointId oneof构造错误失败；v4仅改为现有生成类型create与sequenceNumber oneof，仍请求真实checkpoint0，不改变mask、响应检查和其他原条件。

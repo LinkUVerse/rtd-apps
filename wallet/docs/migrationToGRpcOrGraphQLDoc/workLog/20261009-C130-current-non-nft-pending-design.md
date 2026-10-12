@@ -1,0 +1,11 @@
+# C130当前非NFT持久pending与M5接续设计
+
+目的：沿用当前C124/1122完整产物、C129独立query/guard及受控C129普通账户，补齐非NFT coin/stake/withdraw/dApp的当前durable守卫与完整原帧/journal/实际签名发送计数。旧C39/C43及其失败证据只作冻结来源；不重跑creator，不把旧NFT待确认记录用于本次新业务测试，不消耗原C43仓位。
+
+实施分两步以避免失败后重建pending。C130-1在最新原生sender业务Coin/ref、H0/epoch、原C43完整bytes/active validator、300秒内原七门成立后，由真实普通Wallet Standard signAndExecute请求批准1nano自转Coin（sender=gasOwner），一次真实钱包签名产生的唯一Execute在浏览器route、转发之前核对完整binary及签名并中止。保留产品自然创建的dispatch-pending与完整三store，不写fixture journal；fsync授权/批准/截断帧/待确认快照，即使后续检查失败也绝不重跑creator。不得广播、赞助签名、私钥直接签名、伪造服务返回或修改产品函数。当前受控profile作为专用pending夹具保留。
+
+C130-2只读冷启动同一profile，实际worker/UI加载bytes与C124相等，原密文/完整journal保持，正常解锁且实际scope navigator.locks(ifAvailable)可用。分别访问正确coin发送、原active validator质押、原C43持有仓位赎回：待确认摘要明确可见且禁止新批准，资产上下文覆盖原332734。每路由正常退出恢复observer并等待native锁释放；第二真实dApp sign-only费用失败/Approve禁用，正常卸载其observer后可信prepareDappTransaction明确durable pending拒绝，再正常Reject/Disconnect/relock。新模拟、Verify、签名或Execute必须0，回执读取只固定原Coin摘要。原仓位只读不赎回。
+
+独立审计规范TransactionData/Effects、全部关键原帧与原请求签名、完整journal三store、H0/generation/account/scope、当前加载源、密文、所有请求及实际截断数。无法读取的响应正文如实保留；关键模拟/验签正文缺失直接拒绝，NOT_FOUND可用完整原生只读二进制补证但不能写成浏览器原正文已捕获。任何失败不算完整M5通过，限定子合同与全部入口M5严格区分。原90秒/30秒、300秒freshness、七覆盖和12GiB完整物理门不降低。
+
+C130-1/2仅非NFTdurable增量；M5完整live、已有有效期/赞助/双签/恢复矩阵与原签名调用计数逐入口汇总、完整普通Chrome/TLS权限/名称/全物理WAL冷恢复/一期仍须逐项完成。原98/fine范围不增减，NFT专项第二阶段。query/guard仍需要，完成相关测试后确切CID/出生正常清理，0原服务信号/未知容器卷清理。

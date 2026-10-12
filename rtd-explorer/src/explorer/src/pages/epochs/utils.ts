@@ -2,10 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { useTimeAgo } from "rtd-apps-core";
-import { useRtdClientQuery } from "rtd-dapp-kit";
+import { useExplorerQuery } from "~/rpc/explorer-client";
 
 export function useEpochProgress(suffix = "left") {
-	const { data } = useRtdClientQuery("getLatestRtdSystemState");
+	const { data } = useExplorerQuery("getLatestRtdSystemState");
 	const start = data?.epochStartTimestampMs ? Number(data.epochStartTimestampMs) : undefined;
 	const duration = data?.epochDurationMs ? Number(data.epochDurationMs) : undefined;
 	const end = start !== undefined && duration !== undefined ? start + duration : undefined;

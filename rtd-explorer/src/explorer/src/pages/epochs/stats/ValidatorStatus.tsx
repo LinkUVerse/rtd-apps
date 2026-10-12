@@ -1,7 +1,7 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 import { getRefGasPrice } from "rtd-apps-core";
-import { useRtdClientQuery } from "rtd-dapp-kit";
+import { useExplorerQuery } from "~/rpc/explorer-client";
 import { Heading, Text } from "@linku/ui";
 import { useMemo } from "react";
 
@@ -9,7 +9,7 @@ import { Card } from "~/ui/Card";
 import { RingChart, RingChartLegend } from "~/ui/RingChart";
 
 export function ValidatorStatus() {
-	const { data } = useRtdClientQuery("getLatestRtdSystemState");
+	const { data } = useExplorerQuery("getLatestRtdSystemState");
 
 	const nextRefGasPrice = useMemo(
 		() => getRefGasPrice(data?.activeValidators),

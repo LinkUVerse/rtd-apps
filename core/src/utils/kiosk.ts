@@ -1,8 +1,9 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { KIOSK_OWNER_CAP, Network, PERSONAL_KIOSK_RULE_ADDRESS } from 'rtd-kiosk';
-import { RtdObjectData, RtdObjectResponse } from 'rtd-typescript/client';
+import { KIOSK_OWNER_CAP, PERSONAL_KIOSK_RULE_ADDRESS } from 'rtd-kiosk';
+import type { KioskClientOptions } from 'rtd-kiosk';
+import type { RtdObjectData, RtdObjectResponse } from 'rtd-typescript/jsonRpc';
 
 export const ORIGINBYTE_KIOSK_MODULE =
 	'0x95a441d389b07437d00dd07e0b6f05f513d7659b13fd7c5d3923c7d9d847199b::ob_kiosk';
@@ -10,16 +11,17 @@ export const ORIGINBYTE_KIOSK_MODULE =
 export const ORIGINBYTE_KIOSK_OWNER_TOKEN = `${ORIGINBYTE_KIOSK_MODULE}::OwnerToken`;
 
 export function isKioskOwnerToken(
-	network: Network,
+	network: KioskClientOptions['network'],
 	object?: RtdObjectResponse | RtdObjectData | null,
 ) {
 	if (!object) return false;
 	const objectData = 'data' in object && object.data ? object.data : (object as RtdObjectData);
-	return [
-		KIOSK_OWNER_CAP,
-		`${PERSONAL_KIOSK_RULE_ADDRESS[network]}::personal_kiosk::PersonalKioskCap`,
-		ORIGINBYTE_KIOSK_OWNER_TOKEN,
-	].includes(objectData?.type ?? '');
+	const personalPackage = PERSONAL_KIOSK_RULE_ADDRESS[network];
+	return (
+		objectData?.type === KIOSK_OWNER_CAP ||
+		objectData?.type === ORIGINBYTE_KIOSK_OWNER_TOKEN ||
+		(!!personalPackage && objectData?.type === `${personalPackage}::personal_kiosk::PersonalKioskCap`)
+	);
 }
 
 export function getKioskIdFromOwnerCap(object: RtdObjectResponse | RtdObjectData) {

@@ -16,7 +16,7 @@ export function AccountBadge({ accountType }: AccountBadgeProps) {
 		accountType === 'imported'
 			? t('accounts.typeImported')
 			: accountType === 'qredo'
-				? 'Qredo'
+				? t('accounts.typeQredoReadonly')
 				: accountType === 'zkLogin'
 					? 'zkLogin'
 					: null;

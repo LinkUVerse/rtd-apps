@@ -1,7 +1,8 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { RtdClient, RtdHTTPTransport, getFullnodeUrl } from "rtd-typescript/client";
+import { JsonRpcHTTPTransport as RtdHTTPTransport, getJsonRpcFullnodeUrl as getFullnodeUrl } from "rtd-typescript/jsonRpc";
+import { ExplorerRpcClient } from "../../rpc/ExplorerRpcClient";
 
 export enum Network {
 	LOCAL = "LOCAL",
@@ -21,16 +22,19 @@ export const NetworkConfigs: Record<Network, { url: string }> = {
 	[Network.MAINNET]: { url: getFullnodeUrl("mainnet") },
 };
 
-const defaultClientMap = new Map<Network | string, RtdClient>();
+const defaultClientMap = new Map<Network | string, ExplorerRpcClient>();
 
-// NOTE: This class should not be used directly in React components, prefer to use the useRtdClient() hook instead
+// NOTE: This class should not be used directly in React components, prefer to use the useExplorerClient() hook instead
 export const createRtdClient = (network: Network | string) => {
 	const existingClient = defaultClientMap.get(network);
 	if (existingClient) return existingClient;
 
-	const networkUrl = network in Network ? NetworkConfigs[network as Network].url : network;
+	const known = Object.prototype.hasOwnProperty.call(NetworkConfigs, network);
+	const networkUrl = known ? NetworkConfigs[network as Network].url : network;
+	const sdkNetwork = known ? ({ LOCAL: "localnet", DEVNET: "devnet", TESTNET: "testnet", MAINNET: "mainnet" } as const)[network as Network] : "custom";
 
-	const client = new RtdClient({
+	const client = new ExplorerRpcClient({
+		network: sdkNetwork,
 		transport: new RtdHTTPTransport({ url: networkUrl }),
 	});
 	defaultClientMap.set(network, client);

@@ -1,0 +1,5 @@
+# C164 六场景54实际有效期UI
+
+完整接续C114原六场景、九种有效期54普通Wallet Standard请求：24正向规范effects、6真实过期、24本地RTD不支持timestamp完整错误。正常Reject/Disconnect、唯一requestId/批准token摘要、完整sender/gas/expiry规范BCS与原NFT调用/recipient效果不变。原282参数矩阵实际及独立通过后使用其确切批准字节，当前C136整源及当前36/116归属保持；fresh696489七门和完整四owner/14对象库存独立准入。当前demo55完整源映射重建仅测试资源，不改业务代码。
+
+所有原HTTP身份实体和浏览器交付/正常关闭全尾保存；三真实私有入口均零调用。每个实际popup的CDP完整JS与disk逐字相等后将实际字节按SHA保存在只读证据blob，逐popup保留文件路径/SHA及所有loaded bundle，避免54次重复大字符串；独立逐popup重读确切原始bytes，不以文件名或metadata声明代替。全部54正文/expiry/sender/kind/gas/effects/批准状态/Reject及216变异拒绝审核成立才计有效期。原签名/成功执行不重播，0新的批准/签名/Execute。

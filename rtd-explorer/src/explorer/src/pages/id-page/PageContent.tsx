@@ -13,7 +13,7 @@ import { useBreakpoint } from "~/hooks/useBreakpoint";
 import { OwnedCoins } from "~/components/OwnedCoins";
 import { OwnedObjects } from "~/components/OwnedObjects";
 import { LOCAL_STORAGE_SPLIT_PANE_KEYS, SplitPanes } from "~/ui/SplitPanes";
-import { useRtdClient } from "rtd-dapp-kit";
+import { useExplorerClient } from "~/rpc/explorer-client";
 import { useQuery } from "@tanstack/react-query";
 
 const LEFT_RIGHT_PANEL_MIN_SIZE = 30;
@@ -67,7 +67,7 @@ function OwnedObjectsSection({ address }: { address: string }) {
 }
 
 function TransactionsSection({ address, isObject }: { address: string; isObject: boolean }) {
-	const client = useRtdClient();
+	const client = useExplorerClient();
 
 	const {
 		data: transactionsForAddressData,

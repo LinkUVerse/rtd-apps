@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { useFormatCoin } from "rtd-apps-core";
-import { type CoinStruct } from "rtd-typescript/client";
+import type { CoinStruct } from "rtd-typescript/jsonRpc";
 import { Text } from "@linku/ui";
 
 import { ObjectLink } from "~/ui/InternalLink";

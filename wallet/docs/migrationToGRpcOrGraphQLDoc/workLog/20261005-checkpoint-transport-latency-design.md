@@ -1,0 +1,7 @@
+# checkpoint传输延迟诊断与受控提速计划
+
+当前Display严格完成并按原命令恢复全部SQL流水线；SQL持久水位约289k，共同读窗口仍缺。固定checkpoint290000通过原CA/mTLS直读12次全部相同1759字节、SHA0a07ee99，中位0.079832秒；guard处理内部594个成功请求中位0.045619秒。外部开销约35ms，TCP小包延迟ACK/Nagle是待验证推断，不能直接称根因。
+
+优先尝试仅在guard已认证连接设置TCP_NODELAY，不缓存发布认证／正文，不增加8门槛或adapter6槽，不减少原23流水线，不改watermark/对象版本/源码debug。先保留原server字节、增加真实HTTP socket与body/status验证、运行既有guard完整TLS/版本/复制测试。新镜像必须从当前已安装prefix-guard镜像叠加仅server.py，原visibility/indexed prefix/checkpoints/consumer proxy/requirements/prefix proof及镜像基层逐字不变；host测试与实际候选同链TLS只读证明成立后，用link-u-smart-contract部署脚本替换guard并复测同checkpoint12次。不同步改adapter/预算或Rust。
+
+失败保留候选／输出；不能用提高到未经核验预算、跳过历史或冻结/清空数据换吞吐。无性能收益则记录实际结果并恢复原选择；normal CA/Chrome/业务快照仍独立待验。

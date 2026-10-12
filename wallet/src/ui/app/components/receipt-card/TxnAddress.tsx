@@ -9,10 +9,15 @@ import { TxnAddressLink } from './TxnAddressLink';
 type TxnAddressProps = {
 	address: string;
 	label: string;
+	recipientName?: string;
+	fullAddress?: boolean;
 };
 
-export function TxnAddress({ address, label }: TxnAddressProps) {
-	const domainName = useResolveRtdNSName(address);
+export function TxnAddress({ address, label, recipientName, fullAddress = false }: TxnAddressProps) {
+	// A name is a label; the approved address remains the link destination and visible value.
+	// A prepared recipient already contains its name, so no reverse lookup is necessary.
+	const reverseName = useResolveRtdNSName(recipientName ? undefined : address);
+	const domainName = recipientName ?? reverseName;
 
 	return (
 		<div className="flex min-w-0 justify-between w-full items-center gap-4 py-3 first:pt-0">
@@ -21,8 +26,9 @@ export function TxnAddress({ address, label }: TxnAddressProps) {
 					{label}
 				</Text>
 			</span>
-			<div className="flex min-w-0 items-center gap-1 overflow-hidden">
-				<TxnAddressLink address={domainName ?? address} />
+			<div className="flex min-w-0 flex-col items-end gap-1 text-right">
+				{domainName && <span className="break-all">{domainName}</span>}
+				<TxnAddressLink address={address} fullAddress={fullAddress || !!domainName} />
 			</div>
 		</div>
 	);

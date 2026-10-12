@@ -5,7 +5,7 @@ import { useMemo } from "react";
 
 import { getNormalizedFunctionParameterTypeDetails } from "../utils";
 
-import type { RtdMoveNormalizedType } from "rtd-typescript/client";
+import type { RtdMoveNormalizedType } from "rtd-typescript/jsonRpc";
 
 export function useFunctionParamsDetails(
 	params: RtdMoveNormalizedType[],

@@ -6,11 +6,10 @@ import { useI18n } from '_app/i18n';
 import { normalizeMnemonics, validateMnemonics } from '_src/shared/utils/bip39';
 import { PasswordInput } from '_src/ui/app/shared/forms/controls/PasswordInput';
 import { Text } from '_src/ui/app/shared/text';
-import { useZodForm } from 'rtd-apps-core';
+import { useZodForm, z } from 'rtd-apps-core/src/hooks/useZodForm';
 import { type SubmitHandler } from 'react-hook-form';
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { z } from 'zod';
 
 import Alert from '../alert';
 

@@ -1,7 +1,7 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { type RtdMoveNormalizedType } from "rtd-typescript/client";
+import type { RtdMoveNormalizedType } from "rtd-typescript/jsonRpc";
 import { normalizeRtdAddress } from "rtd-typescript/utils";
 import cl from "clsx";
 import { Highlight, Prism } from "prism-react-renderer";
@@ -15,9 +15,8 @@ import styles from "./ModuleView.module.css";
 
 // Include Rust language support.
 // TODO: Write a custom prismjs syntax for Move Bytecode.
-// @ts-expect-error: Defining global prism object:
 globalThis.Prism = Prism;
-// @ts-expect-error: This file is untyped:
+// @ts-expect-error: Prism ships this registration module without a declaration.
 import("prismjs/components/prism-rust").catch(() => {
 	// intentionally ignore
 });
@@ -91,7 +90,7 @@ function ModuleView({ id, name, code }: Props) {
 										const reference = normalizedModuleReferences?.[token.content];
 
 										const tokenProps = getTokenProps({ token, key });
-										const { key: tokenKey, ...restTokenProps } = tokenProps;
+										const { key: _tokenKey, ...restTokenProps } = tokenProps;
 
 										if (
 											(token.types.includes("class-name") || token.types.includes("constant")) &&
@@ -101,7 +100,7 @@ function ModuleView({ id, name, code }: Props) {
 
 											return (
 											<LinkWithQuery
-												key={tokenKey}
+												key={key}
 												{...restTokenProps}
 												to={href}
 												target={
@@ -115,7 +114,7 @@ function ModuleView({ id, name, code }: Props) {
 
 										return (
 											<span
-												key={tokenKey}
+												key={key}
 												{...restTokenProps}
 											/>
 										);

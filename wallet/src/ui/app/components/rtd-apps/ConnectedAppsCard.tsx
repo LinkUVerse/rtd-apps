@@ -78,10 +78,9 @@ function ConnectedDapps() {
 				{connectedApps.length ? (
 					connectedApps.map((app) => <RtdApp key={app.permissionID} {...app} displayType="card" />)
 				) : (
-					<>
-						<RtdAppEmpty displayType="card" />
-						<RtdAppEmpty displayType="card" />
-					</>
+					<div className="col-span-2">
+						<RtdAppEmpty kind="connections" displayType="card" />
+					</div>
 				)}
 			</div>
 		</Loading>

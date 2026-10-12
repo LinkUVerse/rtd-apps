@@ -1,0 +1,5 @@
+# C124 重读fetch生命周期修正（编码前补充）
+
+第一轮回归141通过、6失败，原因是原createCapabilityFetch.assertCompleted会封闭fetch实例，不能复用。保留第一轮失败，不修改原fetch的封闭/物理完成规则。
+
+同一原ticket、lifetime、session、已批准bytes和总AbortSignal保持；第一attempt完成所有物理读取后assertCompleted封闭旧fetch，只为第二次完整只读probe新建同合同createCapabilityFetch。新fetch仍记录在原lifetime，结束时按原finally处置，任何残留/取消/中断都禁止重读。原第一份编码前合同的“同一fetch”落实为同原始请求域和预算，实例必须按现有封闭合同更新；无跨owner和信任缓存。仅第二attempt，不能循环重读。源码/测试/失败记录SHA另存，旧plan与baseline不修改。

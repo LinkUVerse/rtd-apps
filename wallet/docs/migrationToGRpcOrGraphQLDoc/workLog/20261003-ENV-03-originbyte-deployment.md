@@ -1,0 +1,30 @@
+# ENV-03：OriginByte受控RTD部署推进
+
+2026-10-03。指定独立dev-20261003-01继续运行，完整H0为3tEPxLxUysGx4gfr8UEycvH7xohMWuwKVbTX5np4TCYj。仍使用当前源码debug CLI；未停原链、未清理数据库。
+
+从Origin-Byte/protocol取得干净固定commit e8e8efd77ab15d7b2cf30958fd748dbb3afbdaab。原清单的ob_kiosk类型地址0x95a441…与published-at 0x710fe6…不同，验证了钱包发现包／执行包应分别绑定。全部上游源码保持原样。
+
+link-u-smart-contract/all-in-one-deploy/localDeploy新增prepare_originbyte_wallet_fixture.py：只接受固定干净源码和全新输出目录，复制5个包22份源码及完整上游许可证，生成现代清单、显式本地RTD／std依赖，框架namespace sui替换rtd、原生币SUI替换RTD。记录每文件前后SHA256。最终派生目录为 /Users/changzechuan/.local/state/rtd-wallet-migration/originbyte-rtd-build-06。此为受控RTD移植，不冒充未修改的上游字节码。
+
+编译诊断均保留：首次使用默认CLI环境未匹配；随后旧addresses清单不能被新包管理器识别环境；现代清单去除冗余系统依赖rename-from后进入编译；原生币类型需要RTD适配。多包未发布依赖不能合并到0地址，因为包含同名frozen_pub模块，改为依赖顺序独立发布。不是删除重名源码或关闭检查绕过。
+
+当前pseudorandom和utils均用debug CLI真实编译成功，见20261003-originbyte-pseudorandom-build.log、20261003-originbyte-utils-build.log。准备期间失败目录01／02／04／05均保留。
+
+发布入口publish_wallet_fixture.py同样在指定合约仓库：核对runtime绑定的debug binary、独立配置、本地endpoint及完整H0，传入verify-deps（后续源码核对确认当前CLI忽略该参数，不构成依赖验证证明）；已有日志拒绝再次发送，明确终态success才算通过。3项守卫测试通过，见20261003-originbyte-publish-guards.log。
+
+pseudorandom发布成功：digest `4M6hLChog4KFibSTP1FeQQdFxutZt1E9MKQ19VDDEMmR`，package `0xa99542e7998096a52e974bb0a3aad8fc715973063b63d429acd84f1ad2306fba`，checkpoint13276。公开回执见20261003-originbyte-pseudorandom-publish.json；Published.toml保留在独立构建目录。之后以真实gRPC GetPackage再次读到该包及1个module。
+
+utils发布命令遇到gRPC DeadlineExceeded，输出没有交易digest，脚本终止后续队列；permissions／request／kiosk未发起发布。只读枚举部署者UpgradeCap只有pseudorandom一个、无后续页；这不能证明utils未曾提交或不会迟到，因此没有重发、没有填入成功包ID。日志20261003-originbyte-utils-publish.log保留。下一步需定位超时所在调用阶段并恢复原执行证据，不能直接重复发布。
+
+provenance与公开结果汇总见evidence/20261003-originbyte-rtd-deployment-progress.json。ENV-03、RPC-22仍未完成：仅一个依赖已确认部署，主Kiosk和NFT fixture、完整ABI／实际转移未完成，更不是可试用交付。目标继续进行，不因本次环境问题放弃其他工作。
+
+
+## 后续进展：过期边界、固定字节发布与五包部署
+
+旧utils未知调用未盲重发。仅对本次隔离链validator管理员端口依次关闭epoch0、epoch1，使epoch推进至2；原RTD构建有效期至epoch1。相同H0下gas仍为原version3、UpgradeCap仅一个且无下一页，旧交易已过有效期，不能再迟到执行。evidence/20261003-utils-expiry-fence.json记录该边界。管理员db-shell初步抽查只返回首1000行，不能作全量无pending证明；未清除数据或操作原归档链。
+
+随后新utils交易Ag91tYoNP1iPCcFUUmK8Fs77nSsB3DkynZ8NpyyGzUFj得到明确InsufficientGas终态，原日志／pending／回执保留。部署入口已改为一次构建、正式原字节模拟、签名验签、独占fsync记录、单次execute-signed-tx；默认gas提高至1000000000，模拟必须成功才签名提交。首次模拟校验因官方省略外层摘要被拦，未签名提交；按官方源码校正后成功。部署守卫与失败／超时不重发5项测试通过。
+
+utils、permissions、request、kiosk随后全部模拟及部署成功，回执见各20261003-originbyte-*-exact-publish.json；GetPackage再次读取四包并核对ID／模块名，完整描述见evidence/20261003-originbyte-deployed-packages.json。pseudorandom先前已有独立GetPackage证据。受控OriginByte类型发现与执行当前均为首次发布Kiosk包0x87625fa4a1375155c03e3dfa990741aa5225e9faa6cb04e231c9c35fd9fe9114，不能套用上游Sui地址。
+
+此批仅五包完成。NFT受控fixture、创建／转移实测、完整ABI比对、GraphQL、Chrome批准／恢复仍待完成，ENV-03／RPC-22保持未勾。

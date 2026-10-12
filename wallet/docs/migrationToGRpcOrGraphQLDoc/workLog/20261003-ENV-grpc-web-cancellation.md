@@ -1,0 +1,11 @@
+# gRPC-Web取消、deadline及流错误真实协议验证
+
+2026-10-03，沿用固定Envoy镜像、临时TLS/mTLS测试上游和真实RTD SDK。探测由指定合约仓库run_wallet_grpc_web_probe.py执行，结束清理临时容器／CA，无系统信任修改。
+
+原8项基础上新增6项，合计14项通过：unary Unavailable与message保持；一帧后Internal错误trailers保持且不得当成功结束；AbortSignal取消在native HTTP/2上游观测到非零RST；客户端AbortSignal.timeout返回DeadlineExceeded并取消native上游；Envoy duration上限截断已开始流并取消上游；4MiB以上已解码请求在上游之前返回413。完整记录见evidence/20261003-grpc-web-cancellation-final.json，三种取消路径实际rstCode均为2。
+
+首次deadline断言失败是证据变化：只设置grpc-timeout且上游不主动完成时，Envoy在已发消息后重置流，真实SDK返回INTERNAL/terminated，不会凭空生成DEADLINE_EXCEEDED trailer。客户端明确AbortSignal.timeout则可正确归类DeadlineExceeded。已分别测试这两种语义，没有把截断错误改成成功或掩盖为服务端业务码。初次失败证据保留为20261003-grpc-web-cancellation.json。钱包应继续丢弃失败流的半页结果。
+
+此批仍为合成原生入口，未验证真实发布门禁、Chrome、过载或多副本部署。ENV-04–07不勾，16/98。
+
+真实门禁依赖核查：现有dev-publication-workspace要求连续checkpoint证书校验、staging/source发布、独立replica及PostgreSQL提交可见性共同成立，不能用原始HBase水位冒充。归档原生helper清单旧指向temp/rtd，指定合约仓库新增build_wallet_archive_verifier.py，在全新隔离目录复制helper源码、显式绑定当前rtd-config/rtd-types及相同SDK revision，debug构建verifier／verify_checkpoint_range／render_checkpoint_payload并记录provenance。构建日志20261003-archive-verifier-debug-build.log；本次启动时仍在运行，尚无成功结论。未修改RTD业务源码或旧helper目录。

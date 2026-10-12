@@ -3,13 +3,13 @@
 
 import { CoinItem } from '_components/active-coins-card/CoinItem';
 import { ampli } from '_src/shared/analytics/ampli';
-import { type CoinBalance } from 'rtd-typescript/client';
+import { type RtdClientTypes } from 'rtd-typescript/client';
 import { MIST_PER_RTD } from 'rtd-typescript/utils';
 import { type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 
 type Props = {
-	coinBalance: CoinBalance;
+	coinBalance: RtdClientTypes.Balance;
 	centerAction?: ReactNode;
 	subtitle?: string;
 };
@@ -21,7 +21,7 @@ export function TokenLink({ coinBalance, centerAction, subtitle }: Props) {
 			onClick={() =>
 				ampli.selectedCoin({
 					coinType: coinBalance.coinType,
-					totalBalance: Number(BigInt(coinBalance.totalBalance) / MIST_PER_RTD),
+					totalBalance: Number(BigInt(coinBalance.balance) / MIST_PER_RTD),
 					sourceFlow: 'TokenLink',
 				})
 			}
@@ -30,7 +30,7 @@ export function TokenLink({ coinBalance, centerAction, subtitle }: Props) {
 		>
 			<CoinItem
 				coinType={coinBalance.coinType}
-				balance={BigInt(coinBalance.totalBalance)}
+				balance={BigInt(coinBalance.balance)}
 				centerAction={centerAction}
 				subtitle={subtitle}
 			/>

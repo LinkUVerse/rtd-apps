@@ -3,7 +3,7 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { type TransactionFilter } from "rtd-typescript/client";
+import type { TransactionFilter } from "rtd-typescript/jsonRpc";
 import { Heading, RadioGroup, RadioGroupItem } from "@linku/ui";
 import clsx from "clsx";
 import { useReducer, useState } from "react";

@@ -1,0 +1,7 @@
+# C96 已退役观察器 PID 复用的只读身份补充
+
+独立审核真实被C91 qualification中仅PID16417存在判断拒绝。该PID旧owner出生06:20:23、已按C91完整退役审核退出；08:20:40出现的同PID是macOS mdworker_shared，与旧出生及完整命令均不同。不删除、不终止系统进程，不重跑退役。
+
+保留所有原C91/C92及旧证据字节。新只读selector从原函数AST抽取，资格判断和C92 capture中16417这两处纯predicate改为旧watch-intent绑定的完整processIdentity比较；其余所有检查和返回authority字节保持。旧watch及退役passed/input pins必须完整认证。同birth但不同命令视为异常拒绝；不同birth但仍运行旧watch程序视为控制冲突拒绝；仅不同birth且不同程序可认定历史owner已退出。所有其他旧PID仍按原strict检查，当前92149必须精确出生／命令／原venv／pidfile/status，完整29／14／25及1456文件保持。
+
+适配只读验收工具，不安装publisher、发信号、修改SQL或物理对象；逆变换证明原两个predicate外完全相同，测试含旧真实identity、None、重用PID、同birth命令变动、不同birth同watch、malformedidentity及其他旧PID原行为。原独立失败保留，新审核输出单独02，不据此勾父任务。

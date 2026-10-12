@@ -8,7 +8,7 @@ import { useGetQredoTransaction } from '_src/ui/app/hooks/useGetQredoTransaction
 import { useI18n, type MessageKey } from '_src/ui/app/i18n';
 import { Text } from '_src/ui/app/shared/text';
 import { formatDate } from '_src/ui/app/helpers';
-import { useOnScreen } from 'rtd-apps-core';
+import { useOnScreen } from 'rtd-apps-core/src/hooks/useOnScreen';
 import { bcs } from 'rtd-typescript/bcs';
 import { fromBase64 } from 'rtd-typescript/utils';
 import { useMemo, useRef } from 'react';

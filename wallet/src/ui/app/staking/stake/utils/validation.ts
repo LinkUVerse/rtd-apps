@@ -1,7 +1,7 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { formatBalance } from 'rtd-apps-core';
+import { formatBalance } from 'rtd-apps-core/src/rpc/coin';
 import type { MessageKey, MessageValues } from '_app/i18n';
 import BigNumber from 'bignumber.js';
 import { mixed, object } from 'yup';
@@ -37,10 +37,7 @@ export function createValidationSchema(
 							amount: formatBalance(minimumStake, decimals),
 							symbol: coinSymbol,
 						}),
-						(amount) =>
-							amount
-								? amount.shiftedBy(decimals).gte(minimumStake.toString())
-								: false,
+						(amount) => (amount ? amount.shiftedBy(decimals).gte(minimumStake.toString()) : false),
 					)
 					.test('max', (amount, ctx) => {
 						const gasBudget = ctx.parent.gasBudget || 0n;
@@ -63,13 +60,9 @@ export function createValidationSchema(
 							}),
 						});
 					})
-					.test(
-						'max-decimals',
-						t('validation.maximumDecimals', { count: decimals }),
-						(amount) => {
-							return amount ? amount.shiftedBy(decimals).isInteger() : false;
-						},
-					)
+					.test('max-decimals', t('validation.maximumDecimals', { count: decimals }), (amount) => {
+						return amount ? amount.shiftedBy(decimals).isInteger() : false;
+					})
 					.label(t('transfer.selectAmount')),
 	});
 }

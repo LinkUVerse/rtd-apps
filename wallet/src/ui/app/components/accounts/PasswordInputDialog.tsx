@@ -11,11 +11,10 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from '_src/ui/app/shared/Dialog';
-import { useZodForm } from 'rtd-apps-core';
+import { useZodForm, z } from 'rtd-apps-core/src/hooks/useZodForm';
 import { useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { v4 as uuidV4 } from 'uuid';
-import { z } from 'zod';
 
 import { useAccountSources } from '../../hooks/useAccountSources';
 import { useBackgroundClient } from '../../hooks/useBackgroundClient';

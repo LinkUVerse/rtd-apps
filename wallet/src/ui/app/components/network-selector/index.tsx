@@ -27,7 +27,7 @@ const NetworkSelector = () => {
 	);
 	// change the selected network name whenever the selectedApiEnv changes
 	useEffect(() => {
-		setCustomRpcInputVisible(activeApiEnv === API_ENV.customRPC && !!activeRpcUrl);
+		setCustomRpcInputVisible(activeApiEnv === API_ENV.customRPC);
 	}, [activeApiEnv, activeRpcUrl]);
 	const dispatch = useAppDispatch();
 	const netWorks = useMemo(() => {
@@ -46,6 +46,7 @@ const NetworkSelector = () => {
 							type="button"
 							onClick={async () => {
 								if (activeApiEnv === apiEnv.env) {
+									if (apiEnv.env === API_ENV.customRPC) setCustomRpcInputVisible(true);
 									return;
 								}
 								setCustomRpcInputVisible(apiEnv.env === API_ENV.customRPC);

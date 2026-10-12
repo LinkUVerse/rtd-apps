@@ -1,0 +1,93 @@
+// Independent current C41 actual live-lock and internal direct NFT preview/native proof.
+import assert from 'node:assert/strict';
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
+import { resolve, join } from 'node:path';
+import { homedir } from 'node:os';
+import { createHash } from 'node:crypto';
+import { execFileSync } from 'node:child_process';
+import { RtdGrpcClient, GrpcTypes } from 'rtd-typescript/grpc';
+import { Transaction } from 'rtd-typescript/transactions';
+import { bcs } from 'rtd-typescript/bcs';
+import { toBase64 } from 'rtd-typescript/utils';
+import { decodeFreshObject, FRESH_OBJECT_MASK } from '../src/shared/rpc/fresh-object';
+import { validateNetworkProfile, executionScopeKey } from '../src/shared/rpc/profile';
+
+async function main() {
+ const [proofFile, output] = process.argv.slice(2);assert(proofFile&&output&&!existsSync(output));
+ const wallet=resolve(__dirname,'..'),root=resolve(wallet,'../..'),logs=join(wallet,'migrationToGRpcOrGraphQLDoc/workLog'),rt=join(homedir(),'.local/state/rtd-wallet-migration/dev-20261006-03');
+ const read=(f:string)=>JSON.parse(readFileSync(f,'utf8')),sha=(f:string)=>createHash('sha256').update(readFileSync(f)).digest('hex'),hash=(b:Uint8Array)=>createHash('sha256').update(b).digest('hex');
+ const buildFile=join(logs,'20261007-default-generation-positive-C41-build-01.json'),profileFile=join(rt,'certified-positive-transport-release-20261006-01/profile.json'),p=read(proofFile),build=read(buildFile),profile=validateNetworkProfile(read(profileFile));
+ assert(p.passed&&build.passed);assert.deepEqual(p.source,build.sourceAfter);
+ for(const[f,h]of Object.entries(p.inputsSha256))assert.equal(sha(f),h);
+ for(const[f,h]of Object.entries(build.artifacts))assert.equal(sha(join(build.output,f)),h);
+ assert.equal(p.workerSource.workerSha256,build.artifacts['background.js']);
+ for(const ui of[p.uiSource,p.secondUiSource])for(const b of ui.loadedBundles)assert(b.matchesDisk&&b.loadedSha256===build.artifacts[b.file]);
+ assert(p.signHoldSource.receiverVerified&&p.signHoldSource.module==='dapp-signing');
+ assert.equal(p.signHoldSource.producerSha256,sha(join(wallet,'src/background/dapp-signing.ts')));
+ assert.equal(p.signHoldSource.mapSha256,sha(join(build.output,'background.js.map')));
+ assert(p.checks.every((c:any)=>c.passed));assert.equal(p.executeRequests,0);assert.equal(p.signatureCount,0);assert.equal(p.realSignDataCompleted,1);
+ assert.deepEqual(p.records,[]);assert.deepEqual(p.blocked,[]);
+ assert.deepEqual(p.initialJournal,p.heldJournal);assert.deepEqual(p.initialJournal,p.finalJournal);
+ for(const rows of Object.values(p.initialJournal))assert.deepEqual(rows,[]);
+ assert(p.releaseAt-p.heldAt>=31000);assert(p.originalResultError.includes('网络准入记录未通过精确合同'));
+ const sender=p.nftApproval.prepared.sender;assert.equal(sender,p.nativeBefore.owner.AddressOwner);assert.equal(p.scopeKey,executionScopeKey(profile,sender));
+ const state=p.heldNativeState;assert(state.invoked===1&&state.signaturePresent&&!state.released&&state.dispatches===0);
+ assert.equal(state.intentBytesSha256,p.originalApprovedTransaction.bytesSha256);
+ const approved=p.nftApproval.prepared,bytes=Buffer.from(approved.bytesBase64,'base64'),tx=Transaction.from(bytes),digest=await tx.getDigest();
+ assert.equal(digest,approved.digest);assert.equal(approved.route,'direct');assert.equal(approved.input.objectId,p.nativeBefore.objectId);
+ assert.equal(tx.getData().sender,sender);assert.equal(tx.getData().gasData.owner,sender);assert.equal(String(tx.getData().gasData.budget),String(approved.gasBudget));
+ const expiration=tx.getData().expiration;assert(expiration?.Validity&&expiration.Validity.chain===profile.expectedGenesisDigest);assert(BigInt(expiration.Validity.maxEpoch)===BigInt(expiration.Validity.minEpoch)+1n);assert(expiration.Validity.allowedProposers?.epoch===expiration.Validity.minEpoch);
+ assert.equal(p.heldSimulationsBefore,2);assert.equal(p.nftSimulationStart,2);assert(p.simulations.length>2);
+ const frames=(encoded:string)=>{const raw=Buffer.from(encoded,'base64'),payload:Buffer[]=[],trailers:string[]=[];let at=0;while(at<raw.length){assert(at+5<=raw.length);const flag=raw[at],length=raw.readUInt32BE(at+1);assert(at+5+length<=raw.length);const body=raw.subarray(at+5,at+5+length);if(flag===0)payload.push(body);else{assert.equal(flag,128);trailers.push(body.toString())}at+=5+length}return{payload,trailers}};
+ const parsedSimulations:any[]=[];let fee:any,finalNative:any;
+ for(const[i,sim]of p.simulations.entries()){
+  assert.equal(sim.status,200);assert(sim.checksEnabled);const a=frames(sim.requestBase64),r=frames(sim.responseBase64);
+  assert(a.payload.length===1&&a.trailers.length===0&&r.payload.length===1&&r.trailers.length===1&&/grpc-status:\s*0(?:\r?\n|$)/i.test(r.trailers[0]));
+  const req=GrpcTypes.SimulateTransactionRequest.fromBinary(a.payload[0]),response=GrpcTypes.SimulateTransactionResponse.fromBinary(r.payload[0]);
+  assert.equal(req.checks,GrpcTypes.SimulateTransactionRequest_TransactionChecks.ENABLED);
+  if(i===2){
+   assert.equal(req.doGasSelection,true);assert(!req.transaction?.bcs?.value);assert.equal(req.transaction?.sender,sender);assert.equal(req.transaction?.gasPayment?.owner,sender);assert.deepEqual(req.transaction?.gasPayment?.objects,[]);
+   assert(req.transaction?.kind?.data.oneofKind==='programmableTransaction');
+   const pt=req.transaction.kind.data.programmableTransaction;assert.equal(pt.inputs.length,2);assert.equal(pt.commands.length,1);
+   assert.deepEqual({objectId:pt.inputs[0].objectId,version:String(pt.inputs[0].version),digest:pt.inputs[0].digest},{objectId:p.nativeBefore.objectId,version:p.nativeBefore.version,digest:p.nativeBefore.digest});
+   assert.equal(toBase64(pt.inputs[1].pure!),bcs.Address.serialize(approved.input.to).toBase64());
+   assert.deepEqual(pt.commands[0].command,{oneofKind:'transferObjects',transferObjects:{objects:[{kind:2,input:0}],address:{kind:2,input:1}}});
+   assert(response.transaction?.effects?.status?.success);assert.deepEqual(response.transaction.transaction?.kind?.data,req.transaction.kind.data);
+   fee=response.transaction.transaction;parsedSimulations.push({phase:'kind-fee-selection',checksEnabled:true,success:true,canonicalEffects:false,noFinalBytesInRequest:true});continue;
+  }
+  assert.equal(req.doGasSelection,false);const expected=i<2?p.originalApprovedTransaction.bytesBase64:approved.bytesBase64;
+  assert.equal(toBase64(req.transaction!.bcs!.value),expected);assert.equal(toBase64(response.transaction!.transaction!.bcs!.value),expected);if(i===3)finalNative=response.transaction!.transaction!;
+  const expectedDigest=await Transaction.from(Buffer.from(expected,'base64')).getDigest(),effects=bcs.TransactionEffects.parse(response.transaction!.effects!.bcs!.value);
+  assert(response.transaction!.effects!.status!.success);assert.equal(response.transaction!.effects!.transactionDigest,expectedDigest);assert.equal(effects[effects.$kind].transactionDigest,expectedDigest);
+  parsedSimulations.push({digest:expectedDigest,checksEnabled:true,success:true,canonicalEffects:true});
+ }
+ assert(fee&&finalNative);assert.deepEqual(fee.kind.data,finalNative.kind.data);assert.deepEqual(fee.gasPayment,finalNative.gasPayment);assert.deepEqual(fee.expiration,finalNative.expiration);
+ assert.equal(fee.expiration.chain,expiration.Validity.chain);assert.equal(String(fee.expiration.epoch),expiration.Validity.maxEpoch);assert.equal(String(fee.expiration.minEpoch),expiration.Validity.minEpoch);assert.equal(fee.expiration.nonce,expiration.Validity.nonce);assert.deepEqual(fee.expiration.allowedProposers.proposers,expiration.Validity.allowedProposers.proposers);assert.equal(String(fee.expiration.allowedProposers.epoch),expiration.Validity.allowedProposers.epoch);
+ assert.deepEqual(tx.getData().inputs,[{Object:{ImmOrOwnedObject:{objectId:p.nativeBefore.objectId,version:p.nativeBefore.version,digest:p.nativeBefore.digest},$kind:'ImmOrOwnedObject'},$kind:'Object'},{Pure:{bytes:bcs.Address.serialize(approved.input.to).toBase64()},$kind:'Pure'}]);
+ assert.deepEqual(tx.getData().commands,[{TransferObjects:{objects:[{Input:0,$kind:'Input'}],address:{Input:1,$kind:'Input'}},$kind:'TransferObjects'}]);
+ assert.deepEqual(tx.getData().gasData.payment,fee.gasPayment.objects.map((o:any)=>({objectId:o.objectId,version:String(o.version),digest:o.digest})));assert.equal(tx.getData().gasData.price,String(fee.gasPayment.price));assert.equal(tx.getData().gasData.budget,String(fee.gasPayment.budget));
+ const raw=join(rt,'C41-direct-NFT-lock-independent-native-20261007-01');assert(!existsSync(raw));mkdirSync(raw,{mode:0o700});const calls:any[]=[];
+ const fetch:typeof globalThis.fetch=async(input,init)=>{const url=new URL(input instanceof Request?input.url:String(input));assert.equal(url.origin,new URL(profile.endpoints.fullnodeGrpcWeb).origin);assert(['/GetServiceInfo','/GetObject','/GetCheckpoint'].some(s=>url.pathname.endsWith(s)));const response=await globalThis.fetch(input,init),body=new Uint8Array(await response.clone().arrayBuffer()),file=join(raw,'native-'+calls.length+'.bin');writeFileSync(file,body,{flag:'wx',mode:0o600});calls.push({url:url.href,status:response.status,file,sha256:sha(file)});assert.equal(response.status,200);return response};
+ const client=new RtdGrpcClient({network:profile.sdkNetwork,baseUrl:profile.endpoints.fullnodeGrpcWeb,format:'binary',fetch,mvr:{url:''}});
+ const before=(await client.ledgerService.getServiceInfo({})).response;assert.equal(before.chainId,profile.expectedGenesisDigest);
+ const object=(await client.ledgerService.getObject({objectId:p.nativeBefore.objectId,readMask:{paths:[...FRESH_OBJECT_MASK]}})).response.object;assert(object);
+ const fresh=decodeFreshObject(object,p.nativeBefore.objectId);
+ assert.deepEqual({objectId:fresh.objectId,type:fresh.type,version:fresh.version,digest:fresh.digest,owner:fresh.owner,contentBase64:toBase64(fresh.content),bcsBase64:toBase64(fresh.objectBcs)},p.nativeBefore);
+ assert(fresh.owner.$kind==='AddressOwner'&&fresh.owner.AddressOwner===sender);
+ const inputs=bcs.TransactionData.parse(bytes).V1.kind.ProgrammableTransaction!.inputs,objectInputs=inputs.filter(x=>x.$kind==='Object').map(x=>x.Object!);
+ assert(objectInputs.some(x=>x.$kind==='ImmOrOwnedObject'&&x.ImmOrOwnedObject.objectId===fresh.objectId&&String(x.ImmOrOwnedObject.version)===fresh.version&&x.ImmOrOwnedObject.digest===fresh.digest));
+ const points=new Map<string,string>();
+ for(const c of [...p.heldNftContexts,...p.preparedNftContexts]){
+  assert.equal(c.bindingKey,approved.bindingKey);const s=JSON.parse(c.assetSnapshotKey);assert.equal(s[0],c.readSessionKey);const S=String(s[2]),d=s[3];if(points.has(S))assert.equal(points.get(S),d);points.set(S,d);
+ }
+ for(const[S,d]of points){const cp=(await client.ledgerService.getCheckpoint({checkpointId:{oneofKind:'sequenceNumber',sequenceNumber:BigInt(S)},readMask:{paths:['sequence_number','digest']}})).response.checkpoint;assert(cp&&String(cp.sequenceNumber)===S&&cp.digest===d)}
+ const after=(await client.ledgerService.getServiceInfo({})).response;assert.equal(after.chainId,before.chainId);assert(after.checkpointHeight!>=before.checkpointHeight!);
+ const foundation=join(homedir(),'.local/state/rtd-wallet-migration/dev-20261003-01/publication-foundation'),installedFile=join(foundation,'message-budget-debug-install-20261006-01/installed-provenance.json'),pinFile=join(foundation,'supported-publisher-capacity-20261006-03/plan.json'),installed=read(installedFile);
+ assert.equal(execFileSync('git',['-C',join(root,'rtd'),'rev-parse','HEAD']).toString().trim(),installed.sourceHead);assert.equal(hash(execFileSync('git',['-C',join(root,'rtd'),'diff','--binary','HEAD'])),installed.sourceDiffSha256);for(const[n,h]of Object.entries(read(pinFile).eightDebug))assert.equal(sha(join(root,'rtd/target/debug',n)),h);
+ const source=JSON.parse(execFileSync('python3',['-c','import importlib.util,json;from pathlib import Path;p=Path("scripts/build-reviewed-local-extension.py");s=importlib.util.spec_from_file_location("build",p);m=importlib.util.module_from_spec(s);s.loader.exec_module(m);h,n=m.source_hash(Path.cwd());print(json.dumps({"sha256":h,"files":n}))'],{cwd:wallet}).toString());assert.deepEqual(source,build.sourceAfter);
+ const inputsSha256=Object.fromEntries([__filename,proofFile,buildFile,profileFile,installedFile,pinFile,join(wallet,'scripts/lib/current-worker-production-sign-hold-verified.cjs'),join(wallet,'scripts/lib/lifecycle-journal-snapshot.cjs')].map(f=>[resolve(f),sha(f)]));
+ const report={passed:true,observedAt:new Date().toISOString(),source,actualUiChecks:p.checks.length,h0:before.chainId,owner:sender,originalDigest:p.originalApprovedTransaction.digest,legacyHarnessSeedDigest:p.originalDigest,internalPreviewDigest:digest,originalSignDataCompletedPrivately:1,signaturesReturned:0,executeRequests:0,sameNativeScopeActuallyOccupied:true,directNftExplicitExecutionLockRefusal:true,actualNormalPostReleasePreview:true,formalSimulations:parsedSimulations,fullThreeStoreJournalUnchanged:true,freshOriginalNftCanonicalObjectVerified:true,snapshots:Array.from(points,([checkpoint,digest])=>({checkpoint,digest})),calls,currentEightDebugVerified:true,parentTX04Complete:false,inputsSha256,scope:'Independent current C41 exact production source/maps/UI/worker, original private signing hold native ifAvailable actual refusal, direct NFT no new work while held, post-release ordinary actual direct NFT form/Back with canonical preview/ref/sender/gas/Validity and all successful ENABLED raw frame pairs; one exact transaction-kind gas selection and three canonical final-byte effects; NFT chain-bound Validity unchanged from selection to reviewed bytes. Fresh unchanged native canonical NFT plus admitted checkpoint digests verified; zero returned signatures and zero Execute. Full other NFT branches/durable pending/HTTPS and parent remain open.'};
+ writeFileSync(output,JSON.stringify(report,null,2)+'\n',{flag:'wx',mode:0o600});console.log(JSON.stringify({passed:true,actualUiChecks:p.checks.length,formalSimulations:p.simulations.length,executeRequests:0}));
+}
+main().catch(e=>{console.error(JSON.stringify({passed:false,errorType:e.name,message:String(e.message).slice(0,700)}));process.exitCode=1});
+

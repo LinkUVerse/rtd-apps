@@ -4,8 +4,8 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { useRtdClient } from "rtd-dapp-kit";
-import { type RtdTransactionBlockResponse } from "rtd-typescript/client";
+import { useExplorerClient } from "~/rpc/explorer-client";
+import type { RtdTransactionBlockResponse } from "rtd-typescript/jsonRpc";
 import { LoadingIndicator, Text } from "@linku/ui";
 import { useQuery } from "@tanstack/react-query";
 import { Banner } from "~/ui/Banner";
@@ -61,7 +61,7 @@ export function TransactionsForAddressTable({
 }
 
 export function TransactionsForAddress({ address, type }: Props) {
-	const client = useRtdClient();
+	const client = useExplorerClient();
 
 	const { data, isPending, isError } = useQuery({
 		queryKey: ["transactions-for-address", address, type],

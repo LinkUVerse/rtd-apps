@@ -1,6 +1,7 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
+import { explorerDisplayString } from "rtd-apps-core/src/utils/explorer-kiosk";
 import { useGetKioskContents, useGetOwnedObjects, useLocalStorage } from "rtd-apps-core";
 import { ThumbnailsOnly16, ViewList16, ViewSmallThumbnails16 } from "rtd-apps-icons";
 import { Heading, IconButton, RadioGroup, RadioGroupItem, Text } from "@linku/ui";
@@ -75,24 +76,24 @@ export function OwnedObjects({ id }: { id: string }) {
 		},
 		limit,
 	);
-	const { data: kioskData, isFetching: kioskDataFetching } = useGetKioskContents(id);
+	const { data: kioskData, isFetching: kioskDataFetching, isError: kioskDataError } = useGetKioskContents(id);
 
 	const { data, isError, isFetching, pagination } = useCursorPagination(ownedObjects);
 
-	const isPending = filter === FILTER_VALUES.ALL ? isFetching : kioskDataFetching;
+	const isPending = filter === FILTER_VALUES.KIOSKS ? kioskDataFetching : isFetching;
 
 	useEffect(() => {
-		if (!isPending) {
+		if (!isPending && !kioskDataError) {
 			setFilter(
 				kioskData?.list?.length && filter === FILTER_VALUES.KIOSKS
 					? FILTER_VALUES.KIOSKS
 					: FILTER_VALUES.ALL,
 			);
 		}
-	}, [filter, isPending, kioskData?.list?.length, setFilter]);
+	}, [filter, isPending, kioskDataError, kioskData?.list?.length, setFilter]);
 
 	const filteredData = useMemo(
-		() => (filter === FILTER_VALUES.ALL ? data?.data : kioskData?.list),
+		() => (filter === FILTER_VALUES.KIOSKS ? kioskData?.list : data?.data),
 		[filter, data, kioskData],
 	);
 
@@ -111,9 +112,7 @@ export function OwnedObjects({ id }: { id: string }) {
 		const noImageUrl = [];
 
 		for (const obj of filteredData) {
-			const displayMeta = obj.data?.display?.data;
-
-			if (displayMeta?.image_url) {
+			if (explorerDisplayString(obj, "image_url")) {
 				hasImageUrl.push(obj);
 			} else {
 				noImageUrl.push(obj);
@@ -133,7 +132,7 @@ export function OwnedObjects({ id }: { id: string }) {
 	const hasAssets = sortedDataByDisplayImages.length > 0;
 	const noAssets = !hasAssets && !isPending;
 
-	if (isError) {
+	if (filter === FILTER_VALUES.KIOSKS ? kioskDataError : isError) {
 		return <div className="pt-2 font-sans font-semibold text-issue-dark">Failed to load NFTs</div>;
 	}
 

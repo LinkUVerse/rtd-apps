@@ -1,12 +1,13 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { useRtdClientContext } from 'rtd-dapp-kit';
-import { KIOSK_ITEM, KioskClient, KioskItem, KioskOwnerCap } from 'rtd-kiosk';
-import { RtdClient } from 'rtd-typescript/client';
+import { useExplorerRpcContext as useRtdClientContext } from '../rpc/ExplorerRpcContext';
+import { KIOSK_ITEM, KioskClient, KioskOwnerCap } from 'rtd-kiosk';
+import type { RtdJsonRpcClient } from 'rtd-typescript/jsonRpc';
 import { useQuery } from '@tanstack/react-query';
 
 import { getKioskIdFromOwnerCap, ORIGINBYTE_KIOSK_OWNER_TOKEN } from '../utils/kiosk';
+import { explorerKioskItem, type ExplorerKioskItem } from '../utils/explorer-kiosk';
 import { useKioskClient } from './useKioskClient';
 
 export enum KioskTypes {
@@ -15,14 +16,14 @@ export enum KioskTypes {
 }
 
 export type Kiosk = {
-	items: KioskItem[];
+	items: ExplorerKioskItem[];
 	itemIds: string[];
 	kioskId: string;
 	type: KioskTypes;
 	ownerCap?: KioskOwnerCap;
 };
 
-async function getOriginByteKioskContents(address: string, client: RtdClient) {
+async function getOriginByteKioskContents(address: string, client: RtdJsonRpcClient) {
 	const data = await client.getOwnedObjects({
 		owner: address,
 		filter: {
@@ -44,10 +45,11 @@ async function getOriginByteKioskContents(address: string, client: RtdClient) {
 
 	const contents = await Promise.all(
 		ownedKiosks
-			.map(async (kiosk) => {
-				if (!kiosk.data) return;
+			.map(async (kiosk): Promise<Kiosk> => {
+				if (!kiosk.data) throw new Error('OriginByte Kiosk object is unavailable');
+				const kioskId = kiosk.data.objectId;
 				const objects = await client.getDynamicFields({
-					parentId: kiosk.data.objectId,
+					parentId: kioskId,
 				});
 
 				const objectIds = objects.data
@@ -65,12 +67,11 @@ async function getOriginByteKioskContents(address: string, client: RtdClient) {
 
 				return {
 					itemIds: objectIds,
-					items: kioskContent.map((item) => ({ ...item, kioskId: kiosk.data?.objectId })),
-					kioskId: kiosk.data.objectId,
+					items: kioskContent.map((item) => ({ ...item, kioskId })),
+					kioskId,
 					type: KioskTypes.ORIGINBYTE,
 				};
-			})
-			.filter(Boolean) as Promise<Kiosk>[],
+			}),
 	);
 	return contents;
 }
@@ -83,12 +84,11 @@ async function getRtdKioskContents(address: string, kioskClient: KioskClient) {
 				id,
 				options: {
 					withObjects: true,
-					objectOptions: { showDisplay: true, showContent: true },
 				},
 			});
 			return {
 				itemIds: kiosk.itemIds,
-				items: kiosk.items,
+				items: kiosk.items.map(explorerKioskItem),
 				kioskId: id,
 				type: KioskTypes.RTD,
 				ownerCap: ownedKiosks.kioskOwnerCaps.find((k) => k.kioskId === id),
@@ -106,7 +106,7 @@ export function useGetKioskContents(address?: string | null, disableOriginByteKi
 		queryKey: ['get-kiosk-contents', address, disableOriginByteKiosk, network, kioskClient.network],
 		queryFn: async () => {
 			const rtdKiosks = await getRtdKioskContents(address!, kioskClient);
-			const obKiosks = await getOriginByteKioskContents(address!, rtdClient);
+			const obKiosks = disableOriginByteKiosk ? [] : await getOriginByteKioskContents(address!, rtdClient);
 			return [...rtdKiosks, ...obKiosks];
 		},
 		select(data) {

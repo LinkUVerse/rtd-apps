@@ -9,11 +9,12 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { ValidatorLogo } from './ValidatorLogo';
 
 type ValidatorListItemProp = {
+ view?: import("rtd-apps-core/src/rpc/staking-types").WalletStakingView;
 	selected?: boolean;
 	value: string | number;
 	validatorAddress: string;
 };
-export function ValidatorListItem({ selected, value, validatorAddress }: ValidatorListItemProp) {
+export function ValidatorListItem({ selected, value, validatorAddress, view }: ValidatorListItemProp) {
 	return (
 		<AnimatePresence>
 			<motion.div whileHover={{ scale: 0.98 }} animate={selected ? { scale: 0.98 } : { scale: 1 }}>
@@ -33,6 +34,7 @@ export function ValidatorListItem({ selected, value, validatorAddress }: Validat
 								/>
 							)}
 							<ValidatorLogo
+                                view={view}
 								validatorAddress={validatorAddress}
 								showAddress
 								iconSize="md"

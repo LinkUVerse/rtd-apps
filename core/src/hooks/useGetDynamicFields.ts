@@ -1,8 +1,8 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { useRtdClient } from 'rtd-dapp-kit';
-import { DynamicFieldPage } from 'rtd-typescript/client';
+import { useExplorerRpcClient as useRtdClient } from '../rpc/ExplorerRpcContext';
+import type { DynamicFieldPage } from 'rtd-typescript/jsonRpc';
 import { normalizeRtdAddress } from 'rtd-typescript/utils';
 import { useInfiniteQuery } from '@tanstack/react-query';
 

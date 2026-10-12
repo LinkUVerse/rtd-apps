@@ -8,9 +8,10 @@ import { formatAddress, isValidRtdNSName } from 'rtd-typescript/utils';
 
 type TxnAddressLinkProps = {
 	address: string;
+	fullAddress?: boolean;
 };
 
-export function TxnAddressLink({ address }: TxnAddressLinkProps) {
+export function TxnAddressLink({ address, fullAddress = false }: TxnAddressLinkProps) {
 	const { t } = useI18n();
 
 	return (
@@ -19,8 +20,9 @@ export function TxnAddressLink({ address }: TxnAddressLinkProps) {
 			address={address}
 			title={t('common.viewOnExplorer')}
 			showIcon={false}
+			className={fullAddress ? 'break-all' : undefined}
 		>
-			{isValidRtdNSName(address) ? address : formatAddress(address)}
+			{fullAddress || isValidRtdNSName(address) ? address : formatAddress(address)}
 		</ExplorerLink>
 	);
 }

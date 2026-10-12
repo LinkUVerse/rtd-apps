@@ -1,87 +1,49 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { hasDisplayData, isKioskOwnerToken, useGetOwnedObjects } from 'rtd-apps-core';
-import { useKioskClient } from 'rtd-apps-core/src/hooks/useKioskClient';
-import { type RtdObjectData } from 'rtd-typescript/client';
-import { useMemo } from 'react';
-
-import { useBuyNLargeAssets } from '../components/buynlarge/useBuyNLargeAssets';
-import { useHiddenAssets } from '../pages/home/hidden-assets/HiddenAssetsProvider';
-
-type OwnedAssets = {
-	visual: RtdObjectData[];
-	other: RtdObjectData[];
-	hidden: RtdObjectData[];
-};
+import { useGetOwnedObjects } from "rtd-apps-core/src/rpc/asset-hooks";
+import { useWalletRpc } from "rtd-apps-core/src/rpc/WalletRpcContext";
+import { useMemo } from "react";
+import { groupCollectibles } from "../../../shared/rpc/nft-assets";
+import { useConfig } from "../components/buynlarge/useConfig";
+import { useHiddenAssets } from "../pages/home/hidden-assets/HiddenAssetsProvider";
 
 export enum AssetFilterTypes {
-	visual = 'visual',
-	other = 'other',
+  visual = "visual",
+  other = "other",
 }
-
 export function useGetNFTs(address?: string | null) {
-	const kioskClient = useKioskClient();
-	const bnl = useBuyNLargeAssets();
-	const {
-		data,
-		isPending,
-		error,
-		isError,
-		isFetchingNextPage,
-		hasNextPage,
-		fetchNextPage,
-		isLoading,
-	} = useGetOwnedObjects(
-		address,
-		{
-			MatchNone: [
-				{ StructType: '0x2::coin::Coin' },
-				...(bnl
-					.filter((item) => !!item?.objectType)
-					.map((item) => ({ StructType: item?.objectType })) as { StructType: string }[]),
-			],
-		},
-		50,
-	);
-	const { hiddenAssetIds } = useHiddenAssets();
-
-	const assets = useMemo(() => {
-		const ownedAssets: OwnedAssets = {
-			visual: [],
-			other: [],
-			hidden: [],
-		};
-
-		const groupedAssets = data?.pages
-			.flatMap((page) => page.data)
-			.filter((asset) => !hiddenAssetIds.includes(asset.data?.objectId!))
-			.reduce((acc, curr) => {
-				if (hasDisplayData(curr) || isKioskOwnerToken(kioskClient.network, curr))
-					acc.visual.push(curr.data as RtdObjectData);
-				if (!hasDisplayData(curr)) acc.other.push(curr.data as RtdObjectData);
-				if (hiddenAssetIds.includes(curr.data?.objectId!))
-					acc.hidden.push(curr.data as RtdObjectData);
-				return acc;
-			}, ownedAssets);
-
-		bnl.forEach((item) => {
-			if (item?.asset?.data) {
-				groupedAssets?.visual.unshift(item.asset.data);
-			}
-		});
-
-		return groupedAssets;
-	}, [hiddenAssetIds, data?.pages, kioskClient.network, bnl]);
-
-	return {
-		data: assets,
-		isLoading,
-		hasNextPage,
-		isFetchingNextPage,
-		fetchNextPage,
-		isPending: isPending,
-		isError: isError,
-		error,
-	};
+  const rpc = useWalletRpc();
+  const config = useConfig();
+  const query = useGetOwnedObjects(address, {
+    excludeTypes: ["0x2::coin::Coin"],
+  });
+  const { hiddenAssetIds } = useHiddenAssets();
+  const classified = useMemo(() => {
+    if (!query.data || query.isError) return { data: undefined, error: null };
+    try {
+      return {
+        data: groupCollectibles(
+          query.data,
+          hiddenAssetIds,
+          rpc.packages,
+          config
+            .filter((item) => item.enabled && item.objectType)
+            .map((item) => item.objectType!),
+        ),
+        error: null,
+      };
+    } catch (error) {
+      return {
+        data: undefined,
+        error: error instanceof Error ? error : new Error("资产分类失败"),
+      };
+    }
+  }, [query.data, query.isError, hiddenAssetIds, rpc.packages, config]);
+  return {
+    ...query,
+    data: classified.data,
+    isError: query.isError || !!classified.error,
+    error: query.error ?? classified.error,
+  };
 }

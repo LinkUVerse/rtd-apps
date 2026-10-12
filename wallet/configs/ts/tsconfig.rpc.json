@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.common.json",
+  "compilerOptions": {
+    "moduleResolution": "bundler",
+    "noEmit": true,
+    "jsx": "react-jsx"
+  },
+  "include": ["../../src/shared/rpc/**/*.ts", "../../../core/src/rpc/**/*.ts"],
+  "exclude": ["../../node_modules"]
+}

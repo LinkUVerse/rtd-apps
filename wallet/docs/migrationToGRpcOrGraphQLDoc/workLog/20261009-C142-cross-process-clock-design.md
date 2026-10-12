@@ -1,0 +1,7 @@
+# C142 真实跨进程时序的时钟域修正
+
+实际Python3.9.6/macOS双进程观察发现：time.monotonic使用各进程自己的mach_absolute_time起点，父/子输出分别约0.019576和0.013220，不能直接比较。time.clock_gettime(time.CLOCK_MONOTONIC)实际同宿主为208733.70329/208733.70549，提供共同域。已准备但未执行的旧全source控制器不能据此计跨进程时序通过。
+
+保留v2/v3及所有旧准备证据。v4只在真实guard请求与下游请求边界增加共同CLOCK_MONOTONIC开始/完成时间，原time.monotonic、point、Observation、2秒postcheck及全部授权顺序不变。控制器v3仅对HTTP客户端帧使用共同CLOCK_MONOTONIC，并明确clockDomain；等待/测量的同进程单调计时可保持。独立审核分别要求：共同域下实际客户端完整响应包含服务端与授权区间；原进程域下每个成员自身请求包含Observation/实际授权，postcheck最多2秒。禁止直接混比较两种时间，不以时钟桩或语法资格代替实际全source验收。
+
+修正只增加记录并选择修正版，完整709570认证/独立审核门仍先于创建目录或进程。对照尚未执行，C139回放与C141认证保持，原98计量不变。

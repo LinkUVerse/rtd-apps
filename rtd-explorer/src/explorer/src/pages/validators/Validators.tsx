@@ -8,8 +8,8 @@ import {
 	useGetValidatorsEvents,
 	formatPercentageDisplay,
 } from "rtd-apps-core";
-import { useRtdClientQuery } from "rtd-dapp-kit";
-import { type RtdEvent, type RtdValidatorSummary } from "rtd-typescript/client";
+import { useExplorerQuery } from "~/rpc/explorer-client";
+import type { RtdEvent, RtdValidatorSummary } from "rtd-typescript/jsonRpc";
 import { Heading, Text } from "@linku/ui";
 import { useMemo } from "react";
 
@@ -32,7 +32,7 @@ import { VALIDATOR_LOW_STAKE_GRACE_PERIOD } from "~/utils/validatorConstants";
 // const ValidatorMap = lazy(() => import('../../components/validator-map'));
 
 export function validatorsTableData(
-	validators: RtdValidatorSummary[],
+	validators: Pick<RtdValidatorSummary, "name" | "imageUrl" | "rtdAddress" | "stakingPoolRtdBalance" | "nextEpochGasPrice" | "commissionRate" | "votingPower">[],
 	atRiskValidators: [string, string][],
 	validatorEvents: RtdEvent[],
 	rollingAverageApys: ApyByValidator | null,
@@ -212,7 +212,7 @@ export function validatorsTableData(
 }
 
 function ValidatorPageResult() {
-	const { data, isPending, isSuccess, isError } = useRtdClientQuery("getLatestRtdSystemState");
+	const { data, isPending, isSuccess, isError } = useExplorerQuery("getLatestRtdSystemState");
 
 	const numberOfValidators = data?.activeValidators.length || 0;
 

@@ -1,7 +1,8 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { type RtdObjectResponse } from "rtd-typescript/client";
+import { explorerDisplayString } from "rtd-apps-core/src/utils/explorer-kiosk";
+import type { RtdObjectResponse } from "rtd-typescript/jsonRpc";
 import { formatAddress } from "rtd-typescript/utils";
 import { Placeholder, Text } from "@linku/ui";
 import { type ReactNode } from "react";
@@ -51,8 +52,7 @@ function ListViewItem({
 
 function ListViewItemContainer({ obj }: { obj: RtdObjectResponse }) {
 	const video = useResolveVideo(obj);
-	const displayMeta = obj.data?.display?.data;
-	const name = displayMeta?.name ?? displayMeta?.description ?? "";
+	const name = explorerDisplayString(obj, "name") ?? explorerDisplayString(obj, "description") ?? "";
 	const type = trimStdLibPrefix(parseObjectType(obj));
 	const objectId = obj.data?.objectId;
 
@@ -66,7 +66,7 @@ function ListViewItemContainer({ obj }: { obj: RtdObjectResponse }) {
 						disablePreview
 						title={name}
 						subtitle={type}
-						src={displayMeta?.image_url || ""}
+						src={explorerDisplayString(obj, "image_url") || ""}
 						video={video}
 						variant="xs"
 					/>

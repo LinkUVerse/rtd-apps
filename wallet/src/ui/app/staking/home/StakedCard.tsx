@@ -1,199 +1,94 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
+import { useI18n } from "_src/ui/app/i18n";
+import { CountDownTimer } from "_src/ui/app/shared/countdown-timer";
+import { estimatedEpochStart } from "rtd-apps-core/src/rpc/staking-view";
+import { IconTooltip } from "_src/ui/app/shared/tooltip";
+import { Text } from "_src/ui/app/shared/text";
+import { useFormatCoin } from "rtd-apps-core/src/rpc/coin";
+import type {
+  StakePosition,
+  WalletStakingView,
+} from "rtd-apps-core/src/rpc/staking-types";
+import { RTD_TYPE_ARG, formatAddress } from "rtd-typescript/utils";
+import { Link } from "react-router-dom";
+import { ValidatorLogo } from "../validators/ValidatorLogo";
 
-import { NUM_OF_EPOCH_BEFORE_STAKING_REWARDS_REDEEMABLE } from '_src/shared/constants';
-import { useI18n, type MessageKey } from '_src/ui/app/i18n';
-import { CountDownTimer } from '_src/ui/app/shared/countdown-timer';
-import { Text } from '_src/ui/app/shared/text';
-import { IconTooltip } from '_src/ui/app/shared/tooltip';
-import { useFormatCoin, useGetTimeBeforeEpochNumber } from 'rtd-apps-core';
-import { type StakeObject } from 'rtd-typescript/client';
-import { RTD_TYPE_ARG } from 'rtd-typescript/utils';
-import BigNumber from 'bignumber.js';
-import { cva, cx, type VariantProps } from 'class-variance-authority';
-import type { ReactNode } from 'react';
-import { Link } from 'react-router-dom';
-
-import { ValidatorLogo } from '../validators/ValidatorLogo';
-
-export enum StakeState {
-	WARM_UP = 'WARM_UP',
-	EARNING = 'EARNING',
-	COOL_DOWN = 'COOL_DOWN',
-	WITHDRAW = 'WITHDRAW',
-	IN_ACTIVE = 'IN_ACTIVE',
-}
-
-const STATUS_COPY: Record<StakeState, MessageKey> = {
-	[StakeState.WARM_UP]: 'staking.startsEarning',
-	[StakeState.EARNING]: 'staking.rewards',
-	[StakeState.COOL_DOWN]: 'staking.availableWithdraw',
-	[StakeState.WITHDRAW]: 'staking.withdraw',
-	[StakeState.IN_ACTIVE]: 'staking.inactive',
-};
-
-const STATUS_VARIANT = {
-	[StakeState.WARM_UP]: 'warmUp',
-	[StakeState.EARNING]: 'earning',
-	[StakeState.COOL_DOWN]: 'coolDown',
-	[StakeState.WITHDRAW]: 'withDraw',
-	[StakeState.IN_ACTIVE]: 'inActive',
-} as const;
-
-export type DelegationObjectWithValidator = Extract<StakeObject, { estimatedReward: string }> & {
-	validatorAddress: string;
-};
-
-const cardStyle = cva(
-	[
-		'group flex no-underline flex-col p-3.75 pr-2 py-3 box-border w-full rounded-2xl border border-solid h-36',
-	],
-	{
-		variants: {
-			variant: {
-				warmUp:
-					'theme-surface border border-gray-45 text-steel-dark hover:bg-rtd/10 hover:border-rtd/30',
-				earning:
-					'theme-surface border border-gray-45 text-steel-dark hover:bg-rtd/10 hover:border-rtd/30',
-				coolDown: 'bg-warning-light border-transparent text-steel-darker hover:border-warning',
-				withDraw: 'bg-success-light border-transparent text-success-dark hover:border-success',
-				inActive: 'bg-issue-light border-transparent text-issue hover:border-issue',
-			},
-		},
-	},
-);
-
-export interface StakeCardContentProps extends VariantProps<typeof cardStyle> {
-	statusLabel: string;
-	statusText: string;
-	children?: ReactNode;
-	earnColor?: boolean;
-	earningRewardEpoch?: number | null;
-}
-
-function StakeCardContent({
-	children,
-	statusLabel,
-	statusText,
-	variant,
-	earnColor,
-	earningRewardEpoch,
-}: StakeCardContentProps) {
-	const { t } = useI18n();
-	const { data: rewardEpochTime } = useGetTimeBeforeEpochNumber(earningRewardEpoch || 0);
-	return (
-		<div className={cardStyle({ variant })}>
-			{children}
-			<div className="flex flex-col gap-1">
-				<div className="text-subtitle font-medium">{statusLabel}</div>
-				<div className={cx('text-bodySmall font-semibold', earnColor ? 'text-success-dark' : '')}>
-					{earningRewardEpoch && rewardEpochTime > 0 ? (
-						<CountDownTimer
-							timestamp={rewardEpochTime}
-							variant="bodySmall"
-							label={t('staking.in')}
-						/>
-					) : (
-						statusText
-					)}
-				</div>
-			</div>
-		</div>
-	);
-}
-
-interface StakeCardProps {
-	delegationObject: DelegationObjectWithValidator;
-	currentEpoch: number;
-	inactiveValidator?: boolean;
-}
-
-// For delegationsRequestEpoch n  through n + 2, show Start Earning
-// Show epoch number or date/time for n + 3 epochs
 export function StakeCard({
-	delegationObject,
-	currentEpoch,
-	inactiveValidator = false,
-}: StakeCardProps) {
-	const { t } = useI18n();
-	const { stakedRtdId, principal, stakeRequestEpoch, estimatedReward, validatorAddress } =
-		delegationObject;
-
-	// TODO: Once two step withdraw is available, add cool down and withdraw now logic
-	// For cool down epoch, show Available to withdraw add rewards to principal
-	// Reward earning epoch is 2 epochs after stake request epoch
-	const earningRewardsEpoch =
-		Number(stakeRequestEpoch) + NUM_OF_EPOCH_BEFORE_STAKING_REWARDS_REDEEMABLE;
-	const isEarnedRewards = currentEpoch >= Number(earningRewardsEpoch);
-	const delegationState = inactiveValidator
-		? StakeState.IN_ACTIVE
-		: isEarnedRewards
-			? StakeState.EARNING
-			: StakeState.WARM_UP;
-
-	const rewards = isEarnedRewards && estimatedReward ? BigInt(estimatedReward) : 0n;
-
-	// For inactive validator, show principal + rewards
-	const [principalStaked, symbol] = useFormatCoin(
-		inactiveValidator ? new BigNumber(principal).plus(rewards.toString()).toString() : principal,
-		RTD_TYPE_ARG,
-	);
-	const [rewardsStaked] = useFormatCoin(rewards, RTD_TYPE_ARG);
-	const isEarning = delegationState === StakeState.EARNING && rewards > 0n;
-
-	// Applicable only for warm up
-	const epochBeforeRewards = delegationState === StakeState.WARM_UP ? earningRewardsEpoch : null;
-
-	const statusText = {
-		// Epoch time before earning
-		[StakeState.WARM_UP]: t('staking.epochNumber', { count: earningRewardsEpoch }),
-		[StakeState.EARNING]: `${rewardsStaked} ${symbol}`,
-		// Epoch time before redrawing
-		[StakeState.COOL_DOWN]: t('staking.availableWithdraw'),
-		[StakeState.WITHDRAW]: t('staking.now'),
-		[StakeState.IN_ACTIVE]: t('staking.notEarning'),
-	};
-
-	return (
-		<Link
-			data-testid="stake-card"
-			to={`/stake/delegation-detail?${new URLSearchParams({
-				validator: validatorAddress,
-				staked: stakedRtdId,
-			}).toString()}`}
-			className="no-underline"
-		>
-			<StakeCardContent
-				variant={STATUS_VARIANT[delegationState]}
-				statusLabel={t(STATUS_COPY[delegationState])}
-				statusText={statusText[delegationState]}
-				earnColor={isEarning}
-				earningRewardEpoch={Number(epochBeforeRewards)}
-			>
-				<div className="flex mb-1">
-					<ValidatorLogo
-						validatorAddress={validatorAddress}
-						size="subtitle"
-						iconSize="md"
-						stacked
-						activeEpoch={delegationObject.stakeRequestEpoch}
-					/>
-
-					<div className="text-steel text-pBody opacity-0 group-hover:opacity-100">
-						<IconTooltip tip={t('staking.objectDescription')} placement="top" />
-					</div>
-				</div>
-				<div className="flex-1">
-					<div className="flex items-baseline gap-1">
-						<Text variant="body" weight="semibold" color="gray-90">
-							{principalStaked}
-						</Text>
-						<Text variant="subtitle" weight="normal" color="gray-90">
-							{symbol}
-						</Text>
-					</div>
-				</div>
-			</StakeCardContent>
-		</Link>
-	);
+  position,
+  view,
+}: {
+  position: StakePosition;
+  view: WalletStakingView;
+}) {
+  const { t } = useI18n();
+  const reward =
+    position.reward.state === "estimated" ? position.reward.amount : undefined;
+  // Retired pools show the estimated redeemable total only when its reward is known.
+  const displayedAmount =
+    position.poolState === "inactive"
+      ? reward === undefined
+        ? undefined
+        : BigInt(position.principal) + BigInt(reward)
+      : position.principal;
+  const [principal, symbol] = useFormatCoin(displayedAmount, RTD_TYPE_ARG);
+  const [formattedReward] = useFormatCoin(reward, RTD_TYPE_ARG);
+  const estimatedStart =
+    position.status === "pending"
+      ? estimatedEpochStart(view, position.activationEpoch)
+      : null;
+  const status =
+    position.poolState === "unresolved"
+      ? t("common.syncError")
+      : position.poolState === "inactive"
+        ? t("staking.inactive")
+        : position.status === "pending"
+          ? t("staking.epochNumber", { count: position.activationEpoch })
+          : `${reward === undefined ? "--" : formattedReward} ${symbol}`;
+  const label =
+    position.status === "pending"
+      ? t("staking.startsEarning")
+      : t("staking.rewards");
+  return (
+    <Link
+      data-testid="stake-card"
+      to={`/stake/delegation-detail?${new URLSearchParams({ staked: position.objectId, ...(position.validatorAddress ? { validator: position.validatorAddress } : {}) })}`}
+      className="no-underline"
+    >
+      <div className="theme-surface flex flex-col gap-2 p-3 rounded-2xl border border-solid border-gray-45 h-36">
+        {position.validatorAddress ? (
+          <ValidatorLogo
+            view={view}
+            validatorAddress={position.validatorAddress}
+            size="subtitle"
+            iconSize="md"
+            stacked
+            activeEpoch={position.requestEpoch}
+          />
+        ) : (
+          <Text variant="body" color="steel-dark">
+            {formatAddress(position.poolId)}
+          </Text>
+        )}
+        <Text variant="body" color="gray-90" weight="semibold">
+          {displayedAmount === undefined ? "--" : principal} {symbol}
+        </Text>
+        <div className="text-subtitle font-medium flex gap-1">
+          {label}
+          <IconTooltip tip={t("staking.objectDescription")} placement="top" />
+        </div>
+        <div className="text-bodySmall">
+          {estimatedStart !== null && estimatedStart > Date.now() ? (
+            <span>
+              {t("staking.estimatedActivation")}{" "}
+              <CountDownTimer timestamp={estimatedStart} variant="bodySmall" />
+            </span>
+          ) : null}
+          {view.safeMode
+            ? `${status} · ${t("staking.safeMode")}`
+            : status}
+        </div>
+      </div>
+    </Link>
+  );
 }

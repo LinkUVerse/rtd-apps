@@ -4,6 +4,7 @@
 import { QueryClient } from '@tanstack/react-query';
 import { type PersistedClient, type Persister } from '@tanstack/react-query-persist-client';
 import { del, get, set } from 'idb-keyval';
+import { filterPersistedQueries, QUERY_CACHE_KEY } from './queryPersistence';
 
 export const queryClient = new QueryClient({
 	defaultOptions: {
@@ -72,12 +73,15 @@ function createIDBPersister(idbValidKey: IDBValidKey) {
 	return {
 		persistClient: async (client: PersistedClient) => {
 			try {
+				// Enforce the same cache boundary even when invoked without dehydrateOptions.
+				const allowed = filterPersistedQueries(client);
+				if (!allowed) return;
 				// Filter out non-serializable data
 				const serializableClient = {
-					...client,
+					...allowed,
 					clientState: {
-						...client.clientState,
-						queries: client.clientState.queries.map((query) => ({
+						...allowed.clientState,
+						queries: allowed.clientState.queries.map((query) => ({
 							...query,
 							state: {
 								...query.state,
@@ -93,7 +97,7 @@ function createIDBPersister(idbValidKey: IDBValidKey) {
 		},
 		restoreClient: async () => {
 			try {
-				return await get<PersistedClient>(idbValidKey);
+				return filterPersistedQueries(await get<PersistedClient>(idbValidKey));
 			} catch (error) {
 				console.warn('Failed to restore query client:', error);
 				return undefined;
@@ -109,4 +113,4 @@ function createIDBPersister(idbValidKey: IDBValidKey) {
 	} as Persister;
 }
 
-export const persister = createIDBPersister('queryClient.v1');
+export const persister = createIDBPersister(QUERY_CACHE_KEY);

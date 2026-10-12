@@ -1,0 +1,7 @@
+# C127 当前正式与待提交元数据的精确区分
+
+独立审核01保持拒绝。主副本两个latest producer/advisory都是709569，正式四固定版本与committed marker均553728；只读PG确认latest版本是对应pending_*字段精确登记，不是未登记新版本。源码checkpoint-publisher-dev.py在复制producer/advisory后登记pending版本，再认证所有对象/复制后推进published_hi；publication-guard/visibility.py只以正式PG+committed marker和边界blob授予查询。旧审核的四latest必须全等正式版本仅在没有先行pending版本时适用；本次不改旧审核或任何业务producer/guard。
+
+新审核保留四正式固定版本/完整正文/主副本SHA/复制状态和所有原prefix、七覆盖、145运行反例。chain_id与committed marker的latest始终必须等正式版本。两个producer/advisory的不同latest必须分别精确等同同一read-only/repeatable-read账本的pending版本，全文主副本一致且复制COMPLETED/REPLICA、规范完整八整数字段、height精确pending_hi；未知版本/错误key/错误body/状态/越界全部拒绝。对象读取后重新读完整chain正式和pending版本向量，任何变化拒绝。准备高度不计正式覆盖，future guard仍拒绝。
+
+资格检查真实独立构造的正式与准备阶段和至少16变异拒绝；独立实际审核仍所有原范围。version_history表实际不存在，不安装schema；本合同只证明当前版本，不声称历史/WAL恢复。原子commit-time fencing不改，0直接写/原服务信号/Execute/NFT。原98/细分和全部开放父保持。

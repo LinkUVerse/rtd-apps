@@ -1,0 +1,7 @@
+# C138 非NFT冷测试失败时的真实来源留存
+
+原cold03失败记录缺少初始workerSource/uiSource，原辅助器只返回实际Debugger字节SHA，未保存字节。保留所有旧脚本/失败/profile/creator；新辅助器只在已经通过原逐字节比较后附加Debugger实际字符串的UTF8 base64，不新增钱包业务动作、重载或签名。新cold v4同时在失败分支留存这些来源字段，固定新/旧辅助器SHA；所有正常控制路径及原HTTP错误白名单保持。
+
+未观测到私有signData计数时不能将newSignatures硬编码为0：新脚本显式null及directPrivateSignDataObserved=false，完整cold/M5接受标志保持false。未知正向GraphQL正文仍不可豁免，须后续完整原始捕获和直接调用计数实际成立；完整来源采集失败也不能伪造字节。
+
+本批只准备脚本/完整逆变换/语法，不运行profile、creator或cold测试。三个旧query已经清理，后续必须重新资格化同H0/generation的实际查询/七门和新运行归属，不能复用过期ready记录或旧容器身份。NFT专项后置，原98计量不变。

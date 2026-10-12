@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ChevronRight12 } from "rtd-apps-icons";
-import { type RtdEvent } from "rtd-typescript/client";
+import type { RtdEvent } from "rtd-typescript/jsonRpc";
 import { parseStructTag, formatAddress } from "rtd-typescript/utils";
 import { Text } from "@linku/ui";
 import * as Collapsible from "@radix-ui/react-collapsible";

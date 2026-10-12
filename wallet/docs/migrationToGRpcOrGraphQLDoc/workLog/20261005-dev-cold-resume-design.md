@@ -1,0 +1,7 @@
+# Docker重启后的原dev服务恢复计划
+
+用户明确要求检查Docker并补齐缺失dev服务。容器中的钱包专属Postgres／HBase／S3／TLS入口已恢复；原宿主Fullnode、认证checkpoint writer／adapter／publisher、KV writer／ledger、consistent／GraphQL、query admission与account workers／API均退出。受保护bounded Display历史回放具有真实exitCode=2、bounded-exited，不能称完成或直接启动live indexer。
+
+先以原core source-proof和已安装八debug产物严格比对最新源码及genesis／配置，使用resume_wallet_debug_dev.py恢复原链，原生H0／既有三receipt和余额／真实checkpoint推进后finalize。其他服务在原组件锁内校验原command与launch intent、确认旧PID不存在且没有同命令竞争者，完整保存原启动记录／日志，使用link-u-smart-contract现有部署工具start_process和原配置启动；不修改数据库、合约、票据、水位或权限。先恢复认证生产与readers；Display失败恢复单独设计，保留原supervisor、失败exit与durable coverage，确认原22水位和连续前缀后才允许受控的同界限继续，绝不从尚未成功的bounded状态启动live。
+
+端口监听及容器Up不足以验收。四服务身份／实链查询、原七journal与native admission只读前后SHA、当前UI／worker及后续质押预览均需实际验证。全部失败保留并只写实际完成证据；总体50/98、trial_ready=false。

@@ -1,25 +1,27 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { RtdClientProvider } from "rtd-dapp-kit";
+import { ExplorerRpcBridge } from "~/components/ExplorerRpcBridge";
+
+import { ExplorerClientProvider } from "~/rpc/explorer-client";
 import { type Meta, type StoryObj } from "@storybook/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { CoinBalance, type CoinBalanceProps } from "../CoinBalance";
-import { Network, NetworkConfigs, createRtdClient } from "~/utils/api/DefaultRpcClient";
+import { Network } from "~/utils/api/DefaultRpcClient";
 
 export default {
 	component: CoinBalance,
 	decorators: [
 		(Story) => (
 			<QueryClientProvider client={new QueryClient()}>
-				<RtdClientProvider
-					networks={NetworkConfigs}
+				<ExplorerClientProvider
 					defaultNetwork={Network.LOCAL}
-					createClient={createRtdClient}
 				>
-					<Story />
-				</RtdClientProvider>
+					<ExplorerRpcBridge>
+						<Story />
+					</ExplorerRpcBridge>
+				</ExplorerClientProvider>
 			</QueryClientProvider>
 		),
 	],

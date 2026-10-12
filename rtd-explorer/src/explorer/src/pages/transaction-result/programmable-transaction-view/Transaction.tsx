@@ -1,11 +1,7 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	type MoveCallRtdTransaction,
-	type RtdArgument,
-	type RtdMovePackage,
-} from "rtd-typescript/client";
+import type { MoveCallRtdTransaction, RtdArgument, RtdMovePackage } from "rtd-typescript/jsonRpc";
 import { Text } from "@linku/ui";
 import { type ReactNode } from "react";
 

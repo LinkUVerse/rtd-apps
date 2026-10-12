@@ -29,12 +29,15 @@ const timeStyle = cva([], {
 
 export interface CountDownTimerProps extends VariantProps<typeof timeStyle> {
 	timestamp: number | undefined;
+	/** Stop displaying a forecast when the snapshot epoch used to derive it ends. */
+	validUntil?: number;
 	label?: string;
 	endLabel?: string;
 }
 
 export function CountDownTimer({
 	timestamp,
+	validUntil,
 	label,
 	endLabel,
 	...styles
@@ -48,7 +51,8 @@ export function CountDownTimer({
 		return () => window.clearInterval(timer);
 	}, []);
 
-	const remaining = timestamp ? Math.max(0, timestamp - now) : 0;
+	const remaining = timestamp && (validUntil === undefined || now < validUntil)
+		? Math.max(0, timestamp - now) : 0;
 	const totalSeconds = Math.floor(remaining / 1_000);
 	const formatPart = (value: number, unit: 'hour' | 'minute' | 'second') =>
 		value

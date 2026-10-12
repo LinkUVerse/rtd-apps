@@ -20,7 +20,7 @@ export function Onramp() {
 	const { t } = useI18n();
 	const navigate = useNavigate();
 	const address = useActiveAddress();
-	const { providers, setPreferredProvider } = useOnrampProviders();
+	const { providers, setPreferredProvider, unavailable } = useOnrampProviders();
 
 	const [preferredProvider, ...otherProviders] = providers ?? [];
 
@@ -37,14 +37,20 @@ export function Onramp() {
 
 	useEffect(() => {
 		// This shouldn't happen, but if you land on this page directly and no on-ramps are supported, just bail out
-		if (providers && providers.length === 0) {
+		if (!unavailable && providers && providers.length === 0) {
 			navigate('/tokens');
 		}
-	}, [providers, navigate]);
+	}, [providers, navigate, unavailable]);
 
 	const isGuardLoading = useUnlockedGuard();
 
-	if (!providers || !providers.length || isGuardLoading) return null;
+	if (isGuardLoading) return null;
+	if (unavailable) return (
+		<Overlay showModal title={t('onramp.title')} closeOverlay={() => navigate('/tokens')}>
+			<Alert>{t('onramp.unavailable')}</Alert>
+		</Overlay>
+	);
+	if (!providers || !providers.length) return null;
 
 	return (
 		<Overlay

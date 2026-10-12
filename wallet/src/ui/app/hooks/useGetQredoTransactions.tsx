@@ -4,7 +4,7 @@
 import { type TransactionStatus } from '_src/shared/qredo-api';
 import { useQuery } from '@tanstack/react-query';
 
-import { API_ENV_TO_QREDO_NETWORK } from '../QredoSigner';
+import { API_ENV_TO_QREDO_NETWORK } from "_src/shared/qredo-events";
 import { useActiveAddress } from './useActiveAddress';
 import useAppSelector from './useAppSelector';
 import { useQredoAPI } from './useQredoAPI';

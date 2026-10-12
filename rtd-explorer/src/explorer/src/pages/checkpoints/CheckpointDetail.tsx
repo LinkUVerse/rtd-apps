@@ -1,7 +1,7 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { useRtdClient } from "rtd-dapp-kit";
+import { useExplorerClient } from "~/rpc/explorer-client";
 import { Text, LoadingIndicator } from "@linku/ui";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
@@ -19,7 +19,7 @@ export default function CheckpointDetail() {
 	const { id } = useParams<{ id: string }>();
 	const digestOrSequenceNumber = /^\d+$/.test(id!) ? parseInt(id!, 10) : id;
 
-	const client = useRtdClient();
+	const client = useExplorerClient();
 	const { data, isError, isPending } = useQuery({
 		queryKey: ["checkpoints", digestOrSequenceNumber],
 		queryFn: () => client.getCheckpoint({ id: String(digestOrSequenceNumber!) }),

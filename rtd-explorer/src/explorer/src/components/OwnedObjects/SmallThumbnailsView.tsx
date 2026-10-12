@@ -1,7 +1,8 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { type RtdObjectResponse } from "rtd-typescript/client";
+import { explorerDisplayString } from "rtd-apps-core/src/utils/explorer-kiosk";
+import type { RtdObjectResponse } from "rtd-typescript/jsonRpc";
 import { formatAddress } from "rtd-typescript/utils";
 import { Placeholder } from "@linku/ui";
 import { type ReactNode } from "react";
@@ -43,9 +44,8 @@ function SmallThumbnailsViewLoading({ limit }: { limit: number }) {
 
 function SmallThumbnail({ obj }: { obj: RtdObjectResponse }) {
 	const video = useResolveVideo(obj);
-	const displayMeta = obj.data?.display?.data;
-	const src = displayMeta?.image_url || "";
-	const name = displayMeta?.name ?? displayMeta?.description ?? "--";
+	const src = explorerDisplayString(obj, "image_url") || "";
+	const name = explorerDisplayString(obj, "name") ?? explorerDisplayString(obj, "description") ?? "--";
 	const type = trimStdLibPrefix(parseObjectType(obj));
 	const id = obj.data?.objectId;
 

@@ -1,0 +1,2368 @@
+{
+  "contractVersion": 1,
+  "source": "rtd/crates/rtd-indexer-alt-graphql/schema.graphql",
+  "sourceSha256": "ade0471a6dafd8c2aed429013fc4820212b02b389f5e9c622ebe2ed60162f744",
+  "contracts": {
+    "snapshot": {
+      "document": "query WalletSchemaSnapshot {\n  checkpoint(sequenceNumber: 0) {\n    sequenceNumber\n    digest\n    query {\n      __typename\n    }\n  }\n  serviceConfig {\n    availableRange(type: \"Query\", field: \"checkpoints\", filters: []) {\n      first {\n        sequenceNumber\n      }\n      last {\n        sequenceNumber\n      }\n    }\n    defaultPageSize(type: \"Address\", field: \"objects\")\n    maxPageSize(type: \"Address\", field: \"objects\")\n  }\n}",
+      "fields": {
+        "Query.checkpoint": {
+          "type": "Checkpoint",
+          "arguments": {
+            "sequenceNumber": {
+              "type": "UInt53",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "digest": {
+              "type": "String",
+              "required": false,
+              "defaultLiteral": null
+            }
+          }
+        },
+        "Checkpoint.sequenceNumber": {
+          "type": "UInt53!",
+          "arguments": {}
+        },
+        "Checkpoint.digest": {
+          "type": "String",
+          "arguments": {}
+        },
+        "Checkpoint.query": {
+          "type": "Query",
+          "arguments": {}
+        },
+        "Query.serviceConfig": {
+          "type": "ServiceConfig!",
+          "arguments": {}
+        },
+        "ServiceConfig.availableRange": {
+          "type": "AvailableRange!",
+          "arguments": {
+            "type": {
+              "type": "String!",
+              "required": true,
+              "defaultLiteral": null
+            },
+            "field": {
+              "type": "String",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "filters": {
+              "type": "[String!]",
+              "required": false,
+              "defaultLiteral": null
+            }
+          }
+        },
+        "AvailableRange.first": {
+          "type": "Checkpoint",
+          "arguments": {}
+        },
+        "AvailableRange.last": {
+          "type": "Checkpoint",
+          "arguments": {}
+        },
+        "ServiceConfig.defaultPageSize": {
+          "type": "Int",
+          "arguments": {
+            "type": {
+              "type": "String!",
+              "required": true,
+              "defaultLiteral": null
+            },
+            "field": {
+              "type": "String!",
+              "required": true,
+              "defaultLiteral": null
+            }
+          }
+        },
+        "ServiceConfig.maxPageSize": {
+          "type": "Int",
+          "arguments": {
+            "type": {
+              "type": "String!",
+              "required": true,
+              "defaultLiteral": null
+            },
+            "field": {
+              "type": "String!",
+              "required": true,
+              "defaultLiteral": null
+            }
+          }
+        }
+      },
+      "types": {
+        "Query": {
+          "kind": "OBJECT"
+        },
+        "Checkpoint": {
+          "kind": "OBJECT"
+        },
+        "UInt53": {
+          "kind": "SCALAR"
+        },
+        "String": {
+          "kind": "SCALAR"
+        },
+        "ServiceConfig": {
+          "kind": "OBJECT"
+        },
+        "AvailableRange": {
+          "kind": "OBJECT"
+        },
+        "Int": {
+          "kind": "SCALAR"
+        }
+      }
+    },
+    "balances": {
+      "document": "query WalletSchemaBalances($checkpoint: UInt53!, $owner: RtdAddress!, $cursor: String) {\n  checkpoint(sequenceNumber: $checkpoint) {\n    sequenceNumber\n    digest\n    query {\n      address(address: $owner) {\n        address\n        balances(first: 50, after: $cursor) {\n          pageInfo {\n            hasNextPage\n            endCursor\n          }\n          nodes {\n            coinType {\n              repr\n            }\n            totalBalance\n            coinBalance\n            addressBalance\n          }\n        }\n      }\n    }\n  }\n}",
+      "fields": {
+        "Query.checkpoint": {
+          "type": "Checkpoint",
+          "arguments": {
+            "sequenceNumber": {
+              "type": "UInt53",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "digest": {
+              "type": "String",
+              "required": false,
+              "defaultLiteral": null
+            }
+          }
+        },
+        "Checkpoint.sequenceNumber": {
+          "type": "UInt53!",
+          "arguments": {}
+        },
+        "Checkpoint.digest": {
+          "type": "String",
+          "arguments": {}
+        },
+        "Checkpoint.query": {
+          "type": "Query",
+          "arguments": {}
+        },
+        "Query.address": {
+          "type": "Address",
+          "arguments": {
+            "address": {
+              "type": "RtdAddress",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "name": {
+              "type": "String",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "rootVersion": {
+              "type": "UInt53",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "atCheckpoint": {
+              "type": "UInt53",
+              "required": false,
+              "defaultLiteral": null
+            }
+          }
+        },
+        "Address.address": {
+          "type": "RtdAddress!",
+          "arguments": {}
+        },
+        "Address.balances": {
+          "type": "BalanceConnection",
+          "arguments": {
+            "first": {
+              "type": "Int",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "after": {
+              "type": "String",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "last": {
+              "type": "Int",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "before": {
+              "type": "String",
+              "required": false,
+              "defaultLiteral": null
+            }
+          }
+        },
+        "BalanceConnection.pageInfo": {
+          "type": "PageInfo!",
+          "arguments": {}
+        },
+        "PageInfo.hasNextPage": {
+          "type": "Boolean!",
+          "arguments": {}
+        },
+        "PageInfo.endCursor": {
+          "type": "String",
+          "arguments": {}
+        },
+        "BalanceConnection.nodes": {
+          "type": "[Balance!]!",
+          "arguments": {}
+        },
+        "Balance.coinType": {
+          "type": "MoveType",
+          "arguments": {}
+        },
+        "MoveType.repr": {
+          "type": "String!",
+          "arguments": {}
+        },
+        "Balance.totalBalance": {
+          "type": "BigInt",
+          "arguments": {}
+        },
+        "Balance.coinBalance": {
+          "type": "BigInt",
+          "arguments": {}
+        },
+        "Balance.addressBalance": {
+          "type": "BigInt",
+          "arguments": {}
+        }
+      },
+      "types": {
+        "UInt53": {
+          "kind": "SCALAR"
+        },
+        "RtdAddress": {
+          "kind": "SCALAR"
+        },
+        "String": {
+          "kind": "SCALAR"
+        },
+        "Query": {
+          "kind": "OBJECT"
+        },
+        "Checkpoint": {
+          "kind": "OBJECT"
+        },
+        "Address": {
+          "kind": "OBJECT"
+        },
+        "BalanceConnection": {
+          "kind": "OBJECT"
+        },
+        "Int": {
+          "kind": "SCALAR"
+        },
+        "PageInfo": {
+          "kind": "OBJECT"
+        },
+        "Boolean": {
+          "kind": "SCALAR"
+        },
+        "Balance": {
+          "kind": "OBJECT"
+        },
+        "MoveType": {
+          "kind": "OBJECT"
+        },
+        "BigInt": {
+          "kind": "SCALAR"
+        }
+      }
+    },
+    "coinMetadata": {
+      "document": "query WalletSchemaMetadata($checkpoint: UInt53!, $type: String!) {\n  checkpoint(sequenceNumber: $checkpoint) {\n    sequenceNumber\n    digest\n    query {\n      coinMetadata(coinType: $type) {\n        address\n        decimals\n        name\n        symbol\n        description\n        iconUrl\n      }\n    }\n  }\n}",
+      "fields": {
+        "Query.checkpoint": {
+          "type": "Checkpoint",
+          "arguments": {
+            "sequenceNumber": {
+              "type": "UInt53",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "digest": {
+              "type": "String",
+              "required": false,
+              "defaultLiteral": null
+            }
+          }
+        },
+        "Checkpoint.sequenceNumber": {
+          "type": "UInt53!",
+          "arguments": {}
+        },
+        "Checkpoint.digest": {
+          "type": "String",
+          "arguments": {}
+        },
+        "Checkpoint.query": {
+          "type": "Query",
+          "arguments": {}
+        },
+        "Query.coinMetadata": {
+          "type": "CoinMetadata",
+          "arguments": {
+            "coinType": {
+              "type": "String!",
+              "required": true,
+              "defaultLiteral": null
+            }
+          }
+        },
+        "CoinMetadata.address": {
+          "type": "RtdAddress!",
+          "arguments": {}
+        },
+        "CoinMetadata.decimals": {
+          "type": "Int",
+          "arguments": {}
+        },
+        "CoinMetadata.name": {
+          "type": "String",
+          "arguments": {}
+        },
+        "CoinMetadata.symbol": {
+          "type": "String",
+          "arguments": {}
+        },
+        "CoinMetadata.description": {
+          "type": "String",
+          "arguments": {}
+        },
+        "CoinMetadata.iconUrl": {
+          "type": "String",
+          "arguments": {}
+        }
+      },
+      "types": {
+        "UInt53": {
+          "kind": "SCALAR"
+        },
+        "String": {
+          "kind": "SCALAR"
+        },
+        "Query": {
+          "kind": "OBJECT"
+        },
+        "Checkpoint": {
+          "kind": "OBJECT"
+        },
+        "CoinMetadata": {
+          "kind": "OBJECT"
+        },
+        "RtdAddress": {
+          "kind": "SCALAR"
+        },
+        "Int": {
+          "kind": "SCALAR"
+        }
+      }
+    },
+    "ownedObjects": {
+      "document": "query WalletSchemaObjects($checkpoint: UInt53!, $owner: RtdAddress!, $cursor: String, $filter: ObjectFilter) {\n  checkpoint(sequenceNumber: $checkpoint) {\n    sequenceNumber\n    digest\n    query {\n      address(address: $owner) {\n        address\n        objects(first: 50, after: $cursor, filter: $filter) {\n          pageInfo {\n            hasNextPage\n            endCursor\n          }\n          nodes {\n            address\n            version\n            digest\n            hasPublicTransfer\n            owner {\n              __typename\n              ... on AddressOwner {\n                address {\n                  address\n                }\n              }\n              ... on ObjectOwner {\n                address {\n                  address\n                }\n              }\n              ... on Shared {\n                initialSharedVersion\n              }\n              ... on ConsensusAddressOwner {\n                startVersion\n                address {\n                  address\n                }\n              }\n            }\n            contents {\n              bcs\n              json\n              type {\n                repr\n              }\n              display {\n                output\n                errors\n                basis {\n                  __typename\n                  ... on DisplayV1Basis {\n                    snapshotCheckpoint\n                    objectType\n                    templateId\n                    publishedVersion\n                    sourceCheckpoint\n                    sourceCheckpointDigest\n                    transactionDigest\n                    checkpointTransactionIndex\n                    eventIndex\n                    eventBcsSha256\n                    historyCoverage {\n                      genesisDigest\n                      sourceId\n                      generation\n                      firstCheckpoint\n                      lastCheckpoint\n                      lastCheckpointDigest\n                      snapshotCheckpoint\n                      snapshotCheckpointDigest\n                    }\n                  }\n                  ... on DisplayV2Basis {\n                    snapshotCheckpoint\n                    objectType\n                    templateId\n                    objectVersion\n                    objectDigest\n                    sourceCheckpoint\n                    previousTransactionDigest\n                    contentsBcsSha256\n                    historyCoverage {\n                      genesisDigest\n                      sourceId\n                      generation\n                      firstCheckpoint\n                      lastCheckpoint\n                      lastCheckpointDigest\n                      snapshotCheckpoint\n                      snapshotCheckpointDigest\n                    }\n                  }\n                }\n              }\n            }\n            previousTransaction {\n              digest\n            }\n          }\n        }\n      }\n    }\n  }\n}",
+      "fields": {
+        "Query.checkpoint": {
+          "type": "Checkpoint",
+          "arguments": {
+            "sequenceNumber": {
+              "type": "UInt53",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "digest": {
+              "type": "String",
+              "required": false,
+              "defaultLiteral": null
+            }
+          }
+        },
+        "Checkpoint.sequenceNumber": {
+          "type": "UInt53!",
+          "arguments": {}
+        },
+        "Checkpoint.digest": {
+          "type": "String",
+          "arguments": {}
+        },
+        "Checkpoint.query": {
+          "type": "Query",
+          "arguments": {}
+        },
+        "Query.address": {
+          "type": "Address",
+          "arguments": {
+            "address": {
+              "type": "RtdAddress",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "name": {
+              "type": "String",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "rootVersion": {
+              "type": "UInt53",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "atCheckpoint": {
+              "type": "UInt53",
+              "required": false,
+              "defaultLiteral": null
+            }
+          }
+        },
+        "Address.address": {
+          "type": "RtdAddress!",
+          "arguments": {}
+        },
+        "Address.objects": {
+          "type": "MoveObjectConnection",
+          "arguments": {
+            "first": {
+              "type": "Int",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "after": {
+              "type": "String",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "last": {
+              "type": "Int",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "before": {
+              "type": "String",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "filter": {
+              "type": "ObjectFilter",
+              "required": false,
+              "defaultLiteral": null
+            }
+          }
+        },
+        "MoveObjectConnection.pageInfo": {
+          "type": "PageInfo!",
+          "arguments": {}
+        },
+        "PageInfo.hasNextPage": {
+          "type": "Boolean!",
+          "arguments": {}
+        },
+        "PageInfo.endCursor": {
+          "type": "String",
+          "arguments": {}
+        },
+        "MoveObjectConnection.nodes": {
+          "type": "[MoveObject!]!",
+          "arguments": {}
+        },
+        "MoveObject.address": {
+          "type": "RtdAddress!",
+          "arguments": {}
+        },
+        "MoveObject.version": {
+          "type": "UInt53",
+          "arguments": {}
+        },
+        "MoveObject.digest": {
+          "type": "String",
+          "arguments": {}
+        },
+        "MoveObject.hasPublicTransfer": {
+          "type": "Boolean",
+          "arguments": {}
+        },
+        "MoveObject.owner": {
+          "type": "Owner",
+          "arguments": {}
+        },
+        "AddressOwner.address": {
+          "type": "Address",
+          "arguments": {}
+        },
+        "ObjectOwner.address": {
+          "type": "Address",
+          "arguments": {}
+        },
+        "Shared.initialSharedVersion": {
+          "type": "UInt53",
+          "arguments": {}
+        },
+        "ConsensusAddressOwner.startVersion": {
+          "type": "UInt53",
+          "arguments": {}
+        },
+        "ConsensusAddressOwner.address": {
+          "type": "Address",
+          "arguments": {}
+        },
+        "MoveObject.contents": {
+          "type": "MoveValue",
+          "arguments": {}
+        },
+        "MoveValue.bcs": {
+          "type": "Base64",
+          "arguments": {}
+        },
+        "MoveValue.json": {
+          "type": "JSON",
+          "arguments": {}
+        },
+        "MoveValue.type": {
+          "type": "MoveType",
+          "arguments": {}
+        },
+        "MoveType.repr": {
+          "type": "String!",
+          "arguments": {}
+        },
+        "MoveValue.display": {
+          "type": "Display",
+          "arguments": {}
+        },
+        "Display.output": {
+          "type": "JSON",
+          "arguments": {}
+        },
+        "Display.errors": {
+          "type": "JSON",
+          "arguments": {}
+        },
+        "Display.basis": {
+          "type": "DisplayBasis!",
+          "arguments": {}
+        },
+        "DisplayV1Basis.snapshotCheckpoint": {
+          "type": "UInt53!",
+          "arguments": {}
+        },
+        "DisplayV1Basis.objectType": {
+          "type": "String!",
+          "arguments": {}
+        },
+        "DisplayV1Basis.templateId": {
+          "type": "RtdAddress!",
+          "arguments": {}
+        },
+        "DisplayV1Basis.publishedVersion": {
+          "type": "UInt53!",
+          "arguments": {}
+        },
+        "DisplayV1Basis.sourceCheckpoint": {
+          "type": "UInt53!",
+          "arguments": {}
+        },
+        "DisplayV1Basis.sourceCheckpointDigest": {
+          "type": "String!",
+          "arguments": {}
+        },
+        "DisplayV1Basis.transactionDigest": {
+          "type": "String!",
+          "arguments": {}
+        },
+        "DisplayV1Basis.checkpointTransactionIndex": {
+          "type": "UInt53!",
+          "arguments": {}
+        },
+        "DisplayV1Basis.eventIndex": {
+          "type": "UInt53!",
+          "arguments": {}
+        },
+        "DisplayV1Basis.eventBcsSha256": {
+          "type": "String!",
+          "arguments": {}
+        },
+        "DisplayV1Basis.historyCoverage": {
+          "type": "DisplayHistoryCoverage!",
+          "arguments": {}
+        },
+        "DisplayHistoryCoverage.genesisDigest": {
+          "type": "String!",
+          "arguments": {}
+        },
+        "DisplayHistoryCoverage.sourceId": {
+          "type": "String!",
+          "arguments": {}
+        },
+        "DisplayHistoryCoverage.generation": {
+          "type": "String!",
+          "arguments": {}
+        },
+        "DisplayHistoryCoverage.firstCheckpoint": {
+          "type": "UInt53!",
+          "arguments": {}
+        },
+        "DisplayHistoryCoverage.lastCheckpoint": {
+          "type": "UInt53!",
+          "arguments": {}
+        },
+        "DisplayHistoryCoverage.lastCheckpointDigest": {
+          "type": "String!",
+          "arguments": {}
+        },
+        "DisplayHistoryCoverage.snapshotCheckpoint": {
+          "type": "UInt53!",
+          "arguments": {}
+        },
+        "DisplayHistoryCoverage.snapshotCheckpointDigest": {
+          "type": "String!",
+          "arguments": {}
+        },
+        "DisplayV2Basis.snapshotCheckpoint": {
+          "type": "UInt53!",
+          "arguments": {}
+        },
+        "DisplayV2Basis.objectType": {
+          "type": "String!",
+          "arguments": {}
+        },
+        "DisplayV2Basis.templateId": {
+          "type": "RtdAddress!",
+          "arguments": {}
+        },
+        "DisplayV2Basis.objectVersion": {
+          "type": "UInt53!",
+          "arguments": {}
+        },
+        "DisplayV2Basis.objectDigest": {
+          "type": "String!",
+          "arguments": {}
+        },
+        "DisplayV2Basis.sourceCheckpoint": {
+          "type": "UInt53!",
+          "arguments": {}
+        },
+        "DisplayV2Basis.previousTransactionDigest": {
+          "type": "String!",
+          "arguments": {}
+        },
+        "DisplayV2Basis.contentsBcsSha256": {
+          "type": "String!",
+          "arguments": {}
+        },
+        "DisplayV2Basis.historyCoverage": {
+          "type": "DisplayHistoryCoverage!",
+          "arguments": {}
+        },
+        "MoveObject.previousTransaction": {
+          "type": "Transaction",
+          "arguments": {}
+        },
+        "Transaction.digest": {
+          "type": "String!",
+          "arguments": {}
+        }
+      },
+      "types": {
+        "UInt53": {
+          "kind": "SCALAR"
+        },
+        "RtdAddress": {
+          "kind": "SCALAR"
+        },
+        "String": {
+          "kind": "SCALAR"
+        },
+        "ObjectFilter": {
+          "kind": "INPUT_OBJECT",
+          "oneOf": false,
+          "fields": {
+            "owner": {
+              "type": "RtdAddress",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "ownerKind": {
+              "type": "OwnerKind",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "type": {
+              "type": "String",
+              "required": false,
+              "defaultLiteral": null
+            }
+          }
+        },
+        "OwnerKind": {
+          "kind": "ENUM",
+          "variants": ["ADDRESS", "IMMUTABLE", "OBJECT", "SHARED"]
+        },
+        "Query": {
+          "kind": "OBJECT"
+        },
+        "Checkpoint": {
+          "kind": "OBJECT"
+        },
+        "Address": {
+          "kind": "OBJECT"
+        },
+        "MoveObjectConnection": {
+          "kind": "OBJECT"
+        },
+        "Int": {
+          "kind": "SCALAR"
+        },
+        "PageInfo": {
+          "kind": "OBJECT"
+        },
+        "Boolean": {
+          "kind": "SCALAR"
+        },
+        "MoveObject": {
+          "kind": "OBJECT"
+        },
+        "Owner": {
+          "kind": "UNION",
+          "variants": [
+            "AddressOwner",
+            "ConsensusAddressOwner",
+            "Immutable",
+            "ObjectOwner",
+            "Shared"
+          ]
+        },
+        "AddressOwner": {
+          "kind": "OBJECT"
+        },
+        "ObjectOwner": {
+          "kind": "OBJECT"
+        },
+        "Shared": {
+          "kind": "OBJECT"
+        },
+        "ConsensusAddressOwner": {
+          "kind": "OBJECT"
+        },
+        "MoveValue": {
+          "kind": "OBJECT"
+        },
+        "Base64": {
+          "kind": "SCALAR"
+        },
+        "JSON": {
+          "kind": "SCALAR"
+        },
+        "MoveType": {
+          "kind": "OBJECT"
+        },
+        "Display": {
+          "kind": "OBJECT"
+        },
+        "DisplayBasis": {
+          "kind": "UNION",
+          "variants": ["DisplayV1Basis", "DisplayV2Basis"]
+        },
+        "DisplayV1Basis": {
+          "kind": "OBJECT"
+        },
+        "DisplayHistoryCoverage": {
+          "kind": "OBJECT"
+        },
+        "DisplayV2Basis": {
+          "kind": "OBJECT"
+        },
+        "Transaction": {
+          "kind": "OBJECT"
+        }
+      }
+    },
+    "multiGetObjects": {
+      "document": "query WalletSchemaMultiGetObjects($checkpoint: UInt53!, $keys: [ObjectKey!]!) {\n  checkpoint(sequenceNumber: $checkpoint) {\n    sequenceNumber\n    digest\n    query {\n      multiGetObjects(keys: $keys) {\n        address\n        asMoveObject {\n          address\n          version\n          digest\n          hasPublicTransfer\n          owner {\n            __typename\n            ... on AddressOwner {\n              address {\n                address\n              }\n            }\n            ... on ObjectOwner {\n              address {\n                address\n              }\n            }\n            ... on Shared {\n              initialSharedVersion\n            }\n            ... on ConsensusAddressOwner {\n              startVersion\n              address {\n                address\n              }\n            }\n          }\n          contents {\n            bcs\n            json\n            type {\n              repr\n            }\n            display {\n              output\n              errors\n              basis {\n                __typename\n                ... on DisplayV1Basis {\n                  snapshotCheckpoint\n                  objectType\n                  templateId\n                  publishedVersion\n                  sourceCheckpoint\n                  sourceCheckpointDigest\n                  transactionDigest\n                  checkpointTransactionIndex\n                  eventIndex\n                  eventBcsSha256\n                  historyCoverage {\n                    genesisDigest\n                    sourceId\n                    generation\n                    firstCheckpoint\n                    lastCheckpoint\n                    lastCheckpointDigest\n                    snapshotCheckpoint\n                    snapshotCheckpointDigest\n                  }\n                }\n                ... on DisplayV2Basis {\n                  snapshotCheckpoint\n                  objectType\n                  templateId\n                  objectVersion\n                  objectDigest\n                  sourceCheckpoint\n                  previousTransactionDigest\n                  contentsBcsSha256\n                  historyCoverage {\n                    genesisDigest\n                    sourceId\n                    generation\n                    firstCheckpoint\n                    lastCheckpoint\n                    lastCheckpointDigest\n                    snapshotCheckpoint\n                    snapshotCheckpointDigest\n                  }\n                }\n              }\n            }\n          }\n          previousTransaction {\n            digest\n          }\n        }\n      }\n    }\n  }\n}",
+      "fields": {
+        "Query.checkpoint": {
+          "type": "Checkpoint",
+          "arguments": {
+            "sequenceNumber": {
+              "type": "UInt53",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "digest": {
+              "type": "String",
+              "required": false,
+              "defaultLiteral": null
+            }
+          }
+        },
+        "Checkpoint.sequenceNumber": {
+          "type": "UInt53!",
+          "arguments": {}
+        },
+        "Checkpoint.digest": {
+          "type": "String",
+          "arguments": {}
+        },
+        "Checkpoint.query": {
+          "type": "Query",
+          "arguments": {}
+        },
+        "Query.multiGetObjects": {
+          "type": "[Object]!",
+          "arguments": {
+            "keys": {
+              "type": "[ObjectKey!]!",
+              "required": true,
+              "defaultLiteral": null
+            }
+          }
+        },
+        "Object.address": {
+          "type": "RtdAddress!",
+          "arguments": {}
+        },
+        "Object.asMoveObject": {
+          "type": "MoveObject",
+          "arguments": {}
+        },
+        "MoveObject.address": {
+          "type": "RtdAddress!",
+          "arguments": {}
+        },
+        "MoveObject.version": {
+          "type": "UInt53",
+          "arguments": {}
+        },
+        "MoveObject.digest": {
+          "type": "String",
+          "arguments": {}
+        },
+        "MoveObject.hasPublicTransfer": {
+          "type": "Boolean",
+          "arguments": {}
+        },
+        "MoveObject.owner": {
+          "type": "Owner",
+          "arguments": {}
+        },
+        "AddressOwner.address": {
+          "type": "Address",
+          "arguments": {}
+        },
+        "Address.address": {
+          "type": "RtdAddress!",
+          "arguments": {}
+        },
+        "ObjectOwner.address": {
+          "type": "Address",
+          "arguments": {}
+        },
+        "Shared.initialSharedVersion": {
+          "type": "UInt53",
+          "arguments": {}
+        },
+        "ConsensusAddressOwner.startVersion": {
+          "type": "UInt53",
+          "arguments": {}
+        },
+        "ConsensusAddressOwner.address": {
+          "type": "Address",
+          "arguments": {}
+        },
+        "MoveObject.contents": {
+          "type": "MoveValue",
+          "arguments": {}
+        },
+        "MoveValue.bcs": {
+          "type": "Base64",
+          "arguments": {}
+        },
+        "MoveValue.json": {
+          "type": "JSON",
+          "arguments": {}
+        },
+        "MoveValue.type": {
+          "type": "MoveType",
+          "arguments": {}
+        },
+        "MoveType.repr": {
+          "type": "String!",
+          "arguments": {}
+        },
+        "MoveValue.display": {
+          "type": "Display",
+          "arguments": {}
+        },
+        "Display.output": {
+          "type": "JSON",
+          "arguments": {}
+        },
+        "Display.errors": {
+          "type": "JSON",
+          "arguments": {}
+        },
+        "Display.basis": {
+          "type": "DisplayBasis!",
+          "arguments": {}
+        },
+        "DisplayV1Basis.snapshotCheckpoint": {
+          "type": "UInt53!",
+          "arguments": {}
+        },
+        "DisplayV1Basis.objectType": {
+          "type": "String!",
+          "arguments": {}
+        },
+        "DisplayV1Basis.templateId": {
+          "type": "RtdAddress!",
+          "arguments": {}
+        },
+        "DisplayV1Basis.publishedVersion": {
+          "type": "UInt53!",
+          "arguments": {}
+        },
+        "DisplayV1Basis.sourceCheckpoint": {
+          "type": "UInt53!",
+          "arguments": {}
+        },
+        "DisplayV1Basis.sourceCheckpointDigest": {
+          "type": "String!",
+          "arguments": {}
+        },
+        "DisplayV1Basis.transactionDigest": {
+          "type": "String!",
+          "arguments": {}
+        },
+        "DisplayV1Basis.checkpointTransactionIndex": {
+          "type": "UInt53!",
+          "arguments": {}
+        },
+        "DisplayV1Basis.eventIndex": {
+          "type": "UInt53!",
+          "arguments": {}
+        },
+        "DisplayV1Basis.eventBcsSha256": {
+          "type": "String!",
+          "arguments": {}
+        },
+        "DisplayV1Basis.historyCoverage": {
+          "type": "DisplayHistoryCoverage!",
+          "arguments": {}
+        },
+        "DisplayHistoryCoverage.genesisDigest": {
+          "type": "String!",
+          "arguments": {}
+        },
+        "DisplayHistoryCoverage.sourceId": {
+          "type": "String!",
+          "arguments": {}
+        },
+        "DisplayHistoryCoverage.generation": {
+          "type": "String!",
+          "arguments": {}
+        },
+        "DisplayHistoryCoverage.firstCheckpoint": {
+          "type": "UInt53!",
+          "arguments": {}
+        },
+        "DisplayHistoryCoverage.lastCheckpoint": {
+          "type": "UInt53!",
+          "arguments": {}
+        },
+        "DisplayHistoryCoverage.lastCheckpointDigest": {
+          "type": "String!",
+          "arguments": {}
+        },
+        "DisplayHistoryCoverage.snapshotCheckpoint": {
+          "type": "UInt53!",
+          "arguments": {}
+        },
+        "DisplayHistoryCoverage.snapshotCheckpointDigest": {
+          "type": "String!",
+          "arguments": {}
+        },
+        "DisplayV2Basis.snapshotCheckpoint": {
+          "type": "UInt53!",
+          "arguments": {}
+        },
+        "DisplayV2Basis.objectType": {
+          "type": "String!",
+          "arguments": {}
+        },
+        "DisplayV2Basis.templateId": {
+          "type": "RtdAddress!",
+          "arguments": {}
+        },
+        "DisplayV2Basis.objectVersion": {
+          "type": "UInt53!",
+          "arguments": {}
+        },
+        "DisplayV2Basis.objectDigest": {
+          "type": "String!",
+          "arguments": {}
+        },
+        "DisplayV2Basis.sourceCheckpoint": {
+          "type": "UInt53!",
+          "arguments": {}
+        },
+        "DisplayV2Basis.previousTransactionDigest": {
+          "type": "String!",
+          "arguments": {}
+        },
+        "DisplayV2Basis.contentsBcsSha256": {
+          "type": "String!",
+          "arguments": {}
+        },
+        "DisplayV2Basis.historyCoverage": {
+          "type": "DisplayHistoryCoverage!",
+          "arguments": {}
+        },
+        "MoveObject.previousTransaction": {
+          "type": "Transaction",
+          "arguments": {}
+        },
+        "Transaction.digest": {
+          "type": "String!",
+          "arguments": {}
+        }
+      },
+      "types": {
+        "UInt53": {
+          "kind": "SCALAR"
+        },
+        "ObjectKey": {
+          "kind": "INPUT_OBJECT",
+          "oneOf": false,
+          "fields": {
+            "address": {
+              "type": "RtdAddress!",
+              "required": true,
+              "defaultLiteral": null
+            },
+            "atCheckpoint": {
+              "type": "UInt53",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "rootVersion": {
+              "type": "UInt53",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "version": {
+              "type": "UInt53",
+              "required": false,
+              "defaultLiteral": null
+            }
+          }
+        },
+        "RtdAddress": {
+          "kind": "SCALAR"
+        },
+        "Query": {
+          "kind": "OBJECT"
+        },
+        "Checkpoint": {
+          "kind": "OBJECT"
+        },
+        "String": {
+          "kind": "SCALAR"
+        },
+        "Object": {
+          "kind": "OBJECT"
+        },
+        "MoveObject": {
+          "kind": "OBJECT"
+        },
+        "Boolean": {
+          "kind": "SCALAR"
+        },
+        "Owner": {
+          "kind": "UNION",
+          "variants": [
+            "AddressOwner",
+            "ConsensusAddressOwner",
+            "Immutable",
+            "ObjectOwner",
+            "Shared"
+          ]
+        },
+        "AddressOwner": {
+          "kind": "OBJECT"
+        },
+        "Address": {
+          "kind": "OBJECT"
+        },
+        "ObjectOwner": {
+          "kind": "OBJECT"
+        },
+        "Shared": {
+          "kind": "OBJECT"
+        },
+        "ConsensusAddressOwner": {
+          "kind": "OBJECT"
+        },
+        "MoveValue": {
+          "kind": "OBJECT"
+        },
+        "Base64": {
+          "kind": "SCALAR"
+        },
+        "JSON": {
+          "kind": "SCALAR"
+        },
+        "MoveType": {
+          "kind": "OBJECT"
+        },
+        "Display": {
+          "kind": "OBJECT"
+        },
+        "DisplayBasis": {
+          "kind": "UNION",
+          "variants": ["DisplayV1Basis", "DisplayV2Basis"]
+        },
+        "DisplayV1Basis": {
+          "kind": "OBJECT"
+        },
+        "DisplayHistoryCoverage": {
+          "kind": "OBJECT"
+        },
+        "DisplayV2Basis": {
+          "kind": "OBJECT"
+        },
+        "Transaction": {
+          "kind": "OBJECT"
+        }
+      }
+    },
+    "dynamicFields": {
+      "document": "query WalletSchemaDynamicFields($checkpoint: UInt53!, $parent: RtdAddress!, $cursor: String, $name: DynamicFieldName!) {\n  checkpoint(sequenceNumber: $checkpoint) {\n    sequenceNumber\n    digest\n    query {\n      address(address: $parent) {\n        address\n        dynamicFields(first: 50, after: $cursor) {\n          pageInfo {\n            hasNextPage\n            endCursor\n          }\n          nodes {\n            address\n            name {\n              bcs\n              type {\n                repr\n              }\n            }\n            value {\n              __typename\n              ... on MoveValue {\n                bcs\n                type {\n                  repr\n                }\n              }\n              ... on MoveObject {\n                address\n                contents {\n                  bcs\n                  type {\n                    repr\n                  }\n                }\n              }\n            }\n          }\n        }\n        dynamicField(name: $name) {\n          address\n          name {\n            bcs\n            type {\n              repr\n            }\n          }\n          value {\n            __typename\n            ... on MoveValue {\n              bcs\n              type {\n                repr\n              }\n            }\n            ... on MoveObject {\n              address\n              contents {\n                bcs\n                type {\n                  repr\n                }\n              }\n            }\n          }\n        }\n        dynamicObjectField(name: $name) {\n          address\n          name {\n            bcs\n            type {\n              repr\n            }\n          }\n          value {\n            __typename\n            ... on MoveValue {\n              bcs\n              type {\n                repr\n              }\n            }\n            ... on MoveObject {\n              address\n              contents {\n                bcs\n                type {\n                  repr\n                }\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n}",
+      "fields": {
+        "Query.checkpoint": {
+          "type": "Checkpoint",
+          "arguments": {
+            "sequenceNumber": {
+              "type": "UInt53",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "digest": {
+              "type": "String",
+              "required": false,
+              "defaultLiteral": null
+            }
+          }
+        },
+        "Checkpoint.sequenceNumber": {
+          "type": "UInt53!",
+          "arguments": {}
+        },
+        "Checkpoint.digest": {
+          "type": "String",
+          "arguments": {}
+        },
+        "Checkpoint.query": {
+          "type": "Query",
+          "arguments": {}
+        },
+        "Query.address": {
+          "type": "Address",
+          "arguments": {
+            "address": {
+              "type": "RtdAddress",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "name": {
+              "type": "String",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "rootVersion": {
+              "type": "UInt53",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "atCheckpoint": {
+              "type": "UInt53",
+              "required": false,
+              "defaultLiteral": null
+            }
+          }
+        },
+        "Address.address": {
+          "type": "RtdAddress!",
+          "arguments": {}
+        },
+        "Address.dynamicFields": {
+          "type": "DynamicFieldConnection",
+          "arguments": {
+            "first": {
+              "type": "Int",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "after": {
+              "type": "String",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "last": {
+              "type": "Int",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "before": {
+              "type": "String",
+              "required": false,
+              "defaultLiteral": null
+            }
+          }
+        },
+        "DynamicFieldConnection.pageInfo": {
+          "type": "PageInfo!",
+          "arguments": {}
+        },
+        "PageInfo.hasNextPage": {
+          "type": "Boolean!",
+          "arguments": {}
+        },
+        "PageInfo.endCursor": {
+          "type": "String",
+          "arguments": {}
+        },
+        "DynamicFieldConnection.nodes": {
+          "type": "[DynamicField!]!",
+          "arguments": {}
+        },
+        "DynamicField.address": {
+          "type": "RtdAddress!",
+          "arguments": {}
+        },
+        "DynamicField.name": {
+          "type": "MoveValue",
+          "arguments": {}
+        },
+        "MoveValue.bcs": {
+          "type": "Base64",
+          "arguments": {}
+        },
+        "MoveValue.type": {
+          "type": "MoveType",
+          "arguments": {}
+        },
+        "MoveType.repr": {
+          "type": "String!",
+          "arguments": {}
+        },
+        "DynamicField.value": {
+          "type": "DynamicFieldValue",
+          "arguments": {}
+        },
+        "MoveObject.address": {
+          "type": "RtdAddress!",
+          "arguments": {}
+        },
+        "MoveObject.contents": {
+          "type": "MoveValue",
+          "arguments": {}
+        },
+        "Address.dynamicField": {
+          "type": "DynamicField",
+          "arguments": {
+            "name": {
+              "type": "DynamicFieldName!",
+              "required": true,
+              "defaultLiteral": null
+            }
+          }
+        },
+        "Address.dynamicObjectField": {
+          "type": "DynamicField",
+          "arguments": {
+            "name": {
+              "type": "DynamicFieldName!",
+              "required": true,
+              "defaultLiteral": null
+            }
+          }
+        }
+      },
+      "types": {
+        "UInt53": {
+          "kind": "SCALAR"
+        },
+        "RtdAddress": {
+          "kind": "SCALAR"
+        },
+        "String": {
+          "kind": "SCALAR"
+        },
+        "DynamicFieldName": {
+          "kind": "INPUT_OBJECT",
+          "oneOf": false,
+          "fields": {
+            "bcs": {
+              "type": "Base64",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "literal": {
+              "type": "String",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "type": {
+              "type": "String",
+              "required": false,
+              "defaultLiteral": null
+            }
+          }
+        },
+        "Base64": {
+          "kind": "SCALAR"
+        },
+        "Query": {
+          "kind": "OBJECT"
+        },
+        "Checkpoint": {
+          "kind": "OBJECT"
+        },
+        "Address": {
+          "kind": "OBJECT"
+        },
+        "DynamicFieldConnection": {
+          "kind": "OBJECT"
+        },
+        "Int": {
+          "kind": "SCALAR"
+        },
+        "PageInfo": {
+          "kind": "OBJECT"
+        },
+        "Boolean": {
+          "kind": "SCALAR"
+        },
+        "DynamicField": {
+          "kind": "OBJECT"
+        },
+        "MoveValue": {
+          "kind": "OBJECT"
+        },
+        "MoveType": {
+          "kind": "OBJECT"
+        },
+        "DynamicFieldValue": {
+          "kind": "UNION",
+          "variants": ["MoveObject", "MoveValue"]
+        },
+        "MoveObject": {
+          "kind": "OBJECT"
+        }
+      }
+    },
+    "stakingObjects": {
+      "document": "query WalletSchemaStakingObjects($checkpoint: UInt53!, $owner: RtdAddress!, $object: RtdAddress!, $cursor: String, $filter: ObjectFilter) {\n  checkpoint(sequenceNumber: $checkpoint) {\n    sequenceNumber\n    digest\n    query {\n      object(address: $object) {\n        address\n        asMoveObject {\n          address\n          version\n          digest\n          owner {\n            __typename\n            ... on AddressOwner {\n              address {\n                address\n              }\n            }\n            ... on ObjectOwner {\n              address {\n                address\n              }\n            }\n            ... on Shared {\n              initialSharedVersion\n            }\n            ... on ConsensusAddressOwner {\n              startVersion\n              address {\n                address\n              }\n            }\n          }\n          contents {\n            bcs\n            type {\n              repr\n            }\n          }\n        }\n      }\n      address(address: $owner) {\n        address\n        objects(first: 50, after: $cursor, filter: $filter) {\n          pageInfo {\n            hasNextPage\n            endCursor\n          }\n          nodes {\n            address\n            version\n            digest\n            owner {\n              __typename\n              ... on AddressOwner {\n                address {\n                  address\n                }\n              }\n              ... on ObjectOwner {\n                address {\n                  address\n                }\n              }\n              ... on Shared {\n                initialSharedVersion\n              }\n              ... on ConsensusAddressOwner {\n                startVersion\n                address {\n                  address\n                }\n              }\n            }\n            contents {\n              bcs\n              type {\n                repr\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n}",
+      "fields": {
+        "Query.checkpoint": {
+          "type": "Checkpoint",
+          "arguments": {
+            "sequenceNumber": {
+              "type": "UInt53",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "digest": {
+              "type": "String",
+              "required": false,
+              "defaultLiteral": null
+            }
+          }
+        },
+        "Checkpoint.sequenceNumber": {
+          "type": "UInt53!",
+          "arguments": {}
+        },
+        "Checkpoint.digest": {
+          "type": "String",
+          "arguments": {}
+        },
+        "Checkpoint.query": {
+          "type": "Query",
+          "arguments": {}
+        },
+        "Query.object": {
+          "type": "Object",
+          "arguments": {
+            "address": {
+              "type": "RtdAddress!",
+              "required": true,
+              "defaultLiteral": null
+            },
+            "version": {
+              "type": "UInt53",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "rootVersion": {
+              "type": "UInt53",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "atCheckpoint": {
+              "type": "UInt53",
+              "required": false,
+              "defaultLiteral": null
+            }
+          }
+        },
+        "Object.address": {
+          "type": "RtdAddress!",
+          "arguments": {}
+        },
+        "Object.asMoveObject": {
+          "type": "MoveObject",
+          "arguments": {}
+        },
+        "MoveObject.address": {
+          "type": "RtdAddress!",
+          "arguments": {}
+        },
+        "MoveObject.version": {
+          "type": "UInt53",
+          "arguments": {}
+        },
+        "MoveObject.digest": {
+          "type": "String",
+          "arguments": {}
+        },
+        "MoveObject.owner": {
+          "type": "Owner",
+          "arguments": {}
+        },
+        "AddressOwner.address": {
+          "type": "Address",
+          "arguments": {}
+        },
+        "Address.address": {
+          "type": "RtdAddress!",
+          "arguments": {}
+        },
+        "ObjectOwner.address": {
+          "type": "Address",
+          "arguments": {}
+        },
+        "Shared.initialSharedVersion": {
+          "type": "UInt53",
+          "arguments": {}
+        },
+        "ConsensusAddressOwner.startVersion": {
+          "type": "UInt53",
+          "arguments": {}
+        },
+        "ConsensusAddressOwner.address": {
+          "type": "Address",
+          "arguments": {}
+        },
+        "MoveObject.contents": {
+          "type": "MoveValue",
+          "arguments": {}
+        },
+        "MoveValue.bcs": {
+          "type": "Base64",
+          "arguments": {}
+        },
+        "MoveValue.type": {
+          "type": "MoveType",
+          "arguments": {}
+        },
+        "MoveType.repr": {
+          "type": "String!",
+          "arguments": {}
+        },
+        "Query.address": {
+          "type": "Address",
+          "arguments": {
+            "address": {
+              "type": "RtdAddress",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "name": {
+              "type": "String",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "rootVersion": {
+              "type": "UInt53",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "atCheckpoint": {
+              "type": "UInt53",
+              "required": false,
+              "defaultLiteral": null
+            }
+          }
+        },
+        "Address.objects": {
+          "type": "MoveObjectConnection",
+          "arguments": {
+            "first": {
+              "type": "Int",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "after": {
+              "type": "String",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "last": {
+              "type": "Int",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "before": {
+              "type": "String",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "filter": {
+              "type": "ObjectFilter",
+              "required": false,
+              "defaultLiteral": null
+            }
+          }
+        },
+        "MoveObjectConnection.pageInfo": {
+          "type": "PageInfo!",
+          "arguments": {}
+        },
+        "PageInfo.hasNextPage": {
+          "type": "Boolean!",
+          "arguments": {}
+        },
+        "PageInfo.endCursor": {
+          "type": "String",
+          "arguments": {}
+        },
+        "MoveObjectConnection.nodes": {
+          "type": "[MoveObject!]!",
+          "arguments": {}
+        }
+      },
+      "types": {
+        "UInt53": {
+          "kind": "SCALAR"
+        },
+        "RtdAddress": {
+          "kind": "SCALAR"
+        },
+        "String": {
+          "kind": "SCALAR"
+        },
+        "ObjectFilter": {
+          "kind": "INPUT_OBJECT",
+          "oneOf": false,
+          "fields": {
+            "owner": {
+              "type": "RtdAddress",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "ownerKind": {
+              "type": "OwnerKind",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "type": {
+              "type": "String",
+              "required": false,
+              "defaultLiteral": null
+            }
+          }
+        },
+        "OwnerKind": {
+          "kind": "ENUM",
+          "variants": ["ADDRESS", "IMMUTABLE", "OBJECT", "SHARED"]
+        },
+        "Query": {
+          "kind": "OBJECT"
+        },
+        "Checkpoint": {
+          "kind": "OBJECT"
+        },
+        "Object": {
+          "kind": "OBJECT"
+        },
+        "MoveObject": {
+          "kind": "OBJECT"
+        },
+        "Owner": {
+          "kind": "UNION",
+          "variants": [
+            "AddressOwner",
+            "ConsensusAddressOwner",
+            "Immutable",
+            "ObjectOwner",
+            "Shared"
+          ]
+        },
+        "AddressOwner": {
+          "kind": "OBJECT"
+        },
+        "Address": {
+          "kind": "OBJECT"
+        },
+        "ObjectOwner": {
+          "kind": "OBJECT"
+        },
+        "Shared": {
+          "kind": "OBJECT"
+        },
+        "ConsensusAddressOwner": {
+          "kind": "OBJECT"
+        },
+        "MoveValue": {
+          "kind": "OBJECT"
+        },
+        "Base64": {
+          "kind": "SCALAR"
+        },
+        "MoveType": {
+          "kind": "OBJECT"
+        },
+        "MoveObjectConnection": {
+          "kind": "OBJECT"
+        },
+        "Int": {
+          "kind": "SCALAR"
+        },
+        "PageInfo": {
+          "kind": "OBJECT"
+        },
+        "Boolean": {
+          "kind": "SCALAR"
+        }
+      }
+    },
+    "indexedTransactions": {
+      "document": "query WalletSchemaTransactions($checkpoint: UInt53!, $filter: TransactionFilter!, $cursor: String) {\n  checkpoint(sequenceNumber: $checkpoint) {\n    sequenceNumber\n    digest\n    query {\n      transactions(filter: $filter, last: 50, before: $cursor) {\n        pageInfo {\n          hasNextPage\n          hasPreviousPage\n          startCursor\n          endCursor\n        }\n        nodes {\n          digest\n          sender {\n            address\n          }\n          effects {\n            checkpoint {\n              sequenceNumber\n            }\n          }\n        }\n      }\n    }\n  }\n}",
+      "fields": {
+        "Query.checkpoint": {
+          "type": "Checkpoint",
+          "arguments": {
+            "sequenceNumber": {
+              "type": "UInt53",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "digest": {
+              "type": "String",
+              "required": false,
+              "defaultLiteral": null
+            }
+          }
+        },
+        "Checkpoint.sequenceNumber": {
+          "type": "UInt53!",
+          "arguments": {}
+        },
+        "Checkpoint.digest": {
+          "type": "String",
+          "arguments": {}
+        },
+        "Checkpoint.query": {
+          "type": "Query",
+          "arguments": {}
+        },
+        "Query.transactions": {
+          "type": "TransactionConnection",
+          "arguments": {
+            "first": {
+              "type": "Int",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "after": {
+              "type": "String",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "last": {
+              "type": "Int",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "before": {
+              "type": "String",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "filter": {
+              "type": "TransactionFilter",
+              "required": false,
+              "defaultLiteral": null
+            }
+          }
+        },
+        "TransactionConnection.pageInfo": {
+          "type": "PageInfo!",
+          "arguments": {}
+        },
+        "PageInfo.hasNextPage": {
+          "type": "Boolean!",
+          "arguments": {}
+        },
+        "PageInfo.hasPreviousPage": {
+          "type": "Boolean!",
+          "arguments": {}
+        },
+        "PageInfo.startCursor": {
+          "type": "String",
+          "arguments": {}
+        },
+        "PageInfo.endCursor": {
+          "type": "String",
+          "arguments": {}
+        },
+        "TransactionConnection.nodes": {
+          "type": "[Transaction!]!",
+          "arguments": {}
+        },
+        "Transaction.digest": {
+          "type": "String!",
+          "arguments": {}
+        },
+        "Transaction.sender": {
+          "type": "Address",
+          "arguments": {}
+        },
+        "Address.address": {
+          "type": "RtdAddress!",
+          "arguments": {}
+        },
+        "Transaction.effects": {
+          "type": "TransactionEffects",
+          "arguments": {}
+        },
+        "TransactionEffects.checkpoint": {
+          "type": "Checkpoint",
+          "arguments": {}
+        }
+      },
+      "types": {
+        "UInt53": {
+          "kind": "SCALAR"
+        },
+        "TransactionFilter": {
+          "kind": "INPUT_OBJECT",
+          "oneOf": false,
+          "fields": {
+            "affectedAddress": {
+              "type": "RtdAddress",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "affectedObject": {
+              "type": "RtdAddress",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "afterCheckpoint": {
+              "type": "UInt53",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "atCheckpoint": {
+              "type": "UInt53",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "beforeCheckpoint": {
+              "type": "UInt53",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "function": {
+              "type": "String",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "kind": {
+              "type": "TransactionKindInput",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "sentAddress": {
+              "type": "RtdAddress",
+              "required": false,
+              "defaultLiteral": null
+            }
+          }
+        },
+        "RtdAddress": {
+          "kind": "SCALAR"
+        },
+        "String": {
+          "kind": "SCALAR"
+        },
+        "TransactionKindInput": {
+          "kind": "ENUM",
+          "variants": ["PROGRAMMABLE_TX", "SYSTEM_TX"]
+        },
+        "Query": {
+          "kind": "OBJECT"
+        },
+        "Checkpoint": {
+          "kind": "OBJECT"
+        },
+        "TransactionConnection": {
+          "kind": "OBJECT"
+        },
+        "Int": {
+          "kind": "SCALAR"
+        },
+        "PageInfo": {
+          "kind": "OBJECT"
+        },
+        "Boolean": {
+          "kind": "SCALAR"
+        },
+        "Transaction": {
+          "kind": "OBJECT"
+        },
+        "Address": {
+          "kind": "OBJECT"
+        },
+        "TransactionEffects": {
+          "kind": "OBJECT"
+        }
+      }
+    },
+    "stakingMultiGetObjects": {
+      "document": "query WalletSchemaStakingMultiGet($checkpoint: UInt53!, $keys: [ObjectKey!]!) {\n  checkpoint(sequenceNumber: $checkpoint) {\n    sequenceNumber\n    digest\n    query {\n      multiGetObjects(keys: $keys) {\n        address\n        asMoveObject {\n          address\n          version\n          digest\n          owner {\n            __typename\n            ... on AddressOwner {\n              address {\n                address\n              }\n            }\n            ... on ObjectOwner {\n              address {\n                address\n              }\n            }\n            ... on Shared {\n              initialSharedVersion\n            }\n            ... on ConsensusAddressOwner {\n              startVersion\n              address {\n                address\n              }\n            }\n          }\n          contents {\n            bcs\n            type {\n              repr\n            }\n          }\n        }\n      }\n    }\n  }\n}",
+      "fields": {
+        "Query.checkpoint": {
+          "type": "Checkpoint",
+          "arguments": {
+            "sequenceNumber": {
+              "type": "UInt53",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "digest": {
+              "type": "String",
+              "required": false,
+              "defaultLiteral": null
+            }
+          }
+        },
+        "Checkpoint.sequenceNumber": {
+          "type": "UInt53!",
+          "arguments": {}
+        },
+        "Checkpoint.digest": {
+          "type": "String",
+          "arguments": {}
+        },
+        "Checkpoint.query": {
+          "type": "Query",
+          "arguments": {}
+        },
+        "Query.multiGetObjects": {
+          "type": "[Object]!",
+          "arguments": {
+            "keys": {
+              "type": "[ObjectKey!]!",
+              "required": true,
+              "defaultLiteral": null
+            }
+          }
+        },
+        "Object.address": {
+          "type": "RtdAddress!",
+          "arguments": {}
+        },
+        "Object.asMoveObject": {
+          "type": "MoveObject",
+          "arguments": {}
+        },
+        "MoveObject.address": {
+          "type": "RtdAddress!",
+          "arguments": {}
+        },
+        "MoveObject.version": {
+          "type": "UInt53",
+          "arguments": {}
+        },
+        "MoveObject.digest": {
+          "type": "String",
+          "arguments": {}
+        },
+        "MoveObject.owner": {
+          "type": "Owner",
+          "arguments": {}
+        },
+        "AddressOwner.address": {
+          "type": "Address",
+          "arguments": {}
+        },
+        "Address.address": {
+          "type": "RtdAddress!",
+          "arguments": {}
+        },
+        "ObjectOwner.address": {
+          "type": "Address",
+          "arguments": {}
+        },
+        "Shared.initialSharedVersion": {
+          "type": "UInt53",
+          "arguments": {}
+        },
+        "ConsensusAddressOwner.startVersion": {
+          "type": "UInt53",
+          "arguments": {}
+        },
+        "ConsensusAddressOwner.address": {
+          "type": "Address",
+          "arguments": {}
+        },
+        "MoveObject.contents": {
+          "type": "MoveValue",
+          "arguments": {}
+        },
+        "MoveValue.bcs": {
+          "type": "Base64",
+          "arguments": {}
+        },
+        "MoveValue.type": {
+          "type": "MoveType",
+          "arguments": {}
+        },
+        "MoveType.repr": {
+          "type": "String!",
+          "arguments": {}
+        }
+      },
+      "types": {
+        "UInt53": {
+          "kind": "SCALAR"
+        },
+        "ObjectKey": {
+          "kind": "INPUT_OBJECT",
+          "oneOf": false,
+          "fields": {
+            "address": {
+              "type": "RtdAddress!",
+              "required": true,
+              "defaultLiteral": null
+            },
+            "atCheckpoint": {
+              "type": "UInt53",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "rootVersion": {
+              "type": "UInt53",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "version": {
+              "type": "UInt53",
+              "required": false,
+              "defaultLiteral": null
+            }
+          }
+        },
+        "RtdAddress": {
+          "kind": "SCALAR"
+        },
+        "Query": {
+          "kind": "OBJECT"
+        },
+        "Checkpoint": {
+          "kind": "OBJECT"
+        },
+        "String": {
+          "kind": "SCALAR"
+        },
+        "Object": {
+          "kind": "OBJECT"
+        },
+        "MoveObject": {
+          "kind": "OBJECT"
+        },
+        "Owner": {
+          "kind": "UNION",
+          "variants": [
+            "AddressOwner",
+            "ConsensusAddressOwner",
+            "Immutable",
+            "ObjectOwner",
+            "Shared"
+          ]
+        },
+        "AddressOwner": {
+          "kind": "OBJECT"
+        },
+        "Address": {
+          "kind": "OBJECT"
+        },
+        "ObjectOwner": {
+          "kind": "OBJECT"
+        },
+        "Shared": {
+          "kind": "OBJECT"
+        },
+        "ConsensusAddressOwner": {
+          "kind": "OBJECT"
+        },
+        "MoveValue": {
+          "kind": "OBJECT"
+        },
+        "Base64": {
+          "kind": "SCALAR"
+        },
+        "MoveType": {
+          "kind": "OBJECT"
+        }
+      }
+    },
+    "indexedEvents": {
+      "document": "query WalletSchemaEvents($checkpoint: UInt53!, $filter: EventFilter!, $cursor: String) {\n  checkpoint(sequenceNumber: $checkpoint) {\n    sequenceNumber\n    digest\n    query {\n      events(filter: $filter, first: 50, after: $cursor) {\n        pageInfo {\n          hasNextPage\n          hasPreviousPage\n          startCursor\n          endCursor\n        }\n        nodes {\n          sequenceNumber\n          eventBcs\n          sender {\n            address\n          }\n          transaction {\n            digest\n            effects {\n              checkpoint {\n                sequenceNumber\n              }\n            }\n          }\n          transactionModule {\n            package {\n              address\n            }\n            name\n          }\n          contents {\n            type {\n              repr\n            }\n            bcs\n          }\n        }\n      }\n    }\n  }\n}",
+      "fields": {
+        "Query.checkpoint": {
+          "type": "Checkpoint",
+          "arguments": {
+            "sequenceNumber": {
+              "type": "UInt53",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "digest": {
+              "type": "String",
+              "required": false,
+              "defaultLiteral": null
+            }
+          }
+        },
+        "Checkpoint.sequenceNumber": {
+          "type": "UInt53!",
+          "arguments": {}
+        },
+        "Checkpoint.digest": {
+          "type": "String",
+          "arguments": {}
+        },
+        "Checkpoint.query": {
+          "type": "Query",
+          "arguments": {}
+        },
+        "Query.events": {
+          "type": "EventConnection",
+          "arguments": {
+            "first": {
+              "type": "Int",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "after": {
+              "type": "String",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "last": {
+              "type": "Int",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "before": {
+              "type": "String",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "filter": {
+              "type": "EventFilter",
+              "required": false,
+              "defaultLiteral": null
+            }
+          }
+        },
+        "EventConnection.pageInfo": {
+          "type": "PageInfo!",
+          "arguments": {}
+        },
+        "PageInfo.hasNextPage": {
+          "type": "Boolean!",
+          "arguments": {}
+        },
+        "PageInfo.hasPreviousPage": {
+          "type": "Boolean!",
+          "arguments": {}
+        },
+        "PageInfo.startCursor": {
+          "type": "String",
+          "arguments": {}
+        },
+        "PageInfo.endCursor": {
+          "type": "String",
+          "arguments": {}
+        },
+        "EventConnection.nodes": {
+          "type": "[Event!]!",
+          "arguments": {}
+        },
+        "Event.sequenceNumber": {
+          "type": "UInt53!",
+          "arguments": {}
+        },
+        "Event.eventBcs": {
+          "type": "Base64",
+          "arguments": {}
+        },
+        "Event.sender": {
+          "type": "Address",
+          "arguments": {}
+        },
+        "Address.address": {
+          "type": "RtdAddress!",
+          "arguments": {}
+        },
+        "Event.transaction": {
+          "type": "Transaction",
+          "arguments": {}
+        },
+        "Transaction.digest": {
+          "type": "String!",
+          "arguments": {}
+        },
+        "Transaction.effects": {
+          "type": "TransactionEffects",
+          "arguments": {}
+        },
+        "TransactionEffects.checkpoint": {
+          "type": "Checkpoint",
+          "arguments": {}
+        },
+        "Event.transactionModule": {
+          "type": "MoveModule",
+          "arguments": {}
+        },
+        "MoveModule.package": {
+          "type": "MovePackage",
+          "arguments": {}
+        },
+        "MovePackage.address": {
+          "type": "RtdAddress!",
+          "arguments": {}
+        },
+        "MoveModule.name": {
+          "type": "String!",
+          "arguments": {}
+        },
+        "Event.contents": {
+          "type": "MoveValue",
+          "arguments": {}
+        },
+        "MoveValue.type": {
+          "type": "MoveType",
+          "arguments": {}
+        },
+        "MoveType.repr": {
+          "type": "String!",
+          "arguments": {}
+        },
+        "MoveValue.bcs": {
+          "type": "Base64",
+          "arguments": {}
+        }
+      },
+      "types": {
+        "UInt53": {
+          "kind": "SCALAR"
+        },
+        "EventFilter": {
+          "kind": "INPUT_OBJECT",
+          "oneOf": false,
+          "fields": {
+            "afterCheckpoint": {
+              "type": "UInt53",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "atCheckpoint": {
+              "type": "UInt53",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "beforeCheckpoint": {
+              "type": "UInt53",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "module": {
+              "type": "String",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "sender": {
+              "type": "RtdAddress",
+              "required": false,
+              "defaultLiteral": null
+            },
+            "type": {
+              "type": "String",
+              "required": false,
+              "defaultLiteral": null
+            }
+          }
+        },
+        "String": {
+          "kind": "SCALAR"
+        },
+        "RtdAddress": {
+          "kind": "SCALAR"
+        },
+        "Query": {
+          "kind": "OBJECT"
+        },
+        "Checkpoint": {
+          "kind": "OBJECT"
+        },
+        "EventConnection": {
+          "kind": "OBJECT"
+        },
+        "Int": {
+          "kind": "SCALAR"
+        },
+        "PageInfo": {
+          "kind": "OBJECT"
+        },
+        "Boolean": {
+          "kind": "SCALAR"
+        },
+        "Event": {
+          "kind": "OBJECT"
+        },
+        "Base64": {
+          "kind": "SCALAR"
+        },
+        "Address": {
+          "kind": "OBJECT"
+        },
+        "Transaction": {
+          "kind": "OBJECT"
+        },
+        "TransactionEffects": {
+          "kind": "OBJECT"
+        },
+        "MoveModule": {
+          "kind": "OBJECT"
+        },
+        "MovePackage": {
+          "kind": "OBJECT"
+        },
+        "MoveValue": {
+          "kind": "OBJECT"
+        },
+        "MoveType": {
+          "kind": "OBJECT"
+        }
+      }
+    },
+    "displayHistory": {
+      "document": "query WalletSchemaDisplay {\n  walletDisplayService: serviceConfig {\n    displayHistory {\n      apiVersion\n      supportedTemplateKinds\n      coverage {\n        genesisDigest\n        sourceId\n        generation\n        firstCheckpoint\n        lastCheckpoint\n        lastCheckpointDigest\n        snapshotCheckpoint\n        snapshotCheckpointDigest\n      }\n    }\n  }\n}",
+      "fields": {
+        "Query.serviceConfig": {
+          "type": "ServiceConfig!",
+          "arguments": {}
+        },
+        "ServiceConfig.displayHistory": {
+          "type": "DisplayHistoryCapability!",
+          "arguments": {}
+        },
+        "DisplayHistoryCapability.apiVersion": {
+          "type": "UInt53!",
+          "arguments": {}
+        },
+        "DisplayHistoryCapability.supportedTemplateKinds": {
+          "type": "[DisplayTemplateKind!]!",
+          "arguments": {}
+        },
+        "DisplayHistoryCapability.coverage": {
+          "type": "DisplayHistoryCoverage!",
+          "arguments": {}
+        },
+        "DisplayHistoryCoverage.genesisDigest": {
+          "type": "String!",
+          "arguments": {}
+        },
+        "DisplayHistoryCoverage.sourceId": {
+          "type": "String!",
+          "arguments": {}
+        },
+        "DisplayHistoryCoverage.generation": {
+          "type": "String!",
+          "arguments": {}
+        },
+        "DisplayHistoryCoverage.firstCheckpoint": {
+          "type": "UInt53!",
+          "arguments": {}
+        },
+        "DisplayHistoryCoverage.lastCheckpoint": {
+          "type": "UInt53!",
+          "arguments": {}
+        },
+        "DisplayHistoryCoverage.lastCheckpointDigest": {
+          "type": "String!",
+          "arguments": {}
+        },
+        "DisplayHistoryCoverage.snapshotCheckpoint": {
+          "type": "UInt53!",
+          "arguments": {}
+        },
+        "DisplayHistoryCoverage.snapshotCheckpointDigest": {
+          "type": "String!",
+          "arguments": {}
+        }
+      },
+      "types": {
+        "Query": {
+          "kind": "OBJECT"
+        },
+        "ServiceConfig": {
+          "kind": "OBJECT"
+        },
+        "DisplayHistoryCapability": {
+          "kind": "OBJECT"
+        },
+        "UInt53": {
+          "kind": "SCALAR"
+        },
+        "DisplayTemplateKind": {
+          "kind": "ENUM",
+          "variants": ["V1", "V2"]
+        },
+        "DisplayHistoryCoverage": {
+          "kind": "OBJECT"
+        },
+        "String": {
+          "kind": "SCALAR"
+        }
+      }
+    }
+  }
+}

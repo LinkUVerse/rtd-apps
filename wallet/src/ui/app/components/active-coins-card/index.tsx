@@ -1,11 +1,11 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
+import { walletReadErrorMessage } from "_src/shared/rpc/read-error";
 
 import { useActiveAddress } from '_app/hooks/useActiveAddress';
+import { useGetAllBalances } from '_app/hooks/useGetAllBalances';
 import Loading from '_components/loading';
 import { filterAndSortTokenBalances } from '_helpers';
-import { useCoinsReFetchingConfig } from '_hooks';
-import { useRtdClientQuery } from 'rtd-dapp-kit';
 import { RTD_TYPE_ARG } from 'rtd-typescript/utils';
 import { Link } from 'react-router-dom';
 
@@ -20,19 +20,11 @@ export function ActiveCoinsCard({
 }) {
 	const selectedAddress = useActiveAddress();
 
-	const { staleTime, refetchInterval } = useCoinsReFetchingConfig();
-	const { data: coins, isPending } = useRtdClientQuery(
-		'getAllBalances',
-		{ owner: selectedAddress! },
-		{
-			enabled: !!selectedAddress,
-			refetchInterval,
-			staleTime,
-			select: filterAndSortTokenBalances,
-		},
-	);
+	const { data: balances, isPending, error, isError } = useGetAllBalances(selectedAddress || '');
+	const coins = balances ? filterAndSortTokenBalances(balances) : undefined;
 
 	const activeCoin = coins?.find(({ coinType }) => coinType === activeCoinType);
+	if (isError) return <div role="alert">{walletReadErrorMessage(error)}</div>;
 
 	return (
 		<Loading loading={isPending}>
@@ -47,7 +39,7 @@ export function ActiveCoinsCard({
 						>
 							<CoinItem
 								coinType={activeCoin.coinType}
-								balance={BigInt(activeCoin.totalBalance)}
+								balance={BigInt(activeCoin.balance)}
 								isActive
 							/>
 						</Link>
@@ -55,7 +47,7 @@ export function ActiveCoinsCard({
 				) : (
 					<div className="flex flex-col w-full">
 						<div className="flex flex-col justify-between items-center mt-2 divide-y divide-solid divide-gray-45 divide-x-0">
-							{coins?.map(({ coinType, totalBalance }) => (
+							{coins?.map(({ coinType, balance }) => (
 								<Link
 									to={`/send?${new URLSearchParams({
 										type: coinType,
@@ -63,7 +55,7 @@ export function ActiveCoinsCard({
 									key={coinType}
 									className="no-underline w-full"
 								>
-									<CoinItem coinType={coinType} balance={BigInt(totalBalance)} />
+									<CoinItem coinType={coinType} balance={BigInt(balance)} />
 								</Link>
 							))}
 						</div>

@@ -1,0 +1,20 @@
+# NET-10 Explorer消费边界：旧查询显式SDK入口
+
+2026-10-04。
+
+共享core当前完整tsc通过；Explorer完整tsc仍111条诊断，包含旧Kit不存在以及SDK旧类型／构造器导出失效。NET-10要求保护共享消费者，本轮只修正Explorer继续使用的既有JSON-RPC调用的SDK入口，不给钱包增加旧协议回退，也不将Explorer全面迁移混入钱包完成范围。
+
+## 修改
+
+Explorer六处文件改为显式rtd-typescript/jsonRpc：DefaultRpcClient、useEnhancedRpc、useGetTransactionBlocks、useSearch、TxCardUtils、Move serializer。RtdJsonRpcClient／JsonRpcHTTPTransport／getJsonRpcFullnodeUrl保留当地旧名称别名，避免改变既有消费者签名。构造器显式传SDK网络标签：LOCAL→localnet、DEVNET→devnet、TESTNET→testnet、MAINNET→mainnet；自定义URL→custom，不推导为任一公网链。原端点选择保留；仅以own-property检查内置配置防止继承属性被当作网络枚举。
+
+最初尝试同时调整四类历史指标类型和getAllEpochAddressMetrics后确认jsonRpc也没有这些RTD扩展，因此撤回这五处本轮改动，保持既有诊断，不伪造any类型或补假的API。
+
+## 验证
+
+- Explorer最终101条诊断，比本轮修改前111少10条。去除位置行列后没有新增诊断；原始current／explicit／final日志和consumer-diagnostic-diff.json保留。完整检查仍退出2，不称构建通过。
+- 2文件7测试通过。实际Explorer factory加载当前SDK，验证客户端跨包brand、同端点缓存／不同端点隔离、四内置SDK标签；真实SDK transport通过受控fetch发送准确rtdx_getReferenceGasPrice请求并转换1000n。未访问公网／实链；不等同Explorer页面验收。另2项已有共享core注入测试通过。
+- 首次instanceof断言因两份SDK模块实例失败（对象与期望均为RtdJsonRpcClient），改为SDK公开isRtdJsonRpcClient的Symbol品牌检查；保留初次失败日志。没有放宽请求内容或网络标签断言。
+- wallet完整tsc及四入口产物静态审计通过，钱包旧请求与Explorer context保持不可达。钱包业务源码／产物未变，本轮未重新Webpack；沿用UI71f5931fd7daa80c7c92ff8683fea773481410151e14f7b8286345bb1498a49d、background3a85161e43e83c72be22dc6808dd20feea7b021ad3605c65bf31d7e45263eb10。
+
+NET-10仍开放：旧Kit缺失、RTD指标API和其它Explorer基线诊断尚未解决。41/98、trial_ready=false不变；无链交易、dev重启或部署变化。

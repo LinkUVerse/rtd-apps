@@ -10,10 +10,9 @@ import {
 	DialogTrigger,
 } from '_src/ui/app/shared/Dialog';
 import { useI18n } from '_app/i18n';
-import { useZodForm } from 'rtd-apps-core';
+import { useZodForm, z } from 'rtd-apps-core/src/hooks/useZodForm';
 import { useState, type JSX } from 'react';
 import toast from 'react-hot-toast';
-import { z } from 'zod';
 
 import { useAccounts } from '../../hooks/useAccounts';
 import { useBackgroundClient } from '../../hooks/useBackgroundClient';

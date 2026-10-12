@@ -1,0 +1,5 @@
+# 当前非NFT内部最终费用和再次授权
+
+C150补当前普通/imported共用正常Approve/Disconnect/重锁路径；C153仅补当前C136三个内部页面最终gas变化后的旧批准拒绝与Back/Review新授权边界，不机械重复历史12/27项dApp签名或既有三次成功Execute。使用新空profile、原受控账户、最新原生gas/stake和同链实际归档S；既有原C43仓位保持，零Execute/签名。
+
+从原C110完整内部实际和独立工具仅更新当前1122来源/产物、实际C148网关归属、fresh原七门及唯一profile名；所有内部三个真实初次预览、仅克隆BCS的budget+1000且旧digest保持、真实最终点击再模拟、旧批准拒绝、正常Back新requestId、15 ENABLED模拟/9规范effects/6费用选择、原生对象/typed checkpoint/三store/密文及1015保护文件断言保持。旧C109名称字段作为兼容别名，source必须实际等于C136；本项不称市场gas变化、不单独计完整M5或父任务。

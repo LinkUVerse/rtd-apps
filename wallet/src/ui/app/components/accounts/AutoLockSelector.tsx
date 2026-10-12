@@ -3,7 +3,7 @@
 
 import { useEffect } from 'react';
 import { useFormContext } from 'react-hook-form';
-import { z } from 'zod';
+import { z } from 'rtd-apps-core/src/hooks/useZodForm';
 import { useI18n, type MessageKey, type MessageValues } from '_app/i18n';
 
 import { CheckboxField } from '../../shared/forms/CheckboxField';

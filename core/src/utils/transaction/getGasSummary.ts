@@ -1,12 +1,12 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
-import {
+import type {
 	DryRunTransactionBlockResponse,
 	GasCostSummary,
 	RtdGasData,
 	RtdTransactionBlockResponse,
 	TransactionEffects,
-} from 'rtd-typescript/client';
+} from 'rtd-typescript/jsonRpc';
 
 type Optional<T> = {
 	[K in keyof T]?: T[K];

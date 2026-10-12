@@ -1,0 +1,5 @@
+# C165 四NFT live完整全尾新独立批准
+
+C162 live01全部4真实竞争/4释放后预览/10模拟/1Imported私有签名held/0返回/0Execute及2460原上游实体正文完整、17101捕获文件；但四表单在正常Back后先gotoTokens再立即close，启动12只读SnapshotAdmission客户端请求，没有原生terminal事件或独立route绑定。因此完整M5独立严格门未通过，不改写或将12缺证伪造失败，不计four_live。
+
+保留全部原C113/C162业务条件和所有旧失败。另建C165一次性独立profile/全新预算104000165与摘要，显式不等于原已批准C162；禁止重开旧profile/旧Approve/签名或Execute。原NFT与1456文件只读，4competitors/过期拒绝/正常release与4完整双模拟预览/三store密文/三私有入口与全HTTP原实体均保持。每个preview正常Back清批准后等待原请求结清，直接正常卸载到about:blank并关闭，避免额外Tokens初始化；新增全尾不创建12个无用读请求。全部browser request必须实际finished/failed、完整原实体/当前初始源字节/私有观察全尾独立保持严格断言，再计M5和four_live；失败继续保留。不重播C162已批准摘要。

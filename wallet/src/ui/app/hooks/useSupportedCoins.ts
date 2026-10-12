@@ -1,6 +1,6 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
-import { useAppsBackend } from 'rtd-apps-core';
+import { useAppsBackend } from 'rtd-apps-core/src/hooks/useAppsBackend';
 import { useQuery } from '@tanstack/react-query';
 
 export function useSupportedCoins() {

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { useAppsBackend } from "rtd-apps-core";
-import { useRtdClientQuery } from "rtd-dapp-kit";
+import { useExplorerQuery } from "~/rpc/explorer-client";
 import { Heading, Text, Placeholder } from "@linku/ui";
 import { useQuery } from "@tanstack/react-query";
 import { ParentSize } from "@visx/responsive";
@@ -40,7 +40,7 @@ type Props = {
 export default function ValidatorMap({ minHeight }: Props) {
 	const [network] = useNetwork();
 	const { data: systemState, isError: systemStateError } =
-		useRtdClientQuery("getLatestRtdSystemState");
+		useExplorerQuery("getLatestRtdSystemState");
 
 	const { request } = useAppsBackend();
 

@@ -1,7 +1,7 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { useRtdClientQuery } from "rtd-dapp-kit";
+import { useExplorerQuery } from "~/rpc/explorer-client";
 import { ArrowRight12 } from "rtd-apps-icons";
 import { Text } from "@linku/ui";
 import { useMemo, useState } from "react";
@@ -32,7 +32,7 @@ export function CheckpointsTable({
 }: Props) {
 	const [limit, setLimit] = useState(initialLimit);
 
-	const countQuery = useRtdClientQuery("getLatestCheckpointSequenceNumber");
+	const countQuery = useExplorerQuery("getLatestCheckpointSequenceNumber");
 
 	const checkpoints = useGetCheckpoints(initialCursor, limit);
 

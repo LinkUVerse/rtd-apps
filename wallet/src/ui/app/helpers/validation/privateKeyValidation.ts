@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { decodeRtdPrivateKey } from 'rtd-typescript/cryptography';
-import { z } from 'zod';
+import { z } from 'rtd-apps-core/src/hooks/useZodForm';
 
 export const privateKeyValidation = z
 	.string()

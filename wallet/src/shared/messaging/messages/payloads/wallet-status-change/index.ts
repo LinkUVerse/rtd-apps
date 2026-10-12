@@ -3,11 +3,12 @@
 
 import { isBasePayload } from '_payloads';
 import type { BasePayload, Payload } from '_payloads';
+import type { GetAccountResponse } from '../account/GetAccountResponse';
 import type { NetworkEnvType } from '_src/shared/api-env';
 
 export type WalletStatusChange = {
 	network?: NetworkEnvType;
-	accounts?: { address: string; publicKey: string | null; nickname: string | null }[];
+	accounts?: GetAccountResponse['accounts'];
 };
 
 export interface WalletStatusChangePayload extends BasePayload, WalletStatusChange {

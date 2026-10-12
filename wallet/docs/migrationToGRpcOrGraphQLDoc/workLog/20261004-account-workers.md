@@ -1,0 +1,11 @@
+# 2026-10-04 账户索引增量与常驻更新
+
+发现初始OwnerToken根为v1而现有TokenIndexWorker仅接受v2。已扩展首次续接：v1必须提供绝对路径及SHA固定的独立证书续接状态；v2继续使用自身状态。调用原生advance_owner_tokens前后检查状态SHA，原生工具进一步校验链／父高度／父digest；缺失、未知版本、状态漂移均拒绝，不直接转换格式或伪造验证状态。
+
+部署prepare_wallet_account_workers.py使用既有当前源码debug verify_checkpoint_range独立验证0–100并生成BCS状态，绑定原前缀与verifier proof；未绑定的残留状态拒绝自动采用。worker配置固定当前原生binary SHA、Rust／Python源码SHA、只读publication身份、各自最小权限索引身份、TLS GraphQL及genesis。凭据仅保留私有runtime。
+
+首次真实run_once：OwnerToken和能力worker均提交101–200，已验证v1→v2首次续接。start_wallet_account_workers.py启动原有loop并绑定PID／启动时间／参数，不自动重启退出或不明归属进程。实际token PID74622、capability PID74627；24秒后两者均采样提交至628，有真实连续提交证据，不仅是process alive。
+
+6项worker测试通过（新增3项首次续接规则与既有运行／投影测试），证据：[worker运行与提交](../evidence/20261004-account-workers.json)。这不证明已追上Fullnode或所有查询消费者；后续会继续观察实际覆盖交集。
+
+注意账户API启动绑定包含全部账户Python文件SHA，本次worker模块更新后，旧API进程仍运行原先加载内容；下次受控重启需核对并更新其绑定，不能将拒绝配置漂移当作可无条件覆盖。公开账户TLS入口、非空交易历史及Chrome验收仍未完成。20/98保持不变。

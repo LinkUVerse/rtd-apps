@@ -1,0 +1,7 @@
+# C133普通币pending填表验收补充
+
+首轮冷启动已恢复同profile自然pending原digest，所有已检查submit按钮禁用，但测试以Review按钮数量必须为0而停止；公开诊断显示“交易结果待确认/请勿重新发送”和“检查”仍渲染。源码原SendTokenForm在该页面仍挂载，检查初始输入缺失会禁用；RPC prepareTransaction有withPreparationGuard在序列化/模拟之前核验journal。因此尚不能将按钮存在断言失败认定为执行放行，也不能仅靠空表禁用认定真实durable拒绝。
+
+继续同现有pending冷验收（不重跑获批creator）：普通币填入1nano与本dev账户地址，实际钱包transfer preparation query必须进入明确pending/当前恢复互斥错误且无prepared data；所有Review/签名/发送操作禁用，0新Sim/Verify/sign/Execute。保留scopeBusy与durable错误的区分，正常卸载observer后以原trusted dApp prepare入口验证明确durable pending。stake/旧OwnedWithdraw路由、真实asset contexts、实际ifAvailable探针、三journal/密文、固定digest readonly恢复、正常Reject/Disconnect/relock原条件均保持。若实际模拟被尝试或Review放行，记录失败和当前pending，不点击Review/Approve或发送，以真实证据修复。
+
+本补充调整的是测试对禁用操作的验证，并增加真实有效填表和query错误/无prepared的证据，不修改产品源码，不缩减原禁止重复准备/签名/发送或原98合同。NFT业务仍第二阶段。

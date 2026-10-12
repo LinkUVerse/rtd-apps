@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { useTransactionSummary } from "rtd-apps-core";
-import { type RtdTransactionBlockResponse } from "rtd-typescript/client";
+import type { RtdTransactionBlockResponse } from "rtd-typescript/jsonRpc";
 
 import { BalanceChanges } from "./BalanceChanges";
 import { ObjectChanges } from "./ObjectChanges";

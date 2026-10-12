@@ -1,0 +1,11 @@
+import { expect,it } from 'vitest';
+import { Transaction } from 'rtd-typescript/transactions';
+import { normalizeRtdAddress } from 'rtd-typescript/utils';
+import { authorizationFixtureTransaction } from './authorization-fixture';
+const sender=normalizeRtdAddress('0xa'),sponsor=normalizeRtdAddress('0xb');
+async function fixture(){const tx=new Transaction();tx.setSender(sender);tx.setGasOwner(sponsor);tx.setGasPrice(1000);tx.setGasBudget(100000000);tx.setGasPayment([{objectId:normalizeRtdAddress('0xc'),version:'7',digest:'11111111111111111111111111111111'}]);tx.setExpiration({Epoch:'9007199254740993'});tx.transferObjects([tx.objectRef({objectId:normalizeRtdAddress('0xd'),version:'8',digest:'11111111111111111111111111111111'})],sender);return tx;}
+const url=(json:string,origin='http://127.0.0.1/')=>{const u=new URL(origin);u.searchParams.set('authorization',Buffer.from(json).toString('base64'));return u;};
+it('ordinary demo has no authorization fixture',()=>expect(authorizationFixtureTransaction(new URL('http://127.0.0.1/'),'localnet',sender)).toBeNull());
+it('preserves explicit sponsor, gas and exact large Epoch without claiming chain execution',async()=>{const tx=await fixture();const loaded=authorizationFixtureTransaction(url(await tx.toJSON()),'localnet',sender)!;expect(loaded.getData()).toMatchObject({sender,gasData:tx.getData().gasData,expiration:{$kind:'Epoch',Epoch:'9007199254740993'}});expect(await loaded.build()).toEqual(await tx.build());});
+it.each(['https://127.0.0.1/','http://localhost/','http://example.test/'])('rejects origin %s',async origin=>{const json=await fixture().then(tx=>tx.toJSON());expect(()=>authorizationFixtureTransaction(url(json,origin),'localnet',sender)).toThrow();});
+it('rejects wrong network / sender, incomplete gas and malformed bytes',async()=>{const tx=await fixture(),json=await tx.toJSON();expect(()=>authorizationFixtureTransaction(url(json),'mainnet',sender)).toThrow();expect(()=>authorizationFixtureTransaction(url(json),'localnet',sponsor)).toThrow();tx.setGasPayment([]);const incomplete=await tx.toJSON();expect(()=>authorizationFixtureTransaction(url(incomplete),'localnet',sender)).toThrow();expect(()=>authorizationFixtureTransaction(url('{bad'),'localnet',sender)).toThrow();});

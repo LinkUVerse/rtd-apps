@@ -1,0 +1,7 @@
+# C110 在线单页读取对照实施细则
+
+基于已独立通过的offline启动库存：同一自有C109 profile自行创建一个tokens UI，诊断工具不再newPage；复用该UI，保留原Goto staking新页面边界与原20秒预算、全部metadata／分页／BCS／revalidation。只有单一钱包UI时才继续；记录所有现有页面、CDP target及每个请求的page／worker身份、开始／完整正文时刻与实际物理锁。成功或真实错误均为诊断终点，不能认作完整三内部／十二页或根因全部证明。
+
+完整克隆C109 manager，唯一区别为全新C110 OP及正确小写NAME；继续同一C109 build／source资格／实际Origin／三端口profile／原TLS方法和完整300秒七门。克隆gateway归属只连接新manager／started proof，旧C109已清理receipt不能作为当前运行证据。源及全部旧工具保持，不新编产品、不改固定debug／LD部署原门。
+
+本轮仅重新打开本轮自己的C109 CFT profile；其恢复文件中的开发测试密码仅用于该自有账户解锁，不用于普通Chrome，也不导出任何密钥。禁止Simulate／VerifySignature／Execute以及公共服务，0业务写／签名，正常重锁关闭。原两条链、两个indexer和工作publisher不信号、不重启。单页成功后才能提出后续矩阵工具的具体单页改造及完整当前重验；如果失败则继续从实际原帧定位，不扩大deadline或删断言。自有网关结束后正常精确清理并独立核验原全部运行scope。

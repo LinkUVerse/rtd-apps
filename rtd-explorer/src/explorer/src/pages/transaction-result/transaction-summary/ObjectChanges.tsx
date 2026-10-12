@@ -10,11 +10,7 @@ import {
 	useResolveRtdNSName,
 } from "rtd-apps-core";
 import { ChevronRight12 } from "rtd-apps-icons";
-import {
-	type RtdObjectChangePublished,
-	type RtdObjectChange,
-	type DisplayFieldsResponse,
-} from "rtd-typescript/client";
+import type { RtdObjectChangePublished, RtdObjectChange, DisplayFieldsResponse } from "rtd-typescript/jsonRpc";
 import { parseStructTag } from "rtd-typescript/utils";
 import { Text } from "@linku/ui";
 import * as Collapsible from "@radix-ui/react-collapsible";

@@ -1,59 +1,48 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
-
-import { useQuery } from '@tanstack/react-query';
-import { useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-
-export const RESTRICTED_ERROR = {
-	status: 403,
-	body: 'error code: 1020',
-};
+import {
+  walletReadAllowed,
+  walletReadKeyParts,
+} from "rtd-apps-core/src/rpc/read-admission";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useWalletRpc } from "rtd-apps-core/src/rpc/WalletRpcContext";
 
 export function useRestrictedGuard() {
-	const navigate = useNavigate();
-	const location = useLocation();
-
-	const { data } = useQuery({
-		queryKey: ['restricted-guard'],
-		queryFn: async () => {
-			// NOTE: We use fetch directly here instead of the RPC layer because we don't want this instrumented,
-			// and we also need to work with the response object directly.
-			const res = await fetch('https://wallet-rpc.testnet.rtd.io/', {
-				method: 'POST',
-				body: JSON.stringify({
-					id: 1,
-					method: 'rtd_getLatestCheckpointSequenceNumber',
-					jsonrpc: '2.0',
-					params: [],
-				}),
-				headers: {
-					// Resetting accept makes the response non-HTML
-					accept: '',
-					'content-type': 'application/json',
-				},
-			});
-
-			if (res.status === RESTRICTED_ERROR.status) {
-				const body = await res.text();
-				return { restricted: body === RESTRICTED_ERROR.body };
-			}
-
-			return { restricted: false };
-		},
-		gcTime: 0,
-		retry: 0,
-	});
-
-	useEffect(() => {
-		if (!data) return;
-		if (data.restricted && location.pathname !== '/restricted') {
-			navigate('/restricted', { replace: true });
-		} else if (!data.restricted && location.pathname === '/restricted') {
-			// If access is not restricted, but the user is on the restricted page, then we want to get them out of there:
-			navigate('/', { replace: true });
-		}
-	}, [navigate, data, location.pathname]);
-
-	return data?.restricted ?? false;
+  const rpc = useWalletRpc(),
+    navigate = useNavigate(),
+    location = useLocation();
+  const query = useQuery({
+    queryKey: [
+      "wallet-entry-access",
+      rpc.bindingKey,
+      rpc.readSessionKey,
+      ...walletReadKeyParts(rpc, "entry"),
+    ],
+    queryFn: ({ signal }) => rpc.probeEntryAccess(signal),
+    enabled: walletReadAllowed(rpc, "entry") && rpc.hasFullnodeSession,
+    gcTime: 0,
+    staleTime: 0,
+    retry: false,
+    meta: { skipPersistedCache: true, walletReadOperation: "entry" },
+  });
+  const access =
+    walletReadAllowed(rpc, "entry") && rpc.hasFullnodeSession && !query.isError
+      ? query.data
+      : undefined;
+  useEffect(() => {
+    if (access?.state === "restricted" && location.pathname !== "/restricted")
+      navigate("/restricted", { replace: true });
+    else if (
+      access?.state === "accessible" &&
+      location.pathname === "/restricted"
+    )
+      navigate("/", { replace: true });
+  }, [access, location.pathname, navigate]);
+  // An unknown/new session cannot clear a previously displayed restriction.
+  return (
+    access?.state === "restricted" ||
+    (location.pathname === "/restricted" && access?.state !== "accessible")
+  );
 }

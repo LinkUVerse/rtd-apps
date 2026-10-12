@@ -1,7 +1,7 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { useRtdClient, useRtdClientInfiniteQuery } from "rtd-dapp-kit";
+import { useExplorerClient, useExplorerInfiniteQuery } from "~/rpc/explorer-client";
 import { ArrowRight12 } from "rtd-apps-icons";
 import { Text } from "@linku/ui";
 import { useQuery } from "@tanstack/react-query";
@@ -27,7 +27,7 @@ export function EpochsActivityTable({
 	initialLimit = DEFAULT_EPOCHS_LIMIT,
 }: Props) {
 	const [limit, setLimit] = useState(initialLimit);
-	const client = useRtdClient();
+	const client = useExplorerClient();
 
 	const { data: count } = useQuery({
 		queryKey: ["epochs", "current"],
@@ -35,7 +35,7 @@ export function EpochsActivityTable({
 		select: (epoch) => Number(epoch.epoch) + 1,
 	});
 
-	const epochMetricsQuery = useRtdClientInfiniteQuery("getEpochMetrics", {
+	const epochMetricsQuery = useExplorerInfiniteQuery("getEpochs", {
 		limit,
 		descendingOrder: true,
 	});

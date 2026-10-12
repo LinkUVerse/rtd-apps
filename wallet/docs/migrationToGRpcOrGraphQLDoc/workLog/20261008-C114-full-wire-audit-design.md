@@ -1,0 +1,11 @@
+# C114 完整正向原帧审核实施范围
+
+2026-10-08，接续P114-3。上轮实际前置拒绝已独立通过；本轮补充完整正向审核代码及其离线资格，不把历史样本或离线工具资格当成当前浏览器验收。原P114-3–7、九父及fine权重保持。
+
+审核必须解码实际完整gRPC-web请求、响应正文及trailer。每个正常预览保留两阶段：原ENABLED费用选择的完整kind／旧shared mutability兼容语义、选中的gas对象／版本／digest／price／budget／owner；最终完整规范TransactionData、sender／recipient／GasData／全部expiration字段、digest、规范TransactionEffects及类型域hash。没有完整成功正文不能作为成功。实际非零grpc-status只能在对应故障模拟接受，原正文、trailer或错误headers和details均保留，不能构造空响应代替捕获失败。
+
+四路六场景和两种OriginByte接收方ABI全部审核：direct、framework普通／挂牌、Personal borrow_val→take→transfer→return_val、OriginByte已有目标共享Kiosk与新目标Pure地址；费用／sender／sponsor／expiration改变必须只变化声明的完整字段并拒绝旧grant。既有C48六份批准和原24模拟仅供离线规范资格；原C48六交易不重发，旧证据不扩为当前14对象业务通过。资格审核必须用原实际完整请求／响应，缺少、截断或篡改关键字段的反例应被拒绝。
+
+当前真实完整审核仍要求fresh696489七门、当前C109来源／实际Origin和C113自有网关、54故障行及六次正常更换收款人的新Review，原可见grant不被修改、source-map实际唯一断点、完整原模拟计数、Back新requestId、完整journal／密文、十四canonical对象及实际sponsor coin前后保持。任何正向范围不足都保持false，不用前置审核替代逐原帧审核。
+
+真实有效期UI与四路赞助／同byte签名／Wallet Standard边界是独立必需范围；参数克隆测试不能证明新有效期已显示。补齐这些驱动之前P114-3仍开放；全部实机矩阵未完成之前P114-4–7、TX-01／TX-04和trial_ready仍开放。原80964／child84209及两组链不停止；原C112观察器结束不授予发布交接。

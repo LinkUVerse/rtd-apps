@@ -16,7 +16,9 @@
 		"allowJs": true,
 		"baseUrl": ".",
 		"paths": {
-			"~/*": ["./src/*"]
+			"~/*": ["./src/*"],
+            "rtd-apps-core": ["../../../core/src/index.ts"],
+            "rtd-apps-core/*": ["../../../core/*"]
 		}
 	},
 }

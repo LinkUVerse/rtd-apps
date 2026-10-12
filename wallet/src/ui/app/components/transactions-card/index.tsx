@@ -1,125 +1,66 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { DateCard } from '_app/shared/date-card';
-import { useI18n } from '_app/i18n';
-import { Text } from '_app/shared/text';
-import { useGetTxnRecipientAddress } from '_hooks';
-import { useRecognizedPackages } from '_src/ui/app/hooks/useRecognizedPackages';
-import { getLabel, useTransactionSummary } from 'rtd-apps-core';
-import type { RtdTransactionBlockResponse } from 'rtd-typescript/client';
-import { Link } from 'react-router-dom';
-
-import { TxnTypeLabel } from './TxnActionLabel';
-import { TxnIcon } from './TxnIcon';
+import { DateCard } from "_app/shared/date-card";
+import { useI18n } from "_app/i18n";
+import { Text } from "_app/shared/text";
+import type { WalletHistoryTransaction } from "rtd-apps-core/src/rpc/WalletRpcContext";
+import { receiptStakeEvents } from "rtd-apps-core/src/rpc/transaction-view";
+import { formatAddress } from "rtd-typescript/utils";
+import { Link } from "react-router-dom";
+import { TxnIcon } from "./TxnIcon";
 
 export function TransactionCard({
-	txn,
-	address,
+  txn,
+  address,
 }: {
-	txn: RtdTransactionBlockResponse;
-	address: string;
+  txn: WalletHistoryTransaction;
+  address: string;
 }) {
-	const { t } = useI18n();
-	const executionStatus = txn.effects?.status.status;
-	const recognizedPackagesList = useRecognizedPackages();
-
-	const summary = useTransactionSummary({
-		transaction: txn,
-		currentAddress: address,
-		recognizedPackagesList,
-	});
-
-	// we only show Rtd Transfer amount or the first non-Rtd transfer amount
-
-	const recipientAddress = useGetTxnRecipientAddress({ txn, address });
-
-	const isSender = address === txn.transaction?.data.sender;
-
-	const error = txn.effects?.status.error;
-
-	// Transition label - depending on the transaction type and amount
-	// Epoch change without amount is delegation object
-	// Special case for staking and unstaking move call transaction,
-	// For other transaction show Sent or Received
-
-	// TODO: Support programmable tx:
-	// Show rtd symbol only if transfer transferAmount coinType is RTD_TYPE_ARG, staking or unstaking
-	const showRtdSymbol = false;
-
-	const timestamp = txn.timestampMs;
-	const summaryLabel =
-		summary?.label === 'Receive'
-			? t('transaction.receive')
-			: summary?.label === 'Transaction'
-				? t('receipt.transaction')
-				: summary?.label;
-
-	return (
-		<Link
-			data-testid="link-to-txn"
-			to={`/receipt?${new URLSearchParams({
-				txdigest: txn.digest,
-			}).toString()}`}
-			className="flex min-w-0 items-center w-full flex-col gap-2 py-4 no-underline"
-		>
-			<div className="flex items-start w-full justify-between gap-3">
-				<div className="w-7.5">
-					<TxnIcon
-						txnFailed={executionStatus !== 'success' || !!error}
-						// TODO: Support programmable transactions variable icons here:
-						variant={getLabel(txn, address)}
-					/>
-				</div>
-				<div className="flex flex-col w-full gap-1.5">
-					{error ? (
-						<div className="flex w-full justify-between">
-							<div className="flex flex-col w-full gap-1.5">
-								<Text color="gray-90" weight="medium">
-									{t('receipt.failed')}
-								</Text>
-
-								<div className="flex break-all">
-									<Text variant="pSubtitle" weight="normal" color="issue-dark">
-										{error}
-									</Text>
-								</div>
-							</div>
-							{/* {transferAmountComponent} */}
-						</div>
-					) : (
-						<>
-							<div className="flex w-full justify-between">
-								<div className="flex gap-1 align-middle items-baseline">
-									<Text color="gray-90" weight="semibold">
-										{summaryLabel}
-									</Text>
-									{showRtdSymbol && (
-										<Text
-											color="gray-90"
-											weight="normal"
-											variant="subtitleSmall"
-										>
-											RTD
-										</Text>
-									)}
-								</div>
-								{/* {transferAmountComponent} */}
-							</div>
-
-							{/* TODO: Support programmable tx: */}
-							<TxnTypeLabel
-								address={recipientAddress!}
-								isSender={isSender}
-								isTransfer={false}
-							/>
-							{/* {objectId && <TxnImage id={objectId} />} */}
-						</>
-					)}
-
-					{timestamp && <DateCard timestamp={Number(timestamp)} size="sm" />}
-				</div>
-			</div>
-		</Link>
-	);
+  const { t } = useI18n();
+  const stakes = txn.transaction
+    ? receiptStakeEvents(txn.transaction, address)
+    : [];
+  const kind =
+    stakes.length && stakes.every((event) => event.kind === "stake")
+      ? "Staked"
+      : stakes.length && stakes.every((event) => event.kind === "unstake")
+        ? "Unstaked"
+        : "Transaction";
+  const label =
+    kind === "Staked"
+      ? t("staking.stakeRtd")
+      : kind === "Unstaked"
+        ? t("staking.unstakeRtd")
+        : t("receipt.transaction");
+  const error = txn.transaction?.status.error?.message;
+  return (
+    <Link
+      data-testid="link-to-txn"
+      to={`/receipt?${new URLSearchParams({ txdigest: txn.digest })}`}
+      className="flex min-w-0 items-center w-full flex-col gap-2 py-4 no-underline"
+    >
+      <div className="flex items-start w-full justify-between gap-3">
+        <div className="w-7.5">
+          <TxnIcon txnFailed={txn.status === "FAILURE"} variant={kind} />
+        </div>
+        <div className="flex flex-col w-full gap-1.5">
+          <Text color="gray-90" weight="semibold">
+            {txn.status === "FAILURE" ? t("receipt.failed") : label}
+          </Text>
+          {error && (
+            <Text variant="pSubtitle" color="issue-dark">
+              {error}
+            </Text>
+          )}
+          {txn.sender && (
+            <Text variant="subtitle" color="steel-darker">
+              {t("activity.sender")}: {formatAddress(txn.sender)}
+            </Text>
+          )}
+          <DateCard timestamp={txn.timestampMs} size="sm" />
+        </div>
+      </div>
+    </Link>
+  );
 }

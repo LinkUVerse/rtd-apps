@@ -1,7 +1,7 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { type RtdTransactionBlockResponse } from "rtd-typescript/client";
+import type { RtdTransactionBlockResponse } from "rtd-typescript/jsonRpc";
 import { useParams } from "react-router-dom";
 
 import { TransactionView } from "./TransactionView";

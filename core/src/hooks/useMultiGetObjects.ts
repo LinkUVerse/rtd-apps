@@ -1,8 +1,8 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { useRtdClient } from 'rtd-dapp-kit';
-import { RtdObjectDataOptions, RtdObjectResponse } from 'rtd-typescript/client';
+import { useExplorerRpcClient as useRtdClient } from '../rpc/ExplorerRpcContext';
+import type { RtdObjectDataOptions, RtdObjectResponse } from 'rtd-typescript/jsonRpc';
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 
 import { chunkArray } from '../utils/chunkArray';

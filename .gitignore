@@ -65,3 +65,9 @@ pnpm-debug.log*
 # Misc
 *.local
 .trace
+
+# Python tooling and local acceptance process state
+__pycache__/
+*.py[cod]
+*.pid
+*.stderr

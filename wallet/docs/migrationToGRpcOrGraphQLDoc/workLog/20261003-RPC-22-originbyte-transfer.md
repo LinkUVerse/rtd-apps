@@ -1,0 +1,15 @@
+# RPC-22：OriginByte P2P准备贯通NFT批准入口
+
+2026-10-03。NFT准备由nativeKiosks切换为统一kiosks发现，保留原生／PersonalKiosk路径，新增originbyte-kiosk结果路由。页面已有prepareNftTransfer入口直接覆盖该分支，未增加旧RPC回退。
+
+originbyte-transfer.ts对登记状态、独占／锁定、账户owner、当前OwnerToken关联、NFT包装field owner、当前Shared Kiosk UID／owner／扩展状态逐项检查。交易输入使用Fullnode当前初始共享版本；OwnerToken从不作为OwnerCap参数传入交易。
+
+同S查询收款方Kiosk；存在OriginByte目标时稳定选首个、验证当前目标owner并调用配置执行包p2p_transfer；成功准入的空目标集合调用p2p_transfer_and_create_target_kiosk。读取失败、快照变化、权限或存入限制导致的正式模拟失败不自动换路或创建新目标。最终调用现有prepareTransaction解析输入与正式模拟，返回固定bytes，确认复用现有revalidateNftTransfer和后台一次提交／journal恢复流程。
+
+OwnerToken解析器参数缩为实际需要的字段，供快照和当前对象共同使用。未证明持有关系的页面提示更新，避免继续将已接通的OriginByte编码描述为完全缺失。
+
+定向3文件85项通过（NFT准备41项、OriginByte读取37项、NFT页面7项），覆盖两条p2p目标路径、未登记／独占／锁定、发现token与源owner变化、NFT已离开、目标owner／快照变化以及模拟错误不重建。测试使用真实Transaction对象检查命令与新鲜shared输入，但模拟与读取服务由fixture提供，不是已部署合约验证。
+
+完整TypeScript通过：20261003-originbyte-transfer-typecheck.log。全量83文件950/950通过：20261003-originbyte-full-tests.log。开发版Webpack通过：20261003-originbyte-transfer-build.log。双方迁移矩阵和current-state同步。
+
+RPC-22保持未完成。固定源码entry方法与存储布局仍需在用户指定RTD debug链上通过指定合约仓库部署验证；尚未完成其他历史layout适配、真实GraphQL＋Fullnode同链、Chrome批准与实链发送／恢复。编码测试通过不当作可试用证明。

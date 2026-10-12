@@ -1,0 +1,13 @@
+# C53：六笔NFT成功后的完整生产查询
+
+此清单先于编码。依赖R48-3b，原六笔单次发送最大checkpoint524022；不重新发送、播种、注资、打开任何旧签名profile或恢复发送前八件库存。
+
+P53-1实现并测试写后库存合同：source三个Kiosk及cap仍归原source，普通framework只剩原locked3／exclusive4，Personal及OB source为空，source直接NFT为空；existingTarget直接拥有四件新NFT且OB既有target包含一件；newTarget新OB Kiosk包含另一件。全部八NFT唯一完整分布；六件新版本／摘要／previousTransaction与原规范原生回执相符，两保留NFT的lock／exclusive与挂牌价格保持。负向测试应明确拒绝旧八件source库存、少件、重复、wrong cap／target／owner／digest／锁及挂牌变化。
+
+P53-2实际查询前重新取得七覆盖全部满足524022的证据并检查其新鲜度、H0／generation、source／产品及1015保护文件。没有全部七门，不创建查询session或发送网络请求。达到门后使用当前生产WalletAssetReader在同一个十域及Display快照查询三owner，直接NFT分页大小1；每件再作fresh Fullnode点查、归档精确version与完整规范BCS对照，S的summary／contents与摘要认证均真实读取，六原摘要只读详情与原交易字节匹配。全部使用原已安装三入口及显式Origin，不为此新建容器。
+
+P53-3账户历史使用生产reader、分页大小2和同一最低524022，分别记录实际受支持活动窗口的完整分页及snapshot；它不是资产快照S，也不认证全账户活动全集。source应包含六笔原发送，existingTarget应包含五笔、新target一笔；每行checkpoint与原native回执一致，保留账户参与事实与kioskTransfers而不将sender筛选冒充账户收支全集。按主方案04及实际服务，registrationComplete／allAccountActivityCertified保持false，allAccountTransfersCertified保持原false或null；本次涉及的RegisteredKiosks／discovered Token／capability覆盖仍必须为true。独立审核原GraphQL分页、原样旗标和规范protobuf／BCS；不使用cache或原native回执替代实际账户索引。
+
+P53-4随后再作新的专用Chrome写后页面验证；不开旧C48／C49 profile。仅当真实页面与全部必需合同完成后才审核父项。准备工具、fixture通过或未覆盖的拒绝不能代替正向查询、Chrome刷新或父项完成。当前正式486334仍未覆盖524022；驻留交接观察与本只读准备相互独立。
+
+后续发现旧合成history合同误要求全集旗标true；[原字节与审核记录](./20261007-C53-history-scope-review-01.json)保留，旧45测试仅作历史，不再作为当前准备资格。修正验证工具，保留原524022／七覆盖／完整分页／六原参与事实，新增全集升格与受支持家族覆盖不足的拒绝测试；产品代码、服务旗标和旧成功交易均未修改。

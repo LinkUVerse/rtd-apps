@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { GrowthBookContext } from '@growthbook/growthbook-react';
-import { useRtdClient } from 'rtd-dapp-kit';
-import { CoinMetadata } from 'rtd-typescript/client';
+import { useExplorerRpcClient as useRtdClient } from '../rpc/ExplorerRpcContext';
+import type { CoinMetadata } from 'rtd-typescript/jsonRpc';
 import { RTD_TYPE_ARG } from 'rtd-typescript/utils';
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 import BigNumber from 'bignumber.js';

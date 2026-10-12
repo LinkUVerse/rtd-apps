@@ -1,0 +1,9 @@
+# 正式模拟摘要契约修正与实链验证
+
+Sui固定c860146823abcedef45a1b5a9c766920be98a29c的simulate/mod.rs226-275及当前RTD对应247-300行均未填ExecutedTransaction外层digest。首次受控部署的精确模拟校验拦截了缺字段；未签名未提交。双方案SDK章节已同步官方源码链接及契约。
+
+钱包validateFinalSimulation仅为缺失外层digest派生本地字段，原输入bytes、effects proto摘要及原生BCS摘要仍严格一致；显式错误摘要拒绝，历史查询严格校验不改。SDK解析器因此获得合法摘要且不误称链上确认。
+
+验证：transaction-reader及history-facts两文件60项通过；完整TypeScript检查及开发版构建通过。部署脚本5项守卫通过，包括模拟失败不得签名／提交、超时保留原bytes/signature/digest且同日志不重发。
+
+scripts/probe-isolated-simulation.ts使用实际WalletTransactionReader在当前debug独立链完成prepare，再对完全相同bytes simulate；成功摘要HDKc6Eb5o7XqzTiiFvZr4qsbfH8erHrH7AzX1Fdv2ZKj，gasBudget2988000。请求只有GetServiceInfo和SimulateTransaction，脚本禁止ExecuteTransaction及JSON-RPC请求体，无签名／转账。见evidence/20261003-wallet-live-simulation.json。不是GraphQL、扩展批准、执行恢复或用户试用验收。

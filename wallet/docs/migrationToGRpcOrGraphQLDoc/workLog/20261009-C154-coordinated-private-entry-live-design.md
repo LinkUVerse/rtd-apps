@@ -1,0 +1,7 @@
+# 当前实时签名观察与确切调试暂停归属协调
+
+原C149第一轮整体失败保留：计数观察器会使任何Debugger.paused失效并resume，与已核对生产字节/source-map的sign-return-hold原生断点发生冲突；其Approve已点击，不复用旧5 MIST批准摘要。Execute为0；失败来源和未知直接计数保持，不称已完成live。
+
+先在无扩展/账户的空CFT中实际核对两调试器协议：持有者hitBreakpoints含其ID，旁观者同暂停hitBreakpoints为空，但实际scriptId/line/column相同、reason=other。只允许显式登记的同target/worker SHA、当前source-map定位到dapp-signing原signData调用处的一个自有暂停；一次暂停/一次正常恢复必须留存，未经登记/错误位置/未知断点仍fail closed。观察器不调用/替换私有方法，原三个false条件断点及完整初始到teardown计数保持，恢复仅由实际持有者执行。
+
+全部来源完整逆变换/实际协议反例先通过，再用新6 MIST独立profile及fresh七门真实四入口live；必须与所有历史已批准及本次失败5 MIST摘要不同，不重放旧签名/Execute。原8 ENABLED模拟/规范effects、31秒实际过期拒绝、真实私有Imported一次其余0、签名返回0、竞争者0、三个释放后预览、三store/密文/完整实体和正常关闭不变。独立审核同时检查确切暂停协调和全部原M5条件。普通/imported正常授权及内部再授权不以此工具修正为直接前置，可分别推进。

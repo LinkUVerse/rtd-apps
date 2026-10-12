@@ -17,9 +17,9 @@ export function useStorageMigrationStatus() {
 		meta: { skipPersistedCache: true },
 	});
 	useEffect(() => {
-		if (response.data === 'ready') {
-			setEnabled(false);
-		}
+		// A network change clears QueryClient while this hook may stay mounted.
+		// Recheck missing readiness rather than keeping a disabled empty query.
+		setEnabled(response.data !== 'ready');
 	}, [response.data]);
 	return response;
 }

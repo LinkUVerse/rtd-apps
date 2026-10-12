@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ImageIcon } from '_app/shared/image-icon';
-import { useCoinMetadata } from 'rtd-apps-core';
+import { useCoinMetadata } from 'rtd-apps-core/src/rpc/coin';
 import { Rtd, Unstaked } from 'rtd-apps-icons';
 import { normalizeStructTag, RTD_TYPE_ARG } from 'rtd-typescript/utils';
 import { cva, type VariantProps } from 'class-variance-authority';

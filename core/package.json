@@ -26,7 +26,6 @@
 		"@amplitude/analytics-types": "^2.10.0",
 		"@growthbook/growthbook-react": "^1.6.1",
 		"@hookform/resolvers": "^3.9.0",
-		"rtd-dapp-kit": "file:../../rtd-ts-sdk/packages/dapp-kit",
 		"rtd-kiosk": "file:../../rtd-ts-sdk/packages/kiosk",
 		"rtd-typescript": "file:../../rtd-ts-sdk/packages/typescript",
 		"@sentry/react": "^10.8.0",

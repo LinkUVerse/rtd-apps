@@ -1,0 +1,462 @@
+{
+  "currentWork": [
+    "原98/98及最后五项45/45完整通过；原27未收口子包全部完成，剩余0%。",
+    "C363完整持久/WAL及仅归档重建通过；C364逐98/A01–A22合同审核通过。",
+    "C365完成13容器/6主进程及1worker的精确正常清理，数据卷和G3/G4及共享中间件保留。",
+    "C366清理后当前源码/debug/构建、实际业务和普通C51余额/发送页面复核通过；C362仍为安装版本。",
+    "完整交付说明见workLog/20261012-C367-complete-delivery.md；历史失败、原pending和明确不支持范围均保留。"
+  ],
+  "observedAt": "2026-10-12T09:57:23.198159+00:00",
+  "scope": "Five open parents decomposed for the user status question; equal-count acceptance packages, not hours and not a replacement for 98-parent completion. Historical limited evidence counts only its named package. Partial packages remain open. Shared evidence is reused.",
+  "parents": [
+    {
+      "id": "QA-A15",
+      "title": "名称完整验收",
+      "items": [
+        {
+          "title": "当前名称入口启用、错误提示及普通地址回退",
+          "status": "done",
+          "basis": "../20261011-C241-name-feedback-and-enablement.md",
+          "id": "QA-A15.1"
+        },
+        {
+          "title": "名称索引记录与当前 Fullnode 不一致时拒绝，保留当前新鲜度校验",
+          "status": "done",
+          "basis": "./20261012-C278-name-address-approval.md",
+          "id": "QA-A15.2"
+        },
+        {
+          "title": "当前正式窗口名称正向解析",
+          "status": "done",
+          "basis": "./20261011-C277-current-name-validation.md",
+          "id": "QA-A15.3"
+        },
+        {
+          "title": "当前默认反向解析、显示名与地址区分",
+          "status": "done",
+          "basis": "./20261012-C278-name-address-approval.md",
+          "id": "QA-A15.4"
+        },
+        {
+          "title": "真实缺失名称与过期名称分支",
+          "status": "done",
+          "basis": "./20261011-C277-current-name-validation.md",
+          "id": "QA-A15.5"
+        },
+        {
+          "title": "真实改名、续期后的解析变化",
+          "status": "done",
+          "basis": "./20261012-C278-name-address-approval.md",
+          "id": "QA-A15.6"
+        },
+        {
+          "title": "registry错链/变更在当前完整链路中的拒绝",
+          "status": "done",
+          "basis": "./20261012-C279-name-completion.md",
+          "id": "QA-A15.7"
+        },
+        {
+          "title": "名称显示、最终收款地址与模拟/签名字节联验及汇总",
+          "status": "done",
+          "basis": "./20261012-C278-name-address-approval.md",
+          "id": "QA-A15.8"
+        }
+      ],
+      "total": 8,
+      "completed": 8,
+      "remaining": 0
+    },
+    {
+      "id": "QA-A17",
+      "title": "网络换代与数据生命周期",
+      "items": [
+        {
+          "title": "当前Chrome服务URL变更/缺失及恢复",
+          "status": "done",
+          "basis": "./20261011-C266-network-switch.md",
+          "id": "QA-A17.1"
+        },
+        {
+          "title": "当前Chrome在途旧响应取消、不回填旧资产",
+          "status": "done",
+          "basis": "./20261011-C266-network-switch.md",
+          "id": "QA-A17.2"
+        },
+        {
+          "title": "同H0客户端generation切换、隐藏记录隔离与恢复",
+          "status": "done",
+          "basis": "./20261011-C270-generation-isolation.md",
+          "id": "QA-A17.3"
+        },
+        {
+          "title": "0..709569全范围41条持久管线数据重放",
+          "status": "done",
+          "basis": "./20261012-C295-complete-replay.md",
+          "id": "QA-A17.4"
+        },
+        {
+          "title": "重放完成后完整数据及两个账户查询结果比对",
+          "status": "done",
+          "basis": "./20261012-C348-full-data-comparison.md",
+          "id": "QA-A17.5"
+        },
+        {
+          "title": "完整归档/HBase/SQL/Rocks持久数据与WAL恢复验证",
+          "status": "done",
+          "basis": "./20261012-C363-complete-wal-01.json",
+          "id": "QA-A17.6"
+        },
+        {
+          "title": "同host实际换H0及当前Chrome/全服务隔离恢复",
+          "status": "done",
+          "basis": "./20261012-C296-network-lifecycle-completion.md",
+          "id": "QA-A17.7"
+        },
+        {
+          "title": "同H0实际后端generation换代及全服务联验",
+          "status": "done",
+          "basis": "./20261012-C356-backend-generation-completion.md",
+          "id": "QA-A17.8"
+        },
+        {
+          "title": "只重建归档、保留其他查询数据的完整一致性验收",
+          "status": "done",
+          "basis": "./20261012-C363-complete-archive-01.json",
+          "id": "QA-A17.9"
+        },
+        {
+          "title": "registry变更、缓存/能力失效与迟到结果完整矩阵",
+          "status": "done",
+          "basis": "./20261012-C313-lifecycle-completion.md",
+          "id": "QA-A17.10"
+        }
+      ],
+      "total": 10,
+      "completed": 10,
+      "remaining": 0
+    },
+    {
+      "id": "QA-A20",
+      "title": "完整故障与冷启动",
+      "items": [
+        {
+          "title": "既有单服务故障、不可用与恢复的限定实证",
+          "status": "done",
+          "basis": "../Task.md",
+          "id": "QA-A20.1"
+        },
+        {
+          "title": "既有有限环境保留数据冷恢复及限定字节/journal比对",
+          "status": "done",
+          "basis": "./20261009-C151-complete-cold-independent-acceptance.md",
+          "id": "QA-A20.2"
+        },
+        {
+          "title": "当前完整dev按依赖顺序安全停机与冷启动",
+          "status": "done",
+          "basis": "./20261012-C280-cold-in-progress.md",
+          "id": "QA-A20.3"
+        },
+        {
+          "title": "完整环境冷启动前后持久数据/水位核对",
+          "status": "done",
+          "basis": "./20261012-C280-cold-in-progress.md",
+          "id": "QA-A20.4"
+        },
+        {
+          "title": "Fullnode/GraphQL/archive/account全部入口恢复与真实请求",
+          "status": "done",
+          "basis": "./20261012-C280-cold-in-progress.md",
+          "id": "QA-A20.5"
+        },
+        {
+          "title": "当前普通Chrome恢复、原账户及真实pending journal保持",
+          "status": "done",
+          "basis": "./20261012-C280-browser-identity-recovery-01.json",
+          "id": "QA-A20.6"
+        },
+        {
+          "title": "冷恢复后核心业务回归及无重复签名/广播的最终审核",
+          "status": "done",
+          "basis": "./20261012-C280-completion.md",
+          "id": "QA-A20.7"
+        }
+      ],
+      "total": 7,
+      "completed": 7,
+      "remaining": 0
+    },
+    {
+      "id": "REL-02",
+      "title": "全部真实业务流量",
+      "items": [
+        {
+          "title": "余额、实际转账与写后当前余额展示",
+          "status": "done",
+          "basis": "./20261011-C250-current-balances.md",
+          "id": "REL-02.1"
+        },
+        {
+          "title": "非空活动历史、详情及实际读取帧",
+          "status": "done",
+          "basis": "../20261011-C237-nonempty-browser-acceptance.md",
+          "id": "REL-02.2"
+        },
+        {
+          "title": "非空资产/Kiosk/NFT详情与锁定/挂单反例",
+          "status": "done",
+          "basis": "./20261011-C252-nft-current-readiness.md",
+          "id": "REL-02.3"
+        },
+        {
+          "title": "实际NFT转移与原生所有权/原摘要确认",
+          "status": "done",
+          "basis": "./20261011-C258-current-nft-transfer.md",
+          "id": "REL-02.4"
+        },
+        {
+          "title": "NFT隐藏/恢复、重载持久化及账户/代次隔离",
+          "status": "done",
+          "basis": "./20261011-C270-generation-isolation.md",
+          "id": "REL-02.5"
+        },
+        {
+          "title": "dApp连接/拒绝/取消/消息/只签名及一次实际执行",
+          "status": "done",
+          "basis": "./20261011-C259-current-dapp-execution.md",
+          "id": "REL-02.6"
+        },
+        {
+          "title": "设置、账户、应用入口及明确不支持状态",
+          "status": "done",
+          "basis": "./20261011-C243-readonly-pages.md",
+          "id": "REL-02.7"
+        },
+        {
+          "title": "实际质押、链上确认、收据与当前余额",
+          "status": "done",
+          "basis": "./20261011-C253-current-staking.md",
+          "id": "REL-02.8"
+        },
+        {
+          "title": "名称正向等完整真实业务流量",
+          "status": "done",
+          "basis": "./20261012-C279-name-completion.md",
+          "id": "REL-02.9"
+        },
+        {
+          "title": "NFT转移双方写后索引及页面刷新",
+          "status": "done",
+          "basis": "./20261011-C275-new-generation-browser.md",
+          "id": "REL-02.10"
+        },
+        {
+          "title": "新质押仓位入索引、赎回及余额/历史闭环",
+          "status": "done",
+          "basis": "./20261011-C276-staking-composite-read.md",
+          "id": "REL-02.11"
+        },
+        {
+          "title": "所有功能三入口流量覆盖、无旧RPC/错误公网访问汇总",
+          "status": "done",
+          "basis": "./20261012-C281-business-traffic-completion.md",
+          "id": "REL-02.12"
+        }
+      ],
+      "total": 12,
+      "completed": 12,
+      "remaining": 0
+    },
+    {
+      "id": "REL-05",
+      "title": "完整交付终验",
+      "items": [
+        {
+          "title": "14份合并主方案、原文保留及目录完整性盘点",
+          "status": "done",
+          "basis": "./20261011-C269-release-inventory.md",
+          "id": "REL-05.1"
+        },
+        {
+          "title": "21项旧RPC映射与106个当前RPC模块/安装产物一致性盘点",
+          "status": "done",
+          "basis": "./20261011-C269-release-inventory.md",
+          "id": "REL-05.2"
+        },
+        {
+          "title": "54个Route声明及98原项/A01–A22证据入口索引",
+          "status": "done",
+          "basis": "./20261011-C269-release-inventory.md",
+          "id": "REL-05.3"
+        },
+        {
+          "title": "逐文档内容与当前代码/官方依据的完整语义终验",
+          "status": "done",
+          "basis": "./20261012-C290-document-contract-completion.md",
+          "id": "REL-05.4"
+        },
+        {
+          "title": "逐RPC/页面实际证据、版本、例外和来源的完整追溯",
+          "status": "done",
+          "basis": "./20261012-C362-validator-selection-refresh.md",
+          "id": "REL-05.5"
+        },
+        {
+          "title": "A01–A22与98原项全部必需条件完整审核",
+          "status": "done",
+          "basis": "./20261012-C364-parent-contracts-complete.md",
+          "id": "REL-05.6"
+        },
+        {
+          "title": "最终构建/配置/运行范围、临时资源清理与交付说明一致性",
+          "status": "done",
+          "basis": "./20261012-C366-final-runtime.md",
+          "id": "REL-05.7"
+        },
+        {
+          "title": "全部必需项无未说明缺口、更新最终交付与100%状态",
+          "status": "done",
+          "basis": "./20261012-C367-complete-delivery.md",
+          "id": "REL-05.8"
+        }
+      ],
+      "total": 8,
+      "completed": 8,
+      "remaining": 0
+    }
+  ],
+  "totalPackages": 45,
+  "completedPackages": 45,
+  "openPackages": 0,
+  "remainingPackagePercent": 0.0,
+  "originalCompletedParents": 98,
+  "originalTotalParents": 98,
+  "parentCompletion": true,
+  "completionHistory": [
+    {
+      "at": "2026-10-11T16:07:49.445475+00:00",
+      "id": "QA-A15.3",
+      "summary": "C277 production resolver, native object/clock verification and ordinary Chrome HAR/UI accepted; remaining name UI/transaction work stays open."
+    },
+    {
+      "at": "2026-10-11T16:07:49.730056+00:00",
+      "id": "QA-A15.5",
+      "summary": "C277 production resolver, native object/clock verification and ordinary Chrome HAR/UI accepted; remaining name UI/transaction work stays open."
+    },
+    {
+      "at": "2026-10-11T16:15:29.847746+00:00",
+      "id": "QA-A15.8",
+      "summary": "C278 native UI final address, exact successful simulation/signature bytes and one confirmed name transfer at checkpoint 4594."
+    },
+    {
+      "at": "2026-10-11T16:16:02.097300+00:00",
+      "id": "QA-A15.4",
+      "summary": "C278 ordinary Chrome account list shows current default name separately from real address; explorer keeps full address."
+    },
+    {
+      "at": "2026-10-11T16:23:40.071140+00:00",
+      "id": "QA-A15.6",
+      "summary": "One renewal at 4614 and rename at 4699, stale-field rejection, current readers and real Chrome before/after accepted."
+    },
+    {
+      "at": "2026-10-11T16:33:02.710131+00:00",
+      "id": "QA-A15.7",
+      "summary": "C279 wrong-H0 preflight and wrong-registry ordinary Chrome rejection, original profile restoration and 269-frame audit accepted; no new execution."
+    },
+    {
+      "at": "2026-10-11T16:33:27.899300+00:00",
+      "id": "REL-02.9",
+      "summary": "Reuse the completed QA-A15 current G4 real name flow, original transaction, mutations, negative configuration and Chrome traces; no duplicate transaction."
+    },
+    {
+      "at": "2026-10-11T17:14:19.549268+00:00",
+      "id": "REL-02.12",
+      "summary": "25 ordinary Chrome HARs, 3918 unique frames, all four API surfaces, six original executions and explicit C278 source applicability independently audited; no new transaction."
+    },
+    {
+      "at": "2026-10-11T17:21:08.930465+00:00",
+      "id": "QA-A20.4",
+      "summary": "Current G4 all-off and same-container recovery completed; full SQL/HBase/Rocks/archive version inventories and original checkpoint hashes identical before and after."
+    },
+    {
+      "at": "2026-10-11T17:21:59.640980+00:00",
+      "id": "QA-A20.3",
+      "summary": "Current complete G4 retained-data cold startup and actual four-surface production reads accepted; 72 successful captured reads, unchanged two-account business results and progressing native query watermarks."
+    },
+    {
+      "at": "2026-10-11T17:21:59.860080+00:00",
+      "id": "QA-A20.5",
+      "summary": "Current complete G4 retained-data cold startup and actual four-surface production reads accepted; 72 successful captured reads, unchanged two-account business results and progressing native query watermarks."
+    },
+    {
+      "at": "2026-10-11T17:25:02.478661+00:00",
+      "id": "QA-A20.6",
+      "summary": "Ordinary C51 extension background/UI reload, same original four accounts and authorized unlock accepted; all three journal stores exactly match before full backend cold recovery, including original G3 pending."
+    },
+    {
+      "at": "2026-10-11T17:32:27.445932+00:00",
+      "id": "QA-A20.7",
+      "summary": "Complete current G4 cold data/API recovery and ordinary C51 core UI regression accepted; original journal/pending retained, 670 actual HAR requests with explicit exceptions and zero new transaction requests. Guard source defect fixed and deployed."
+    },
+    {
+      "at": "2026-10-11T18:33:41.564122+00:00",
+      "id": "REL-05.4",
+      "summary": "14 current document contracts reviewed, seven source bodies aligned, 618 local links valid, originals/edit chain and 649 prior source/evidence hashes verified; runtime and final release scopes stay open."
+    },
+    {
+      "at": "2026-10-12T00:22:48.837117+00:00",
+      "id": "QA-A17.4",
+      "summary": "C295 directly verified all 41 persisted SQL/HBase/Rocks watermarks equal final checkpoint 709569 under original G3; whole range replay complete."
+    },
+    {
+      "at": "2026-10-12T00:26:26.519719+00:00",
+      "id": "REL-05.5",
+      "summary": "C295 complete 21-method and 54-route version/evidence/exception traceability; C292 installed artifacts and actual unavailable route/back/home accepted."
+    },
+    {
+      "at": "2026-10-12T00:35:09.362900+00:00",
+      "id": "QA-A17.7",
+      "summary": "C296 current C292 Chrome actual same-URL G3/G4 four-role rejection and recovery accepted; original profile restored and temporary proxy stopped."
+    },
+    {
+      "at": "2026-10-12T02:08:30.637363+00:00",
+      "id": "QA-A17.10",
+      "summary": "C313 current C292 four actual delayed-read roles, current 105 lifecycle tests and applicable registry/cache/H0 evidence accepted; 26 HAR exceptions separately retained and temporary proxy cleaned."
+    },
+    {
+      "at": "2026-10-12T05:06:48.252031+00:00",
+      "id": "QA-A17.5",
+      "summary": "Complete SQL/HBase/Rocks and three-account comparison passed; primary bitmap source fix, 36-row/338-member conditional repair and full-prefix membership recheck passed."
+    },
+    {
+      "at": "2026-10-12T08:43:46.997997+00:00",
+      "id": "QA-A17.8",
+      "summary": "Actual independent same-H0 read backends, 89 production requests and 462 exact-byte browser/proxy requests accepted; original profile, accounts and pending retained; temporary route/proxy removed."
+    },
+    {
+      "id": "QA-A17.6",
+      "at": "2026-10-12T09:49:08.325327+00:00",
+      "summary": "Complete source/stage/replica versions, nine-container cold recovery, real HBase/PG WAL faults and all ten full persisted comparisons passed; historical body proofs explicitly reused."
+    },
+    {
+      "id": "QA-A17.9",
+      "at": "2026-10-12T09:52:07.687172+00:00",
+      "summary": "Full archive versions/bytes/replica, restored ledger guard, historical fence restart and 89 actual production reads across four surfaces passed; preserved query stores and independently admitted read-only backends."
+    },
+    {
+      "id": "REL-05.6",
+      "at": "2026-10-12T09:52:26.188490+00:00",
+      "summary": "Original 98 contracts and A01–A22 individually mapped and reviewed; all 97 underlying parents and their acceptance criteria passed. Final resource/runtime and publication packages remain separate."
+    },
+    {
+      "id": "REL-05.7",
+      "at": "2026-10-12T09:57:22.495555+00:00",
+      "summary": "Current C347 debug/source and C362 installed artifacts qualified; 13 temporary containers, 6 parent processes, 1 worker and 1 unused helper image retired, 8 volumes retained. G4 progressing, 76 business reads and ordinary C51 homepage/send passed after cleanup."
+    },
+    {
+      "id": "REL-05.8",
+      "at": "2026-10-12T09:57:23.198159+00:00",
+      "summary": "All original 98 contracts, complete lifecycle, current build/runtime/browser and scoped cleanup accepted; no required gap remains."
+    }
+  ]
+}

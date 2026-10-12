@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { useGetValidatorsApy, useGetValidatorsEvents } from "rtd-apps-core";
-import { useRtdClientQuery } from "rtd-dapp-kit";
-import { type RtdSystemStateSummary } from "rtd-typescript/client";
+import { useExplorerQuery } from "~/rpc/explorer-client";
+import type { RtdSystemStateSummary } from "rtd-typescript/jsonRpc";
 import { LoadingIndicator, Text } from "@linku/ui";
 import { useMemo } from "react";
 import { useParams } from "react-router-dom";
@@ -26,7 +26,7 @@ const getAtRiskRemainingEpochs = (
 
 function ValidatorDetails() {
 	const { id } = useParams();
-	const { data, isPending } = useRtdClientQuery("getLatestRtdSystemState");
+	const { data, isPending } = useExplorerQuery("getLatestRtdSystemState");
 
 	const validatorData = useMemo(() => {
 		if (!data) return null;

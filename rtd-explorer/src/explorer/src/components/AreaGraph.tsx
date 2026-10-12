@@ -121,7 +121,7 @@ export function AreaGraph<D>({
 	);
 	const [handleTooltipThrottled, setHandleTooltipThrottled] =
 		useState<ReturnType<typeof throttle>>();
-	const handleTooltipThrottledRef = useRef<ReturnType<typeof throttle>>();
+	const handleTooltipThrottledRef = useRef<ReturnType<typeof throttle> | undefined>(undefined);
 	useEffect(() => {
 		handleTooltipThrottledRef.current = throttle(100, handleTooltip);
 		setHandleTooltipThrottled(() => handleTooltipThrottledRef.current);

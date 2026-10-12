@@ -9,11 +9,10 @@ import {
 	type MessageValues,
 } from '_app/i18n';
 import { ToS_LINK } from '_src/shared/constants';
-import { useZodForm } from 'rtd-apps-core';
+import { useZodForm, z } from 'rtd-apps-core/src/hooks/useZodForm';
 import { useEffect, useMemo } from 'react';
 import { type SubmitHandler } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import { z } from 'zod';
 import zxcvbn from 'zxcvbn';
 
 import {

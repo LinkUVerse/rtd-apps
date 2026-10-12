@@ -1,12 +1,12 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { useRtdClientQuery } from 'rtd-dapp-kit';
+import { useExplorerSystemState } from '../rpc/ExplorerRpcContext';
 
 // Get time between current epoch and specified epoch
 // Get the period between the current epoch and next epoch
 export function useGetTimeBeforeEpochNumber(epoch: number) {
-	const data = useRtdClientQuery('getLatestRtdSystemState');
+	const data = useExplorerSystemState();
 	// Current epoch
 	const currentEpoch = Number(data.data?.epoch || 0);
 	const currentEpochStartTime = Number(data.data?.epochStartTimestampMs || 0);

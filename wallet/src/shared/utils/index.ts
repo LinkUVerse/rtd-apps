@@ -65,16 +65,7 @@ export function prepareLinkToCompare(link: string) {
 	return adjLink;
 }
 
-/**
- * Includes ? when query string is set
- */
-export function toSearchQueryString(searchParams: URLSearchParams) {
-	const searchQuery = searchParams.toString();
-	if (searchQuery) {
-		return `?${searchQuery}`;
-	}
-	return '';
-}
+export { toSearchQueryString } from './search-query';
 
 export function toUtf8OrB64(message: string | Uint8Array) {
 	const messageBytes = typeof message === 'string' ? fromBase64(message) : message;

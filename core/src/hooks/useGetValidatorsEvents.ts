@@ -1,7 +1,7 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
-import { useRtdClient } from 'rtd-dapp-kit';
-import { RtdEvent, type EventId } from 'rtd-typescript/client';
+import { useExplorerRpcClient as useRtdClient } from '../rpc/ExplorerRpcContext';
+import type { RtdEvent, EventId } from 'rtd-typescript/jsonRpc';
 import { useQuery } from '@tanstack/react-query';
 
 type GetValidatorsEvent = {

@@ -1,7 +1,7 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { useRtdClient, useRtdClientQuery } from 'rtd-dapp-kit';
+import { useExplorerRpcClient as useRtdClient, useExplorerSystemState } from '../rpc/ExplorerRpcContext';
 import { useQuery } from '@tanstack/react-query';
 
 import { roundFloat } from '../utils/roundFloat';
@@ -24,7 +24,7 @@ const MINIMUM_THRESHOLD = 0.001;
 
 export function useGetValidatorsApy() {
 	const client = useRtdClient();
-	const { data: systemStateResponse, isFetched } = useRtdClientQuery('getLatestRtdSystemState');
+	const { data: systemStateResponse, isFetched } = useExplorerSystemState();
 	return useQuery({
 		queryKey: ['get-rolling-average-apys'],
 		queryFn: () => client.getValidatorsApy(),

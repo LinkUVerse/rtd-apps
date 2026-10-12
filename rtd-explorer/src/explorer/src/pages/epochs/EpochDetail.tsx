@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { useFormatCoin } from "rtd-apps-core";
-import { useRtdClientQuery } from "rtd-dapp-kit";
+import { useExplorerQuery, useExplorerClientContext } from "~/rpc/explorer-client";
 import { RTD_TYPE_ARG } from "rtd-typescript/utils";
 import { LoadingIndicator } from "@linku/ui";
 import { useQuery } from "@tanstack/react-query";
@@ -40,14 +40,16 @@ function RtdStats({
 export default function EpochDetail() {
 	const { id } = useParams();
 	const enhancedRpc = useEnhancedRpcClient();
-	const { data: systemState } = useRtdClientQuery("getLatestRtdSystemState");
+	const {network} = useExplorerClientContext();
+	const { data: systemState } = useExplorerQuery("getLatestRtdSystemState");
 	const { data, isPending, isError } = useQuery({
-		queryKey: ["epoch", id],
-		queryFn: async () =>
+		queryKey: ["epoch", network, id],
+		queryFn: async ({signal}) =>
 			enhancedRpc.getEpochs({
 				// todo: endpoint returns no data for epoch 0
-				cursor: id === "0" ? undefined : (Number(id!) - 1).toString(),
+				cursor: id === "0" ? undefined : (BigInt(id!) - 1n).toString(),
 				limit: 1,
+				signal,
 			}),
 	});
 
@@ -86,7 +88,7 @@ export default function EpochDetail() {
 
 	// cursor should be the sequence number of the last checkpoint + 1  if we want to query with desc. order
 	const initialCursorPlusOne = epochData.endOfEpochInfo?.lastCheckpointId
-		? (Number(epochData.endOfEpochInfo?.lastCheckpointId) + 1).toString()
+		? (BigInt(epochData.endOfEpochInfo.lastCheckpointId) + 1n).toString()
 		: undefined;
 
 	return (

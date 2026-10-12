@@ -11,7 +11,7 @@ import {
 import { useAutoLockMinutesMutation } from '_src/ui/app/hooks/useAutoLockMinutesMutation';
 import { Button } from '_src/ui/app/shared/ButtonUI';
 import { Form } from '_src/ui/app/shared/forms/Form';
-import { useZodForm } from 'rtd-apps-core';
+import { useZodForm } from 'rtd-apps-core/src/hooks/useZodForm';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 

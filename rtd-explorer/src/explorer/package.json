@@ -1,4 +1,4 @@
-/Users/changzechuan/WenchuanProjects/linku-admin-ui/.codex/skills/ui-ux-pro-max{
+{
     "private": true,
     "name": "rtd-explorer",
     "scripts": {
@@ -22,7 +22,6 @@
         "@fontsource-variable/red-hat-mono": "^5.1.1",
         "@headlessui/react": "^2.2.4",
         "rtd-apps-core": "file:../../../core",
-        "rtd-dapp-kit": "file:../../../../rtd-ts-sdk/packages/dapp-kit",
         "rtd-apps-icons": "workspace:*",
         "rtd-typescript": "file:../../../../rtd-ts-sdk/packages/typescript",
         "@linku/ui": "workspace:*",
@@ -66,7 +65,8 @@
         "react-router-dom": "^6.29.0",
         "throttle-debounce": "^5.0.2",
         "topojson-client": "^3.1.0",
-        "zod": "^3.24.1"
+        "zod": "^3.24.1",
+        "rtd-dapp-kit-react": "file:../../../../rtd-ts-sdk/packages/dapp-kit/packages/dapp-kit-react"
     },
     "devDependencies": {
         "@babel/core": "^7.26.7",

@@ -1,7 +1,7 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import type { RtdObjectChange } from 'rtd-typescript/client';
+import type { RtdObjectChange } from 'rtd-typescript/jsonRpc';
 
 export const getOwnerType = (change: RtdObjectChange) => {
 	if (!('owner' in change)) return '';

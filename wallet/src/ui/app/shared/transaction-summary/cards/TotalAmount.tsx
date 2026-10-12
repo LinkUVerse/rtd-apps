@@ -3,7 +3,7 @@
 import { Heading } from '_src/ui/app/shared/heading';
 import { useI18n } from '_src/ui/app/i18n';
 import { Text } from '_src/ui/app/shared/text';
-import { useFormatCoin } from 'rtd-apps-core';
+import { useFormatCoin } from 'rtd-apps-core/src/rpc/coin';
 
 import { Card } from '../Card';
 

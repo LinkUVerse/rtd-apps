@@ -1,10 +1,11 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { useRtdClient } from "rtd-dapp-kit";
+import { useExplorerClient } from "~/rpc/explorer-client";
 import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
 
-import { RtdClient, type PaginatedTransactionResponse, type TransactionFilter } from "rtd-typescript/client";
+import { RtdJsonRpcClient as RtdClient } from "rtd-typescript/jsonRpc";
+import type { PaginatedTransactionResponse, TransactionFilter } from "rtd-typescript/jsonRpc";
 import { useNetworkContext } from "~/context";
 import { Network } from "~/utils/api/DefaultRpcClient";
 
@@ -18,16 +19,18 @@ export function useGetTransactionBlocks(
 	useAltRpc = false,
 ) {
 	const [network] = useNetworkContext();
+	const defaultClient = useExplorerClient();
 	const client =
-		 (useAltRpc && network === Network.MAINNET)  ? new RtdClient({ url: "https://mainnet.rtdet.app" })
-		: (useAltRpc && network === Network.TESTNET) ? new RtdClient({ url: "https://testnet.rtdet.app" })
-		: useRtdClient();
+		 (useAltRpc && network === Network.MAINNET)  ? new RtdClient({ network: "mainnet", url: "https://mainnet.rtdet.app" })
+		: (useAltRpc && network === Network.TESTNET) ? new RtdClient({ network: "testnet", url: "https://testnet.rtdet.app" })
+		: defaultClient;
 
 	return useInfiniteQuery<PaginatedTransactionResponse>({
-		queryKey: ["get-transaction-blocks", filter, limit],
-		queryFn: async ({ pageParam }) =>
+		queryKey: ["get-transaction-blocks", network, useAltRpc, filter, limit],
+		queryFn: async ({ pageParam, signal }) =>
 			await client.queryTransactionBlocks({
 				filter,
+				signal,
 				cursor: pageParam as string | null,
 				order: "descending",
 				limit,

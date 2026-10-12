@@ -1,7 +1,7 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { toSearchQueryString } from './utils';
+import { toSearchQueryString } from './utils/search-query';
 
 export type QredoAPIErrorResponse = {
 	code: string;
@@ -72,13 +72,6 @@ export type TransactionStatus =
 	| 'confirmed'
 	| 'mined'
 	| 'failed';
-
-export type PostTransactionParams = {
-	messageWithIntent: string;
-	broadcast: boolean;
-	network: NetworkType;
-	from: string;
-};
 
 export type TransactionInfoResponse = {
 	txID: string;
@@ -172,16 +165,6 @@ export class QredoAPI {
 			searchParams.append('address', filters.address);
 		}
 		return this.#request(`${this.baseURL}wallets${toSearchQueryString(searchParams)}`);
-	}
-
-	public createTransaction(params: PostTransactionParams): Promise<TransactionInfoResponse> {
-		return this.#request(`${this.baseURL}transactions`, {
-			method: 'post',
-			body: JSON.stringify(params),
-			headers: {
-				'Content-Type': 'application/json',
-			},
-		});
 	}
 
 	public getTransaction(transactionID: string): Promise<TransactionInfoResponse> {

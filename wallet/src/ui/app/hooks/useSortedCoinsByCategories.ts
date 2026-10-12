@@ -3,15 +3,19 @@
 
 import { usePinnedCoinTypes } from '_app/hooks/usePinnedCoinTypes';
 import { useRecognizedPackages } from '_app/hooks/useRecognizedPackages';
-import { type CoinBalance as CoinBalanceType } from 'rtd-typescript/client';
+import { type RtdClientTypes } from 'rtd-typescript/client';
 import { RTD_TYPE_ARG } from 'rtd-typescript/utils';
 import { useMemo } from 'react';
 
+type CoinBalanceType = RtdClientTypes.Balance;
+
 function sortCoins(balances: CoinBalanceType[]) {
-	return balances.sort((a, b) => {
+	return [...balances].sort((a, b) => {
+		if (a.coinType === b.coinType) return 0;
 		if (a.coinType === RTD_TYPE_ARG) {
 			return -1;
 		}
+		if (b.coinType === RTD_TYPE_ARG) return 1;
 
 		return a.coinType.toLowerCase().localeCompare(b.coinType.toLowerCase());
 	});

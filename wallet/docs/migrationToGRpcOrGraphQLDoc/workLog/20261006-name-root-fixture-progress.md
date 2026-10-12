@@ -1,0 +1,15 @@
+# 正式门禁名称根夹具进展
+
+后续终态：[完整认证C3／C4](./20261006-name-certified-release-design.md)已经通过1014820个checkpoint、五编译module原发布字节核验、六pin声明、profile5及隔离生产构建／全闭包审核。下文“尚无声明／待idle切换”是原发生阶段记录；原profile4与原失败日志保持，实际名称索引／Chrome正例与改名续期继续开放。
+
+保留原三模块名称字段夹具和它的两笔成功交易，新五模块版本补当前生产deployment-contract要求的固定共享根／RegistryKey／Registry布局。双方正式技术合同和钱包生产门禁均未放宽。
+
+[当前debug五模块构建](./20261006-name-root-build-01.json)完成；源账户原16笔、17笔实际尝试分别复核后，单次publish AdXHQ6Fc93N7UUo1QRjkDdobtsS2X1yGpinNrM7zyJVt／checkpoint1014819，单次seed3cu8yKG7MUpS8YZNeGDESf1g6WqBcbqYpxEvnU6AuhQG／checkpoint1015260。原durable pending／回执／摘要全部保留，恢复0签名／模拟／执行。
+
+package0xb1b27c379321e63a94e29e599eddaf496a8c95dc0b19d8337df52d56f191b235；共享SuiNS根0x517bc9b3e082bd4acfa910282de25b93698e91f6dd5f40a74b8feabaa7bdbe5c、initialSharedVersion3997070；受控AdminCap0x8275b417d1fe5d72bf9bb1a761da14c0ddec610e15f8770e2502c5d444116b92。Registry字段0xfaf452318288475d55db109e108c295214d7002edcc10f7fe9f03c9e79ba7e94，forward0xe2c601555dd2108ceb24540f84554b30c4905dfc1d75bcb8509b576add4f78e7，reverse0x26b0dcd0532ed1e27a0c81e6ab3f8f6c3d9951cb170697b8e9719bcaa21e6148。
+
+[实际ABI](./20261006-name-root-abi-01.json)通过nameMoveContract及nameRegistryMoveContract，10项字段名／ability／字段顺序变异被拒绝。[实际原BCS恢复](./20261006-name-root-seed-recovery-01.json)通过原签名与事务／effects、规范根UID／Shared／受控cap、113字节Registry字段、五正向／两反向／缺失、三NFT及Clock。verifyNameRegistryRoot／Field直接验证同链对象并拒绝另外10项UID／owner／version／type／key／长度／Table绑定错误。
+
+原profile4尚未添加name pins，只在验证器中构造临时候选配置；没有新trusted declaration，没有实际Chrome名称正例。新package认证需要[完整离线genesis锚定前缀](./20261006-name-certified-release-design.md)，随后才能组合静态声明、构建新profile及实际名称／目标地址／改名续期验收。原publisher pending907824／epoch1与六消费者继续保持，主debug优化候选仍待原监督器真实idle切换窗口。
+
+Fullnode物理故障前置只读probe01因正常移动的lowestCheckpoint238376→238412断言失败，原exit1日志保留：[实际失败](./20261006-physical-fullnode-before-01.log)。它已读到原三笔回执／余额，不是节点故障或停机成功；本批未向Fullnode发送任何停止信号。后续必须使用符合固定摘要点查范围的完整只读前置核验，不能把该失败改为通过。

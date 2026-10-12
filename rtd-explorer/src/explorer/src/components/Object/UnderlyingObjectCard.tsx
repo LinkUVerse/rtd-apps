@@ -1,13 +1,13 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { useRtdClientQuery } from "rtd-dapp-kit";
+import { useExplorerQuery } from "~/rpc/explorer-client";
 import { LoadingIndicator } from "@linku/ui";
 
 import { FieldItem } from "./FieldItem";
 import { Banner } from "~/ui/Banner";
 
-import type { DynamicFieldName } from "rtd-typescript/client";
+import type { DynamicFieldName } from "rtd-typescript/jsonRpc";
 
 type UnderlyingObjectCardProps = {
 	parentId: string;
@@ -20,7 +20,7 @@ export function UnderlyingObjectCard({
 	name,
 	dynamicFieldType,
 }: UnderlyingObjectCardProps) {
-	const { data, isPending, isError, isFetched } = useRtdClientQuery("getDynamicFieldObject", {
+	const { data, isPending, isError, isFetched } = useExplorerQuery("getDynamicFieldObject", {
 		parentId,
 		name,
 	});
@@ -36,7 +36,7 @@ export function UnderlyingObjectCard({
 		data: normalizedStruct,
 		isFetched: normalizedStructFetched,
 		isPending: loadingNormalizedStruct,
-	} = useRtdClientQuery("getNormalizedMoveStruct", {
+	} = useExplorerQuery("getNormalizedMoveStruct", {
 		package: packageId,
 		module: moduleName,
 		struct: functionName,

@@ -1,0 +1,15 @@
+# RPC-22：OriginByte内容与统一页面查询
+
+2026-10-03。在上一批双包绑定／发现基础上接通内容读取，未删除OriginByte分支。
+
+原生readNativeKiosks的框架Item／Listing／Lock和对象内容读取提取为readFrameworkKioskContents，仍核对item_count、包装动态字段ID与child owner、对象类型与BCS、锁和挂牌对应关系。原生cap授权发现保留在原入口，公共读取函数只解析存储，不提供OwnerCap权限。
+
+readOriginByteKiosks使用同S发现后核对固定v3扩展VersionDfKey、内嵌KioskOwnerCapDfKey、NftRefsDfKey及Table全部动态字段。要求cap指向当前Kiosk、Kiosk owner一致、扩展开启，登记数量等于Table.size，所有登记ID确实对应Item，无重复ID／auths，独占登记必须只有一个授权地址。未登记基础Item仍可展示，并明确标记originByteRegistered=false。OriginByte独占状态独立于框架Listing保留。
+
+源码核对发现Move空结构的BCS布局为编译器注入bool，值是false：rtd/external-crates/move/crates/move-compiler/src/to_bytecode/translate.rs的struct_fields与E::Pack空字段分支分别生成dummy_field和LdFalse。初版测试夹具误用true，已按源码修正，拒绝true并重跑测试；没有用夹具通过冒充部署ABI验证。
+
+WalletAssetReader.kiosks统一组合native与配置的OriginByte，末验S且拒绝重复Kiosk；core kiosk-hooks改用新接口。collectibleKioskCap现在也识别配置OriginByte的发现token用于页面分组／Kiosk链接；执行端仍不把它当原生cap。页面通过共用hook获得列表和预览。
+
+验证：3文件83项通过（OriginByte37、框架Kiosk16、NFT准备30），见20261003-originbyte-contents-tests.log；NFT hook与转移页另2文件15项通过，见20261003-originbyte-ui-tests.log。完整TypeScript通过，开发版Webpack通过，分别见20261003-originbyte-contents-typecheck.log、20261003-originbyte-contents-build.log。扩展登记测试使用真实SDK BCS和受控reader／共用读取边界，框架读取原有GraphQL响应测试回归通过；尚无新链真实OriginByte GraphQL证据。
+
+双方迁移矩阵已同步。RPC-22不勾选：p2p交易准备／执行、其他历史layout、RTD部署ABI、真实扩展与链验收尚未完成。当前NFT转移准备仍只处理原生cap，OriginByte尝试明确报错；下一步必须补齐此分支，不能把页面可读作为所有接口迁移完成。

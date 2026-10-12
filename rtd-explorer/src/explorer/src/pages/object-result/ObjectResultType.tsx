@@ -1,9 +1,10 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
+import { explorerDisplayStrings } from "rtd-apps-core/src/utils/explorer-kiosk";
 import { parseObjectType } from "../../utils/objectUtils";
 
-import type { RtdObjectResponse, ObjectOwner } from "rtd-typescript/client";
+import type { RtdObjectResponse, ObjectOwner, DisplayFieldsResponse } from "rtd-typescript/jsonRpc";
 
 export type DataType = {
 	id: string;
@@ -23,6 +24,8 @@ export type DataType = {
 	};
 	loadState?: string;
 	display?: Record<string, string>;
+	/** Full SDK metadata, including structured values and partial errors. */
+	rawDisplay?: DisplayFieldsResponse | null;
 };
 
 /**
@@ -44,7 +47,8 @@ export function translate(o: RtdObjectResponse): DataType {
 						: o.data.content!.disassembled,
 				tx_digest: o.data.previousTransaction,
 			},
-			display: o.data.display?.data || undefined,
+			display: explorerDisplayStrings(o) ?? undefined,
+			rawDisplay: o.data.display,
 		};
 	} else {
 		throw new Error(`${o.error}`);

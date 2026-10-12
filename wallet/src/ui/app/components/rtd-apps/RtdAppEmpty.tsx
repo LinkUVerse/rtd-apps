@@ -1,40 +1,43 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { cva, type VariantProps } from 'class-variance-authority';
+import { cva, type VariantProps } from "class-variance-authority";
+import { useI18n } from "_app/i18n";
 
-const appEmptyStyle = cva(['flex gap-3 p-3.75 h-28'], {
-	variants: {
-		displayType: {
-			full: 'w-full',
-			card: 'bg-white flex flex-col p-3.75 box-border w-full rounded-2xl h-32 box-border w-full rounded-2xl border border-solid border-gray-40',
-		},
-	},
-	defaultVariants: {
-		displayType: 'full',
-	},
-});
+const appEmptyStyle = cva(
+  ["flex flex-col justify-center gap-2 p-3.75 text-center"],
+  {
+    variants: {
+      displayType: {
+        full: "w-full min-h-28",
+        card: "bg-white box-border w-full rounded-2xl min-h-32 border border-solid border-gray-40",
+      },
+    },
+    defaultVariants: {
+      displayType: "full",
+    },
+  },
+);
 
-export interface RtdAppEmptyProps extends VariantProps<typeof appEmptyStyle> {}
+export interface RtdAppEmptyProps extends VariantProps<typeof appEmptyStyle> {
+  kind: "catalog" | "connections";
+}
 
-export function RtdAppEmpty({ ...styleProps }: RtdAppEmptyProps) {
-	return (
-		<div className={appEmptyStyle(styleProps)}>
-			<div className="bg-gray-40 w-10 h-10 rounded-full"></div>
-			<div className="flex flex-col gap-2.5 flex-1">
-				{styleProps.displayType === 'full' ? (
-					<>
-						<div className="bg-gray-40 rounded h-3.5 w-2/5"></div>
-						<div className="bg-gray-40 rounded h-3.5 w-full"></div>
-						<div className="bg-gray-40 rounded h-3.5 w-1/4"></div>
-					</>
-				) : (
-					<div className="flex gap-2">
-						<div className="bg-gray-40 rounded h-3.5 w-1/4"></div>
-						<div className="bg-gray-40 rounded h-3.5 w-3/5"></div>
-					</div>
-				)}
-			</div>
-		</div>
-	);
+export function RtdAppEmpty({ kind, ...styleProps }: RtdAppEmptyProps) {
+  const { t } = useI18n();
+  const connected = kind === "connections";
+  return (
+    <div className={appEmptyStyle(styleProps)} role="status" aria-live="polite">
+      <p className="m-0 text-pBody font-semibold text-gray-90">
+        {t(connected ? "apps.noConnections" : "apps.noApps")}
+      </p>
+      <p className="m-0 text-pBodySmall text-gray-75">
+        {t(
+          connected
+            ? "apps.noConnectionsDescription"
+            : "apps.noAppsDescription",
+        )}
+      </p>
+    </div>
+  );
 }

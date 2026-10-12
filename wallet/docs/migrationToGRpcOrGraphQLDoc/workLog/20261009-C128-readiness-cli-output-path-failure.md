@@ -1,0 +1,1 @@
+C128 readiness第一次03调用把输出路径拼写成 migrationToGRpcOrGraphQLQLDoc。只读探测在首次durable_record时因目录不存在失败；失败输出也无法写入，未创建错误目录。保留本记录，不计通过；随后使用正确路径另行执行。原链/索引/发布者未发信号，0业务签名/Execute。

@@ -1,7 +1,7 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { type RtdTransaction } from "rtd-typescript/client";
+import type { RtdTransaction } from "rtd-typescript/jsonRpc";
 
 import { Transaction } from "./Transaction";
 import { ProgrammableTxnBlockCard } from "~/components/transactions/ProgTxnBlockCard";

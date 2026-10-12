@@ -1,0 +1,9 @@
+# C134独立3nano live案例实施前合同
+
+03已经正常批准2nano sign-only，真实signData调用一次并保持返回，Coin竞争拒绝已观察；第二dApp等待新page超时，两个质押竞争和正面预览尚未执行。03失败原件及其已批准请求不重跑、不重签、不重发，签名未用于广播。01/02均在批准前失败，仍保留。
+
+04使用另一个独立受控profile、新鲜Coin引用和3nano自转sign-only，摘要必须不同于03和C133自然pending。新增案例不是重复批准03；依旧只持有一个实际原签名返回，0Execute且31秒真实期限之后才释放，保持当前C131产品源码和所有原归属合同。四竞争和释放后的规范预览、正常退出及独立审核沿用原P134合同。
+
+测试fixture的run在connect期间设置busy，但账户可由standard events提前显示。03没有保存第二demo的busy/error/result，因而尚不能确认该竞态是本次超时根因。04在点击Request前明确等到Connect返回结果的accounts字段，失败时保存公开result/error/input及当前page列表；不注入fixture状态、不替换响应、不新增授权重试。原未批准首次preview的明确busy只允许原05约束内正常reload一次，绝不重试已批准请求。
+
+失败清理也记录真实31秒后原结果错误/未交付、原signer恢复及实际原生锁空闲、三journal/密文和C133关闭profile保持；记录不到的事实不算通过。所有变更全源逆变换，准备不记业务验收。NFT专项、普通Chrome/TLS权限和完整M5继续保持未通过。

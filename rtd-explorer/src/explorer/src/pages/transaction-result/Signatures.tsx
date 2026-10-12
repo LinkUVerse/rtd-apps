@@ -1,14 +1,14 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { type RtdTransactionBlockResponse } from "rtd-typescript/client";
+import type { RtdTransactionBlockResponse } from "rtd-typescript/jsonRpc";
 import {
 	parseSerializedSignature,
 	type SignatureScheme,
 	type PublicKey,
 } from "rtd-typescript/cryptography";
 import { parsePartialSignatures } from "rtd-typescript/multisig";
-import { toB64, normalizeRtdAddress } from "rtd-typescript/utils";
+import { toBase64, normalizeRtdAddress } from "rtd-typescript/utils";
 import { publicKeyFromRawBytes } from "rtd-typescript/verify";
 import { Text } from "@linku/ui";
 
@@ -52,7 +52,7 @@ function SignaturePanel({
 				) : null}
 				<DescriptionItem title="Signature" align="start" labelWidth="sm">
 					<Text variant="pBody/medium" color="steel-darker">
-						{toB64(signature)}
+						{toBase64(signature)}
 					</Text>
 				</DescriptionItem>
 			</DescriptionList>

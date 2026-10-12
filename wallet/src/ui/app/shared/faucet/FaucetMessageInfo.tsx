@@ -3,12 +3,12 @@
 
 import { GAS_TYPE_ARG } from '_redux/slices/rtd-objects/Coin';
 import { useI18n } from '_app/i18n';
-import { useFormatCoin } from 'rtd-apps-core';
+import { useFormatCoin } from 'rtd-apps-core/src/rpc/coin';
 
 export type FaucetMessageInfoProps = {
 	error?: string | null;
 	loading?: boolean;
-	totalReceived?: number | null;
+	totalReceived?: bigint | null;
 };
 
 function FaucetMessageInfo({
@@ -24,7 +24,7 @@ function FaucetMessageInfo({
 	if (error) {
 		return <>{error}</>;
 	}
-	const amount = `${totalReceived ? `${coinsReceivedFormatted} ` : ''}${coinsReceivedSymbol}`;
+	const amount = `${totalReceived !== null ? `${coinsReceivedFormatted} ` : ''}${coinsReceivedSymbol}`;
 	return <>{t('faucet.received', { amount })}</>;
 }
 

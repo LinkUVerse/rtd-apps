@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Text } from '_app/shared/text';
-import { useFormatCoin } from 'rtd-apps-core';
+import { useFormatCoin } from 'rtd-apps-core/src/rpc/coin';
 import { RTD_TYPE_ARG } from 'rtd-typescript/utils';
 
 //TODO create variant for different use cases like heading4, subtitle, bodySmall and different symbols color

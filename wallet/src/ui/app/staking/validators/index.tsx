@@ -1,64 +1,63 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
+import { walletReadErrorMessage } from "_src/shared/rpc/read-error";
 
-import Alert from '_components/alert';
-import Loading from '_components/loading';
-import Overlay from '_components/overlay';
-import { useI18n } from '_app/i18n';
-import {
-	DELEGATED_STAKES_QUERY_REFETCH_INTERVAL,
-	DELEGATED_STAKES_QUERY_STALE_TIME,
-} from '_src/shared/constants';
-import { useGetDelegatedStake } from 'rtd-apps-core';
-import { useNavigate } from 'react-router-dom';
+import Alert from "_components/alert";
+import Loading from "_components/loading";
+import Overlay from "_components/overlay";
+import { useI18n } from "_app/i18n";
+import { useStakingView } from "rtd-apps-core/src/rpc/staking-hooks";
+import { useNavigate } from "react-router-dom";
 
-import { useActiveAddress } from '../../hooks/useActiveAddress';
-import { SelectValidatorCard } from './SelectValidatorCard';
-import { ValidatorsCard } from './ValidatorsCard';
+import { useActiveAddress } from "../../hooks/useActiveAddress";
+import { SelectValidatorCard } from "./SelectValidatorCard";
+import { ValidatorsCard } from "./ValidatorsCard";
 
 export function Validators() {
-	const { t } = useI18n();
-	const accountAddress = useActiveAddress();
-	const {
-		data: stakedValidators,
-		isPending,
-		isError,
-		error,
-	} = useGetDelegatedStake({
-		address: accountAddress || '',
-		staleTime: DELEGATED_STAKES_QUERY_STALE_TIME,
-		refetchInterval: DELEGATED_STAKES_QUERY_REFETCH_INTERVAL,
-	});
+  const { t } = useI18n();
+  const accountAddress = useActiveAddress();
+  const {
+    data: stakedValidators,
+    snapshot,
+    isPending,
+    isError,
+    error,
+  } = useStakingView(accountAddress, { enabled: !!accountAddress });
 
-	const navigate = useNavigate();
+  const navigate = useNavigate();
 
-	const pageTitle = stakedValidators?.length
-		? t('staking.stakeAndEarnTitle')
-		: t('staking.selectValidatorTitle');
+  const pageTitle = stakedValidators?.positions?.length
+    ? t("staking.stakeAndEarnTitle")
+    : t("staking.selectValidatorTitle");
 
-	return (
-		<Overlay
-			showModal
-			title={isPending ? t('common.loading') : pageTitle}
-			closeOverlay={() => navigate('/')}
-		>
-			<div className="w-full h-full flex flex-col flex-nowrap">
-				<Loading loading={isPending}>
-					{isError ? (
-						<div className="mb-2">
-							<Alert>
-								<strong>{error?.message}</strong>
-							</Alert>
-						</div>
-					) : null}
+  return (
+    <Overlay
+      showModal
+      title={isPending ? t("common.loading") : pageTitle}
+      closeOverlay={() => navigate("/")}
+    >
+      <div className="w-full h-full flex flex-col flex-nowrap">
+        <Loading loading={isPending}>
+          {isError ? (
+            <div className="mb-2">
+              <Alert>
+                <strong>{walletReadErrorMessage(error)}</strong>
+              </Alert>
+            </div>
+          ) : null}
 
-					{stakedValidators?.length ? (
-						<ValidatorsCard />
-					) : (
-						<SelectValidatorCard />
-					)}
-				</Loading>
-			</div>
-		</Overlay>
-	);
+          {!isError && stakedValidators ? (
+            stakedValidators.positions?.length ? (
+              <ValidatorsCard />
+            ) : (
+              <SelectValidatorCard
+                view={stakedValidators}
+                snapshotKey={snapshot?.cacheKey}
+              />
+            )
+          ) : null}
+        </Loading>
+      </div>
+    </Overlay>
+  );
 }

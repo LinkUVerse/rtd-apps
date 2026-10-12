@@ -1,0 +1,77 @@
+// Actual C26/profile5 UI locale, four themes, settings links and retained locked browser restart; readonly chain.
+const fs=require('node:fs'),path=require('node:path'),os=require('node:os'),crypto=require('node:crypto'),assert=require('node:assert/strict');
+const{chromium,expect}=require('@playwright/test'),{Ed25519Keypair}=require('rtd-typescript/keypairs/ed25519'),{GrpcTypes}=require('rtd-typescript/grpc');
+const{RTD_TYPE_ARG,normalizeStructTag}=require('rtd-typescript/utils');
+(async()=>{
+const[output,fixture]=process.argv.slice(2),wallet=path.resolve(__dirname,'..'),rt=path.join(os.homedir(),'.local/state/rtd-wallet-migration/dev-20261003-01'),log=path.join(wallet,'migrationToGRpcOrGraphQLDoc/workLog');
+assert(path.dirname(path.resolve(fixture))===rt&&path.basename(fixture).startsWith('current-local-settings-readonly-')&&!fs.existsSync(fixture)&&!fs.existsSync(output));fs.mkdirSync(fixture,{mode:0o700});
+const read=f=>JSON.parse(fs.readFileSync(f)),sha=f=>crypto.createHash('sha256').update(fs.readFileSync(f)).digest('hex');
+const buildFile=path.join(log,'20261006-name-production-build-01.json'),tokenFile=path.join(rt,'token-mixed-funding-01/fixture.json'),metadataFile=path.join(log,'20261006-RPC-04-loopback-token-read-01.json');
+const build=read(buildFile),token=read(tokenFile),prior=read(metadataFile),key=Ed25519Keypair.fromSecretKey(read(path.join(rt,'address-funding-fixture-01/keys.json')).source),password=crypto.randomBytes(32).toString('base64url');
+assert.equal(key.toRtdAddress(),token.sender);assert.equal(prior.metadata.decimals,6);assert.equal(prior.metadata.symbol,'WMIG');assert(build.passed);for(const[f,h]of Object.entries(build.artifacts))assert.equal(sha(path.join(build.output,f)),h);
+let context,page,worker,stage='launch',proof={},secretStage=false;const checks=[],traffic=[],simulations=[],responseJobs=[],graphql=[],errors=[],forbidden=[];
+const check=(label,value)=>{assert(value,label);checks.push({label,passed:true})};
+try{
+context=await chromium.launchPersistentContext(path.join(fixture,'profile'),{executablePath:path.join(os.homedir(),'Library/Caches/ms-playwright/chromium-1243/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing'),headless:true,args:[`--disable-extensions-except=${build.output}`,`--load-extension=${build.output}`]});
+context.on('request',r=>{const u=new URL(r.url());if(['http:','https:'].includes(u.protocol))traffic.push({url:u.href,method:r.method()})});
+await context.route('**/*',route=>{const r=route.request(),u=new URL(r.url());if(['http:','https:'].includes(u.protocol)&&(!['127.0.0.1','localhost'].includes(u.hostname)||/\/(ExecuteTransaction|SimulateTransaction)$/.test(u.pathname)||String(r.postData()).includes('"jsonrpc"'))){forbidden.push({url:u.href,method:r.method()});return route.abort()}return route.continue()});
+context.on('response',r=>{if(r.url().endsWith('/SimulateTransaction'))responseJobs.push((async()=>{const req=r.request().postDataBuffer(),res=await r.body();const decode=(b,t)=>{assert.equal(b[0],0);const len=b.readUInt32BE(1);return t.fromBinary(b.subarray(5,5+len))};const request=decode(req,GrpcTypes.SimulateTransactionRequest),response=decode(res,GrpcTypes.SimulateTransactionResponse);simulations.push({status:r.status(),request:GrpcTypes.SimulateTransactionRequest.toJson(request),response:GrpcTypes.SimulateTransactionResponse.toJson(response),requestBase64:req.toString('base64'),responseBase64:res.toString('base64')});})().catch(e=>errors.push({stage:'simulation capture',message:String(e.message).slice(0,300)})));else if(r.url().endsWith('/graphql'))responseJobs.push((async()=>{const d=await r.json();if(d.data?.walletSnapshot)graphql.push({status:r.status(),query:r.request().postData(),data:d.data.walletSnapshot})})().catch(()=>{}))});
+worker=context.serviceWorkers()[0]||await context.waitForEvent('serviceworker');const loaded=await require('./lib/current-extension-worker.cjs').ensure(context,worker,build.output);worker=loaded.worker;proof.workerSource=loaded.evidence.after??loaded.evidence.before;check('worker current bytes',proof.workerSource.workerSha256===build.artifacts['background.js']);proof.extensionId=new URL(worker.url()).host;
+page=await context.newPage();const base=new URL('ui.html',worker.url()).href;proof.uiSource=await require('./lib/current-extension-ui-source.cjs').inspect(context,page,build.output,Object.keys(build.artifacts).filter(f=>f.endsWith('.js')&&!['background.js','content-script.js','dapp-interface.js','egress-gate.js'].includes(f)),{url:base,navigate:async()=>{await page.goto(base);await page.locator('a[href*="add-account"]').first().waitFor()}});
+const command=(method,args)=>page.evaluate(({method,args})=>new Promise((resolve,reject)=>{const port=chrome.runtime.connect({name:'rtd_ui<->background'}),id=crypto.randomUUID(),timer=setTimeout(()=>{port.disconnect();reject(new Error('account command timeout'))},20000);port.onMessage.addListener(m=>{if(m?.kind==='rtd-ui-source-challenge'){port.postMessage({kind:'rtd-ui-source-confirm',nonce:m.nonce});return}if(m.id===id){clearTimeout(timer);port.disconnect();resolve(m.payload)}});port.postMessage({id,payload:method==='@setNetwork'?{type:'set-network',network:args}:{type:'method-payload',method,args}})}),{method,args});
+stage='actual private key import and protection';secretStage=true;await page.goto(base+'#/accounts/import-private-key');await page.locator('[name="privateKey"]').fill(key.getSecretKey());await page.locator('[name="privateKey"]').blur();await expect(page.locator('button[type="submit"]')).toBeEnabled();await page.locator('button[type="submit"]').click();await page.waitForURL(/protect-account/);await page.locator('[name="password.input"]').fill(password);await page.locator('[name="password.confirmation"]').fill(password);await page.locator('#acceptedTos').click();await expect(page.locator('button[type="submit"]')).toBeEnabled();await page.locator('button[type="submit"]').click();await page.waitForURL(/#\/tokens/, {timeout:45000});secretStage=false;
+const accounts=(await command('getStoredEntities',{type:'accounts'})).args.entities;check('actual UI import address',accounts.length===1&&accounts[0].address===token.sender&&!accounts[0].isLocked);check('actual local selection',(await command('@setNetwork',{env:'local',customRpcUrl:null})).type==='done');await page.goto(base+'#/tokens');stage='actual token list metadata';await expect(page.getByText('Wallet mig…',{exact:true})).toBeVisible({timeout:60000});check('actual shortened metadata name and precise balance rendered',true);
+proof.tokenListText=(await page.locator('body').innerText()).slice(0,3500);proof.owner=token.sender;proof.recipient=token.target;proof.coinType=token.coinType;
+
+
+stage='actual locale settings';
+await page.goto(base+'#/tokens?menu=%2Flanguage');
+const locale=page.locator('.settings-panel').getByRole('radio');await expect(locale).toHaveCount(2);await locale.nth(0).click();
+await expect(page.locator('html')).toHaveAttribute('lang','en');await expect(page.getByRole('radiogroup',{name:'Language'})).toBeVisible();
+check('actual English selection changes localized menu and html',true);
+await page.reload();await expect(page.locator('html')).toHaveAttribute('lang','en');check('locale survives real document reload',true);
+stage='actual four theme settings';await page.goto(base+'#/tokens?menu=%2Ftheme');
+const themes=['passion','calm','professional','red-thread'],themeRows=[];
+for(let index=0;index<themes.length;index++){
+ const radio=page.locator('.settings-panel').getByRole('radio').nth(index);await radio.click();await expect(radio).toHaveAttribute('aria-checked','true');
+ await expect(page.locator('html')).toHaveAttribute('data-rtd-theme',themes[index]);
+ const state=await page.evaluate(()=>({theme:document.documentElement.dataset.rtdTheme,colorScheme:document.documentElement.style.colorScheme,stored:localStorage.getItem('rtd-wallet.theme')}));
+ assert.equal(state.theme,themes[index]);assert.equal(state.stored,themes[index]);assert.equal(state.colorScheme,index>=2?'dark':'light');themeRows.push(state);check('actual theme option '+themes[index],true);
+}
+await page.reload();await expect(page.locator('html')).toHaveAttribute('data-rtd-theme','red-thread');check('theme survives real document reload',true);
+stage='actual settings and links';await page.goto(base+'#/tokens?menu=%2F');
+await expect(page.getByText('Wallet Settings',{exact:true})).toBeVisible();
+const menuLinks=[];for(const label of ['Network','Auto-lock Accounts','Theme','Language','More options','FAQ','Support','Terms of service']){
+ const link=page.getByRole('link',{name:new RegExp('^'+label)});await expect(link).toBeVisible();const href=await link.getAttribute('href');assert(href);menuLinks.push({label,href});
+}
+check('all eight settings links remain visible with destinations',true);
+await page.keyboard.press('Escape');await expect(page.getByText('Wallet Settings',{exact:true})).toHaveCount(0);check('Escape closes actual settings panel',true);
+stage='actual relock and retained Chrome restart';await page.goto(base+'#/tokens');
+await expect(page.getByTestId('lock-account-button')).toBeVisible();await page.getByTestId('lock-account-button').click();
+await expect.poll(async()=>(await command('getStoredEntities',{type:'accounts'})).args.entities[0].isLocked).toBe(true);
+check('actual UI locks imported controlled account',true);
+const oldWorkerUrl=worker.url();await context.close();context=null;
+context=await chromium.launchPersistentContext(path.join(fixture,'profile'),{executablePath:path.join(os.homedir(),'Library/Caches/ms-playwright/chromium-1243/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing'),headless:true,args:[`--disable-extensions-except=${build.output}`,`--load-extension=${build.output}`]});
+context.on('request',r=>{const u=new URL(r.url());if(['http:','https:'].includes(u.protocol))traffic.push({url:u.href,method:r.method(),restarted:true})});
+await context.route('**/*',route=>{const r=route.request(),u=new URL(r.url());if(['http:','https:'].includes(u.protocol)&&(!['127.0.0.1','localhost'].includes(u.hostname)||/\/(ExecuteTransaction|SimulateTransaction)$/.test(u.pathname)||String(r.postData()).includes('"jsonrpc"'))){forbidden.push({url:u.href,method:r.method()});return route.abort()}return route.continue()});
+worker=context.serviceWorkers()[0]||await context.waitForEvent('serviceworker');assert.equal(worker.url(),oldWorkerUrl);
+const restarted=await require('./lib/current-extension-worker.cjs').ensure(context,worker,build.output);worker=restarted.worker;
+proof.restartedWorkerSource=restarted.evidence.after??restarted.evidence.before;
+page=await context.newPage();await page.goto(base+'#/tokens');
+await expect(page.getByTestId('unlock-account-button')).toBeVisible({timeout:30000});
+const retained=(await command('getStoredEntities',{type:'accounts'})).args.entities;assert.equal(retained.length,1);assert.equal(retained[0].address,token.sender);assert(retained[0].isLocked);
+check('normal browser restart retains same account locked',true);
+await expect(page.locator('html')).toHaveAttribute('lang','en');await expect(page.locator('html')).toHaveAttribute('data-rtd-theme','red-thread');
+check('normal browser restart retains locale and theme',true);
+check('restarted worker exact current bytes',proof.restartedWorkerSource.workerSha256===build.artifacts['background.js']);
+stage='actual Chinese restoration';await page.goto(base+'#/tokens?menu=%2Flanguage');await page.locator('.settings-panel').getByRole('radio').nth(1).click();await expect(page.locator('html')).toHaveAttribute('lang','zh-CN');
+check('actual Chinese selection restores locale',true);
+await Promise.all(responseJobs);
+check('zero simulation signing Execute or external requests',simulations.length===0&&errors.length===0&&forbidden.length===0&&traffic.every(r=>new URL(r.url).hostname==='127.0.0.1'&&!/\/(ExecuteTransaction|SimulateTransaction)$/.test(new URL(r.url).pathname)));
+for(const[f,h]of Object.entries(build.artifacts))assert.equal(sha(path.join(build.output,f)),h);
+proof={...proof,passed:true,observedAt:new Date().toISOString(),fixture,checks,themeRows,menuLinks,retainedAccountAddress:retained[0].address,retainedAccountLocked:true,normalBrowserRestart:true,simulations,graphql,traffic,errors,forbidden,
+ signatures:0,executeRequests:0,certificateChanges:0,originalProfilesOpened:0,normalChromeHttpsAccepted:false,source:build.sourceAfter,
+ inputsSha256:Object.fromEntries([__filename,buildFile,tokenFile,metadataFile,path.join(wallet,'scripts/lib/current-extension-worker.cjs'),path.join(wallet,'scripts/lib/current-extension-ui-source.cjs')].map(f=>[f,sha(f)])),
+ scope:'Actual C26/profile5 controlled-account locale/4 themes/settings destinations/Escape/UI lock and retained normal browser restart. Chain readonly; no simulation, signatures, Execute, original profile edits or certificate exception. No NFT hiding, external destination navigation, full QA-A22 or normal HTTPS acceptance.'};
+}catch(e){proof={...proof,passed:false,stage,errorType:e.name,message:secretStage?'Private import/protection UI stage failed; secret diagnostic redacted':String(e.message).slice(0,1000),fixture,checks,simulations,traffic,errors,forbidden,signatures:0,executeRequests:0};if(page&&!secretStage)proof.publicDiagnostic={route:new URL(page.url()).hash,text:(await page.locator('body').innerText().catch(()=>'' )).slice(0,4000)};process.exitCode=1}finally{if(context)await context.close();await Promise.all(responseJobs);fs.writeFileSync(output,JSON.stringify(proof,null,2)+'\n',{flag:'wx',mode:0o600});console.log(JSON.stringify({passed:proof.passed,stage:proof.stage,checks:checks.length,simulations:simulations.length,executeRequests:0}))}
+})().catch(e=>{console.error(String(e.message).slice(0,400));process.exitCode=1});

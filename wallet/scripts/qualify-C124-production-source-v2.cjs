@@ -1,0 +1,21 @@
+// Actual unit/type/build/map evidence only. No browser completion claim.
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+const {sha,read}=require('./qualify-C124-product-delta.cjs'),lineage=require('./lib/C124-product-source-lineage-v2.cjs');
+const wallet=path.resolve(__dirname,'..'),logs=path.join(wallet,'migrationToGRpcOrGraphQLDoc/workLog');
+const [output]=process.argv.slice(2);assert(output&&!fs.existsSync(output));let result;
+try{
+ const input=[__filename,path.join(__dirname,'lib/C124-product-source-lineage-v2.cjs')],load=n=>{const f=path.join(logs,n);input.push(f);return read(f)};
+ const delta=load('20261009-C124-product-delta-prepared-01.json'),typed=load('20261009-C124-typecheck-regression-01.json'),closure=load('20261009-default-generation-positive-C124-closure-01.json');
+ assert(delta.passed&&typed.passed&&closure.passed);assert.equal(typed.regressionTests,282);assert.equal(typed.regressionFiles,14);assert.equal(typed.newC124ActualSdkCases,9);assert(typed.checks.every(c=>c.processExitCode===0&&!c.diagnostics.length));assert.deepEqual(typed.source,delta.currentSource);assert.deepEqual(closure.source,delta.currentSource);
+ const buildFile=path.join(logs,'20261009-default-generation-positive-C124-build-01.json');input.push(buildFile);const build=read(buildFile);assert(build.passed&&build.reviewedRelease.inputsUnchanged&&build.compiledProfile.passed);
+ const producer=path.join(wallet,'src/shared/rpc/transaction-move-admission.ts'),source=fs.readFileSync(producer,'utf8');let maps=0;const mapProof=[];
+ for(const f of Object.keys(build.artifacts).filter(f=>f.endsWith('.js.map'))){const p=path.join(build.output,f),m=read(p);for(let i=0;i<m.sources.length;i++)if(m.sources[i].endsWith('/shared/rpc/transaction-move-admission.ts')){assert.equal(m.sourcesContent[i],source);maps++;mapProof.push({map:f,source:m.sources[i],sha256:sha(p)});}}
+ assert.equal(maps,1);input.push(producer);for(const p of [delta,typed,closure])for(const[f,h]of Object.entries(p.inputsSha256)){assert.equal(sha(f),h);input.push(f)}
+ const previousQualificationFile=path.join(logs,'20261008-C109-production-source-independent-01.json');input.push(previousQualificationFile);
+ for(const name of ['20261007-default-generation-positive-C46-build-03.json','20261008-default-generation-positive-C102-build-03.json','20261008-default-generation-positive-C109-build-01.json']){const b=load(name);assert(b.passed);for(const[f,h]of Object.entries(b.artifacts))assert.equal(sha(path.join(b.output,f)),h)}
+ const proof={...delta,buildFile,previousQualificationFile,fullProductionTypecheck:true,emittedProductionClosure:true,isolatedProductionBuild:true,originalC46C102C109BuildsHeld:true,regressionTests:282,currentProductMapsVerified:maps,mapProof,inputsSha256:Object.fromEntries([...new Set(input)].map(f=>[f,sha(f)]))};assert.deepEqual(lineage.validateWithProof(proof,delta.originalSource,buildFile),delta.currentSource);
+ let negatives=0;for(const mutate of [p=>p.passed=false,p=>p.changed.push('unknown'),p=>p.added.push('unknown'),p=>p.deleted.push('unknown'),p=>p.currentSource.sha256='0'.repeat(64),p=>p.originalSource.sha256='0'.repeat(64),p=>p.maximumReadonlyProbeAttempts=3,p=>p.signOrExecuteRetries=1,p=>p.originalTicketAndTotalDeadlineHeld=false,p=>p.allOriginalTestCasesHeld=false,p=>p.currentProductMapsVerified=0]){const bad=structuredClone(proof);mutate(bad);assert.throws(()=>lineage.validateWithProof(bad,delta.originalSource,buildFile));negatives++}
+ assert.throws(()=>lineage.validateWithProof(proof,delta.originalSource,path.join(logs,'another-build.json')));negatives++;const old=read(previousQualificationFile);assert.throws(()=>require('./lib/C109-product-source-lineage.cjs').validate(old.originalSource,old.buildFile));negatives++;
+ result={...proof,observedAt:new Date().toISOString(),sourceLineageRejectChecks:negatives,oldC109SourceGuardRejectsNewSource:true,signatures:0,executeRequests:0,currentCoreBrowserAccepted:false,parentAcceptance:false};
+}catch(e){result={passed:false,errorType:e.name,message:String(e.message).slice(0,2200),parentAcceptance:false};process.exitCode=1}
+fs.writeFileSync(output,JSON.stringify(result,null,2)+'\n',{flag:'wx',mode:0o600});console.log(JSON.stringify({passed:result.passed,source:result.currentSource,message:result.message}));

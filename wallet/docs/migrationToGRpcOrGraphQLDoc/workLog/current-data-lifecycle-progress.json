@@ -1,0 +1,827 @@
+{
+  "observedAt": "2026-10-12T09:58:17.020811+00:00",
+  "progressOnly": true,
+  "parentCompletion": false,
+  "acceptanceCounts": {
+    "parents": "98/98",
+    "packages": "45/45"
+  },
+  "exactActiveAttemptsSelected": true,
+  "jobs": {
+    "C298": {
+      "attempt": "C298-complete-account-prefix-20261012-01",
+      "evidence": {
+        "progress.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C298-complete-account-prefix-20261012-01/progress.json",
+          "sha256": "fa3ece8368d230d34f91c051485217954089e451da8ef64b689e16ce9e19d761"
+        },
+        "failure.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C298-complete-account-prefix-20261012-01/failure.json",
+          "sha256": "42617afd72c641adc5514f98a0bfdeb54c3c09a220e6f416515f476daafcbc2d"
+        },
+        "superseded-C321.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C298-complete-account-prefix-20261012-01/superseded-C321.json",
+          "sha256": "9acec2d4b1b56690b3cb7ce9f038dbd55e9ce2a09dc4ba916282239278051514"
+        }
+      },
+      "progress.json": {
+        "at": "2026-10-12T04:10:28.783038+00:00",
+        "downloaded": 709570,
+        "total": 709570,
+        "percent": 100.0,
+        "seconds": 12101.63,
+        "complete": false
+      },
+      "failure.json": {
+        "at": "2026-10-12T04:59:10.069748+00:00",
+        "errorType": "KeyboardInterrupt",
+        "complete": false,
+        "automaticRetry": false
+      },
+      "superseded-C321.json": {
+        "at": "2026-10-12T04:59:09.377590+00:00",
+        "pid": 10937,
+        "processIdentity": "Mon Oct 12 08:48:44 2026 /Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/Resources/Python.app/Contents/MacOS/Python link-u-smart-contract/all-in-one-deploy/localDeploy/download_wallet_C298_full_account_prefix.py",
+        "signal": "SIGINT",
+        "allBatchesDownloaded": true,
+        "allNativeAndDatabaseConsumersComplete": true,
+        "replacementFullEndRecheck": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C321-full-account-end-recheck-20261012-01/complete.json",
+        "replacementSha256": "a487577ccde3f2ab94ca1bde592c880066ad1cac474a3089e87f2e85b80eab46",
+        "stopped": true,
+        "controlledInterruption": true,
+        "originalFinalizerClaimedSuccessful": false,
+        "nativeAccountComparison": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C327-complete-account-comparison-20261012-01/complete.json"
+      },
+      "qualifiedTerminalPresent": false,
+      "historicalFailureRetained": false
+    },
+    "C301": {
+      "attempt": "C301-complete-account-roots-20261012-01",
+      "evidence": {
+        "progress.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C301-complete-account-roots-20261012-01/progress.json",
+          "sha256": "70996be48c814b8d6d647c5c0c6389812dc7b175f47daea8b04e0e7a007f3adf"
+        },
+        "complete.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C301-complete-account-roots-20261012-01/complete.json",
+          "sha256": "a380a082154c5cba3683aea95e6a31326f54acda675317eaeccb2e2908a8bf28"
+        }
+      },
+      "progress.json": {
+        "at": "2026-10-12T04:10:47.672065+00:00",
+        "through": 709569,
+        "verifiedCheckpoints": 709570,
+        "total": 709570,
+        "complete": false
+      },
+      "complete.json": {
+        "passed": true,
+        "observedAt": "2026-10-12T04:10:49.779105+00:00",
+        "parentCompletion": false
+      },
+      "qualifiedTerminalPresent": true,
+      "historicalFailureRetained": false
+    },
+    "C302": {
+      "attempt": "C302-complete-account-database-20261012-01",
+      "evidence": {
+        "progress.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C302-complete-account-database-20261012-01/progress.json",
+          "sha256": "e6d9d54b8cca748e4c25d5cf66239a37c1fc8a02b4ad725546f124e2ae8d5bdb"
+        },
+        "complete.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C302-complete-account-database-20261012-01/complete.json",
+          "sha256": "6cf1c5a42deb54f23aa1a537e5b67086ec99b8d22dbb7283f93cf4576fc5df74"
+        }
+      },
+      "progress.json": {
+        "at": "2026-10-12T04:11:09.383427+00:00",
+        "through": 709569,
+        "importedCheckpointsPerStream": 709570,
+        "totalPerStream": 709570,
+        "complete": false
+      },
+      "complete.json": {
+        "passed": true,
+        "observedAt": "2026-10-12T04:11:11.303571+00:00",
+        "parentCompletion": false
+      },
+      "qualifiedTerminalPresent": true,
+      "historicalFailureRetained": false
+    },
+    "C320": {
+      "attempt": "C320-pipelined-personal-capability-repair-20261012-01",
+      "evidence": {
+        "progress.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C320-pipelined-personal-capability-repair-20261012-01/progress.json",
+          "sha256": "0ab1f2e300e63fec31e4162a35908a9194d072f454be56c85d6187df6e8a74cf"
+        },
+        "complete.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C320-pipelined-personal-capability-repair-20261012-01/complete.json",
+          "sha256": "44d4af0727ee7b9d26ca4c7644d6539c06a6a2739bc778dae921acd26f95264f"
+        }
+      },
+      "progress.json": {
+        "at": "2026-10-12T04:11:12.480292+00:00",
+        "through": 709569,
+        "checkpointsPerDatabase": 709570,
+        "newPersonalTransitions": 6,
+        "total": 709570,
+        "complete": false
+      },
+      "complete.json": {
+        "passed": true,
+        "at": "2026-10-12T04:11:13.963054+00:00",
+        "parentCompletion": false
+      },
+      "qualifiedTerminalPresent": true,
+      "historicalFailureRetained": false
+    },
+    "C321": {
+      "attempt": "C321-full-account-end-recheck-20261012-01",
+      "evidence": {
+        "progress.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C321-full-account-end-recheck-20261012-01/progress.json",
+          "sha256": "9567d477b0421089d9d9f1e04b7ba3cab00833b52252ecd3cf8efad4bf758192"
+        },
+        "complete.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C321-full-account-end-recheck-20261012-01/complete.json",
+          "sha256": "a487577ccde3f2ab94ca1bde592c880066ad1cac474a3089e87f2e85b80eab46"
+        }
+      },
+      "progress.json": {
+        "at": "2026-10-12T04:33:25.166536+00:00",
+        "checked": 709570,
+        "total": 709570,
+        "seconds": 1372.948,
+        "complete": false
+      },
+      "complete.json": {
+        "passed": true,
+        "at": "2026-10-12T04:33:27.615392+00:00",
+        "parentCompletion": false
+      },
+      "qualifiedTerminalPresent": true,
+      "historicalFailureRetained": false
+    },
+    "C326": {
+      "attempt": "C326-pending-recovery-bytes-20261012-01",
+      "evidence": {
+        "progress.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C326-pending-recovery-bytes-20261012-01/progress.json",
+          "sha256": "1cfd50e26db402f818a57a734f212b6d537ebb5b79b2320b64f0c24eff520b88"
+        },
+        "complete.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C326-pending-recovery-bytes-20261012-01/complete.json",
+          "sha256": "b48086edb03926ba2f651c54657e2c82a7096479876c96860e77cb5371de9a75"
+        }
+      },
+      "progress.json": {
+        "at": "2026-10-12T04:09:05.504855+00:00",
+        "downloaded": 297199,
+        "total": 297199,
+        "endRechecked": 291000,
+        "complete": false
+      },
+      "complete.json": {
+        "passed": true,
+        "at": "2026-10-12T04:09:14.626588+00:00",
+        "parentCompletion": false
+      },
+      "qualifiedTerminalPresent": true,
+      "historicalFailureRetained": false
+    },
+    "C327": {
+      "attempt": "C327-complete-account-comparison-20261012-01",
+      "evidence": {
+        "progress.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C327-complete-account-comparison-20261012-01/progress.json",
+          "sha256": "c9e929a78572c9ceb48d149e2eace9c9686acf9697731dacdf4b920146cf17ab"
+        },
+        "complete.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C327-complete-account-comparison-20261012-01/complete.json",
+          "sha256": "6e275f6d7a957ac29bd72f2a6c8d963a931daa2e7d3003d317e04d084b8c17fe"
+        }
+      },
+      "progress.json": {
+        "at": "2026-10-12T04:33:24.368679+00:00",
+        "waitingFor": [
+          "C321-full-account-end-recheck-20261012-01"
+        ],
+        "complete": false
+      },
+      "complete.json": {
+        "passed": true,
+        "at": "2026-10-12T04:35:38.921823+00:00",
+        "parentCompletion": false
+      },
+      "qualifiedTerminalPresent": true,
+      "historicalFailureRetained": false
+    },
+    "C328": {
+      "attempt": "C328-pending-suffix-certification-20261012-01",
+      "evidence": {
+        "progress.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C328-pending-suffix-certification-20261012-01/progress.json",
+          "sha256": "aa19522c37c440f30d144d276740eca3b6e612bc49ee78102fc24b63d9856c07"
+        },
+        "complete.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C328-pending-suffix-certification-20261012-01/complete.json",
+          "sha256": "f9723382cabf942719a2e913cafcef573ba984ee95da237e407894c261e4eabc"
+        }
+      },
+      "progress.json": {
+        "at": "2026-10-12T04:10:46.817140+00:00",
+        "through": 1006768,
+        "verified": 297199,
+        "waitingFor": [
+          "C301-complete-account-roots-20261012-01"
+        ],
+        "complete": false
+      },
+      "complete.json": {
+        "passed": true,
+        "at": "2026-10-12T04:10:53.787534+00:00",
+        "parentCompletion": false
+      },
+      "qualifiedTerminalPresent": true,
+      "historicalFailureRetained": false
+    },
+    "C347": {
+      "attempt": "C347-applied-bitmap-build-20261012-02",
+      "evidence": {
+        "progress.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C347-applied-bitmap-build-20261012-02/progress.json",
+          "sha256": "03832adf7863bcb8d8e29a556c2a82bf7b4b08fb9ad956a410eda251f7573749"
+        },
+        "complete.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C347-applied-bitmap-build-20261012-02/complete.json",
+          "sha256": "5ecb89d130238baf965596230c74fb5194bc3fc22f6b6f18da0c18dce91112c2"
+        }
+      },
+      "progress.json": {
+        "at": "2026-10-12T05:06:08.115580+00:00",
+        "phase": "build-account-helpers",
+        "complete": false
+      },
+      "complete.json": {
+        "passed": true,
+        "at": "2026-10-12T05:06:09.827810+00:00",
+        "parentCompletion": false
+      },
+      "qualifiedTerminalPresent": true,
+      "historicalFailureRetained": false
+    },
+    "C344": {
+      "attempt": "C344-historical-bitmap-repair-20261012-03",
+      "evidence": {
+        "progress.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C344-historical-bitmap-repair-20261012-03/progress.json",
+          "sha256": "4b4f65c6b6fea30a6d5740573f687980375699770cdd41b7ffeb5ad7ebe4a5a0"
+        },
+        "complete.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C344-historical-bitmap-repair-20261012-03/complete.json",
+          "sha256": "701d2a649d9fac38392392234c024f93773715e907719c8f1c1167e730cdc36b"
+        }
+      },
+      "progress.json": {
+        "at": "2026-10-12T05:06:45.040995+00:00",
+        "complete": true,
+        "rowsRepaired": 36,
+        "membershipsRepaired": 338
+      },
+      "complete.json": {
+        "passed": true,
+        "at": "2026-10-12T05:06:45.034942+00:00",
+        "parentCompletion": false
+      },
+      "qualifiedTerminalPresent": true,
+      "historicalFailureRetained": false
+    },
+    "C345": {
+      "attempt": "C345-referenced-stage-inventory-20261012-01",
+      "evidence": {
+        "progress.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C345-referenced-stage-inventory-20261012-01/progress.json",
+          "sha256": "2696058190d34f9f6b1b7167390a576082879ce5bfd93794b179e18395739cf0"
+        },
+        "complete.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C345-referenced-stage-inventory-20261012-01/complete.json",
+          "sha256": "6b48c3ab4316f2940f0505b77a007363af98f5abe4f718fb36856e4787559acd"
+        }
+      },
+      "progress.json": {
+        "at": "2026-10-12T05:29:12.632920+00:00",
+        "phase": "complete-version-inventory",
+        "listedVersions": 795000,
+        "totalVersions": 795323,
+        "complete": false
+      },
+      "complete.json": {
+        "passed": true,
+        "at": "2026-10-12T05:29:13.304915+00:00",
+        "parentCompletion": false
+      },
+      "qualifiedTerminalPresent": true,
+      "historicalFailureRetained": false
+    },
+    "C346": {
+      "attempt": "C346-pending-stage-restore-20261012-01",
+      "evidence": {
+        "progress.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C346-pending-stage-restore-20261012-01/progress.json",
+          "sha256": "7400ae7ad04d309fd168f19c6e4f666d30b1f4464deb1358c211806d6d071129"
+        },
+        "complete.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C346-pending-stage-restore-20261012-01/complete.json",
+          "sha256": "a1b5d8c57264d1371825107bb749fc7acad6401734141686c059759f8c78b33a"
+        }
+      },
+      "progress.json": {
+        "at": "2026-10-12T06:09:14.768733+00:00",
+        "phase": "full-version-inventory",
+        "listedVersions": 1006000,
+        "totalVersions": 1006772,
+        "complete": false
+      },
+      "complete.json": {
+        "passed": true,
+        "at": "2026-10-12T06:09:15.777076+00:00",
+        "parentCompletion": false
+      },
+      "qualifiedTerminalPresent": true,
+      "historicalFailureRetained": false
+    },
+    "C348": {
+      "attempt": "C348-complete-data-comparison-20261012-02",
+      "evidence": {
+        "complete.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C348-complete-data-comparison-20261012-02/complete.json",
+          "sha256": "d0c1361aadbc454ba408f427574cd7a1d865cc8e721530bd468d912dcb486a05"
+        }
+      },
+      "complete.json": {
+        "passed": true,
+        "at": "2026-10-12T05:06:48.249851+00:00",
+        "parentCompletion": false
+      },
+      "qualifiedTerminalPresent": true,
+      "historicalFailureRetained": false
+    },
+    "C349": {
+      "attempt": "C349-current-rebuilt-query-debug-20261012-03",
+      "evidence": {
+        "complete.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C349-current-rebuilt-query-debug-20261012-03/complete.json",
+          "sha256": "24f020ccd0556b95ff65a9fdbeefd420c054addfeb4c5eb1803cfbad67e9beea"
+        }
+      },
+      "complete.json": {
+        "passed": true,
+        "parentCompletion": false
+      },
+      "qualifiedTerminalPresent": true,
+      "historicalFailureRetained": false
+    },
+    "C340": {
+      "attempt": "C340-complete-recovery-replica-20261012-02",
+      "evidence": {
+        "progress.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C340-complete-recovery-replica-20261012-02/progress.json",
+          "sha256": "d31b4a1412074845ab0cd97cc5c2e4e591be34e7c8df3a1af3f5092b520b219a"
+        },
+        "complete.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C340-complete-recovery-replica-20261012-02/complete.json",
+          "sha256": "67a091f82ec7a37039f8b1f7895b06592bcf60c27470987f01b40e4f188f53d5"
+        }
+      },
+      "progress.json": {
+        "at": "2026-10-12T05:10:47.099722+00:00",
+        "verified": 795320,
+        "total": 795320,
+        "pendingObservations": 119786,
+        "seconds": 5392.969,
+        "complete": false
+      },
+      "complete.json": {
+        "passed": true,
+        "at": "2026-10-12T06:01:11.073562+00:00",
+        "parentCompletion": false
+      },
+      "qualifiedTerminalPresent": true,
+      "historicalFailureRetained": false
+    },
+    "C341": {
+      "attempt": "C341-published-version-resume-20261012-01",
+      "evidence": {
+        "progress.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C341-published-version-resume-20261012-01/progress.json",
+          "sha256": "58bd2e61f51f91baf4dc0ad8e0b8ff64d6da601885a3cc58417284d9aee4748e"
+        },
+        "copy-complete.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C341-published-version-resume-20261012-01/copy-complete.json",
+          "sha256": "5cffb1fe14b9a8cf98974fa6b403e4c1b487a1639f500ff4d582d3326a3b5f27"
+        }
+      },
+      "progress.json": {
+        "at": "2026-10-12T05:23:21.327075+00:00",
+        "restored": 795320,
+        "total": 795320,
+        "phase": "complete-version-inventory",
+        "listedVersions": 795000,
+        "complete": false
+      },
+      "copy-complete.json": {
+        "passed": true,
+        "at": "2026-10-12T05:23:21.797077+00:00",
+        "parentCompletion": false
+      },
+      "qualifiedTerminalPresent": true,
+      "historicalFailureRetained": false
+    },
+    "C350": {
+      "attempt": "C350-recovered-archive-protection-20261012-01",
+      "evidence": {
+        "failure.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C350-recovered-archive-protection-20261012-01/failure.json",
+          "sha256": "23d37f587d3127c39b7d4d9e2b4b5c0101b04750a1eb02d8a31d9d848491423b"
+        },
+        "complete.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C350-recovered-archive-protection-20261012-01/complete.json",
+          "sha256": "366a6927e06996bd77e608942b0d16d59b78ffcbd538bc717bf4391e61063d04"
+        }
+      },
+      "failure.json": {
+        "at": "2026-10-12T07:49:55.207026+00:00",
+        "errorType": "AssertionError",
+        "recoveryAccepted": false,
+        "protectionMustNotBeAutomaticallyRemoved": true
+      },
+      "complete.json": {
+        "passed": true,
+        "at": "2026-10-12T07:54:24.197295+00:00",
+        "parentCompletion": false
+      },
+      "qualifiedTerminalPresent": true,
+      "historicalFailureRetained": true
+    },
+    "C352": {
+      "attempt": "C352-restored-prefix-catalog-20261012-05",
+      "evidence": {
+        "complete.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C352-restored-prefix-catalog-20261012-05/complete.json",
+          "sha256": "5129e360750cf4d0eb79cad08671d6a0bf41649371683a17fc2a0554649d259d"
+        }
+      },
+      "complete.json": {
+        "passed": true,
+        "at": "2026-10-12T08:02:39.546081+00:00",
+        "parentCompletion": false
+      },
+      "qualifiedTerminalPresent": true,
+      "historicalFailureRetained": false
+    },
+    "C353": {
+      "attempt": "C353-complete-rebuilt-cold-20261012-01",
+      "evidence": {
+        "complete.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C353-complete-rebuilt-cold-20261012-01/complete.json",
+          "sha256": "63c525e9d3f6e9860bd1c5d0029a20086f5355cfb26bccaea89d6d028d01dbbd"
+        }
+      },
+      "complete.json": {
+        "passed": true,
+        "at": "2026-10-12T08:05:17.155063+00:00",
+        "parentCompletion": false
+      },
+      "qualifiedTerminalPresent": true,
+      "historicalFailureRetained": false
+    },
+    "C354-sql-retry-02": {
+      "attempt": "C354-cold-full-data-comparison-20261012-01/sql-retry-02",
+      "evidence": {
+        "complete.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C354-cold-full-data-comparison-20261012-01/sql-retry-02/complete.json",
+          "sha256": "8011a33cf921a92d5f20782d30235134c115138ce5d2312c232a29260494730e"
+        },
+        "capture/progress.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C354-cold-full-data-comparison-20261012-01/sql-retry-02/capture/progress.json",
+          "sha256": "f3cc8a55879f103d43298c9f30cb10a8cf0db4a38b29f06b8bca9451cd356d80"
+        }
+      },
+      "complete.json": {
+        "passed": true,
+        "at": "2026-10-12T08:39:17.509997+00:00",
+        "parentCompletion": false
+      },
+      "qualifiedTerminalPresent": true,
+      "historicalFailureRetained": false,
+      "capture/progress.json": {
+        "at": "2026-10-12T08:39:12.268951+00:00",
+        "table": "tx_kinds",
+        "rows": 6100000,
+        "seconds": 37.377,
+        "complete": false
+      }
+    },
+    "C354-hbase": {
+      "attempt": "C354-cold-full-data-comparison-20261012-01/hbase",
+      "evidence": {
+        "complete.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C354-cold-full-data-comparison-20261012-01/hbase/complete.json",
+          "sha256": "d5e0d4892f86f2b82fcb2d490b8ad9da94d9153642c4c2f78ad6bb2bb82518d1"
+        }
+      },
+      "complete.json": {
+        "passed": true,
+        "at": "2026-10-12T08:11:45.417659+00:00",
+        "parentCompletion": false
+      },
+      "qualifiedTerminalPresent": true,
+      "historicalFailureRetained": false
+    },
+    "C354-rocks": {
+      "attempt": "C354-cold-full-data-comparison-20261012-01/rocks",
+      "evidence": {
+        "complete.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C354-cold-full-data-comparison-20261012-01/rocks/complete.json",
+          "sha256": "1d6c887ccb51063466a38b7817aedfe80501ee3d9c25ab6c6d5516491aa34fe9"
+        }
+      },
+      "complete.json": {
+        "passed": true,
+        "at": "2026-10-12T08:07:20.900075+00:00",
+        "parentCompletion": false
+      },
+      "qualifiedTerminalPresent": true,
+      "historicalFailureRetained": false
+    },
+    "C354-publication": {
+      "attempt": "C354-cold-full-data-comparison-20261012-01/publication",
+      "evidence": {
+        "complete.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C354-cold-full-data-comparison-20261012-01/publication/complete.json",
+          "sha256": "05898a4d3861d8ce8b79f927a9ac1e2b2ab48e8dec5b744b995dc24bcf880549"
+        }
+      },
+      "complete.json": {
+        "passed": true,
+        "at": "2026-10-12T08:07:41.975614+00:00",
+        "parentCompletion": false
+      },
+      "qualifiedTerminalPresent": true,
+      "historicalFailureRetained": false
+    },
+    "C354-accounts": {
+      "attempt": "C354-cold-full-data-comparison-20261012-01/accounts",
+      "evidence": {
+        "complete.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C354-cold-full-data-comparison-20261012-01/accounts/complete.json",
+          "sha256": "dd21b048ede85c74881c62867f63d03ef423d01b25e77ff285df0661a38ca7f6"
+        }
+      },
+      "complete.json": {
+        "passed": true,
+        "at": "2026-10-12T08:11:29.243342+00:00",
+        "parentCompletion": false
+      },
+      "qualifiedTerminalPresent": true,
+      "historicalFailureRetained": false
+    },
+    "C354-parallel-02/s3-published": {
+      "attempt": "C354-cold-full-data-comparison-20261012-01/parallel-02/s3-published",
+      "evidence": {
+        "progress.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C354-cold-full-data-comparison-20261012-01/parallel-02/s3-published/progress.json",
+          "sha256": "babbcd45ab9036c9caa43fc7f41afc0c8ba81bf3697941c5007fee5ab18f5787"
+        },
+        "complete.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C354-cold-full-data-comparison-20261012-01/parallel-02/s3-published/complete.json",
+          "sha256": "848a3e6649b9168b72679d9c6bfba81167e216aaf67d4f31373c2c9874af383e"
+        }
+      },
+      "progress.json": {
+        "at": "2026-10-12T09:45:32.672905+00:00",
+        "listedVersions": 790000,
+        "totalVersions": 795324,
+        "seconds": 5040.06
+      },
+      "complete.json": {
+        "passed": true,
+        "at": "2026-10-12T09:45:34.704700+00:00",
+        "parentCompletion": false
+      },
+      "qualifiedTerminalPresent": true,
+      "historicalFailureRetained": false
+    },
+    "C354-parallel-02/s3-stage": {
+      "attempt": "C354-cold-full-data-comparison-20261012-01/parallel-02/s3-stage",
+      "evidence": {
+        "progress.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C354-cold-full-data-comparison-20261012-01/parallel-02/s3-stage/progress.json",
+          "sha256": "5b9d460000ab5f45b4f7b0c46e234ad4d34ba9662e73f941d4cc5001e645e5be"
+        },
+        "complete.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C354-cold-full-data-comparison-20261012-01/parallel-02/s3-stage/complete.json",
+          "sha256": "a188e1b12ebee2a6efd053ee89cc344564e192b8002d3f11095dc3ed012defa6"
+        }
+      },
+      "progress.json": {
+        "at": "2026-10-12T09:46:33.685928+00:00",
+        "listedVersions": 1000000,
+        "totalVersions": 1006772,
+        "seconds": 5100.06
+      },
+      "complete.json": {
+        "passed": true,
+        "at": "2026-10-12T09:46:34.845509+00:00",
+        "parentCompletion": false
+      },
+      "qualifiedTerminalPresent": true,
+      "historicalFailureRetained": false
+    },
+    "C354-parallel-02/s3-replica": {
+      "attempt": "C354-cold-full-data-comparison-20261012-01/parallel-02/s3-replica",
+      "evidence": {
+        "progress.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C354-cold-full-data-comparison-20261012-01/parallel-02/s3-replica/progress.json",
+          "sha256": "8837a2c074354ba2f309ec2e68ac9764c883b0b3b378a88c814e88488190f99b"
+        },
+        "complete.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C354-cold-full-data-comparison-20261012-01/parallel-02/s3-replica/complete.json",
+          "sha256": "53debdfea55015de68b599664e709ad54784eea1accc3eaa4810dd10a4a0469f"
+        }
+      },
+      "progress.json": {
+        "at": "2026-10-12T08:59:57.800703+00:00",
+        "listedVersions": 790000,
+        "totalVersions": 795324,
+        "seconds": 2305.2
+      },
+      "complete.json": {
+        "passed": true,
+        "at": "2026-10-12T08:59:59.162433+00:00",
+        "parentCompletion": false
+      },
+      "qualifiedTerminalPresent": true,
+      "historicalFailureRetained": false
+    },
+    "C355": {
+      "attempt": "C355-rebuilt-browser-backend-20261012-01",
+      "evidence": {
+        "started.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C355-rebuilt-browser-backend-20261012-01/started.json",
+          "sha256": "8317eb64ccb32470b1ac2e765d7fc679514cb4304341f1340c28d3cf82f5ad9a"
+        }
+      },
+      "started.json": {
+        "passed": true,
+        "at": "2026-10-12T08:16:23.948507+00:00",
+        "parentCompletion": false
+      },
+      "qualifiedTerminalPresent": true,
+      "historicalFailureRetained": false
+    },
+    "C356": {
+      "attempt": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261011-04/C356-backend-generation-20261012-01",
+      "evidence": {
+        "complete.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261011-04/C356-backend-generation-20261012-01/complete.json",
+          "sha256": "509eca8fe5d8933f62347647667e86b907a4748a6c8af36c898db30767483041"
+        }
+      },
+      "complete.json": {
+        "passed": true,
+        "at": "2026-10-12T08:43:05.790220+00:00",
+        "parentCompletion": false
+      },
+      "qualifiedTerminalPresent": true,
+      "historicalFailureRetained": false
+    },
+    "C357": {
+      "attempt": "C357-wal-recovery-20261012-01",
+      "evidence": {
+        "fault-recovered.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C357-wal-recovery-20261012-01/fault-recovered.json",
+          "sha256": "b47b95d862f5f0377d45284f5deb4df43f914b030a413ee9bd268093f4aa73f8"
+        }
+      },
+      "fault-recovered.json": {
+        "passed": true,
+        "at": "2026-10-12T08:48:43.803243+00:00",
+        "parentCompletion": false
+      },
+      "qualifiedTerminalPresent": true,
+      "historicalFailureRetained": false
+    },
+    "C358-sql": {
+      "attempt": "C358-post-wal-full-data-20261012-01/sql",
+      "evidence": {
+        "complete.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C358-post-wal-full-data-20261012-01/sql/complete.json",
+          "sha256": "a4651e0cb189e2100f1e0f104d2ae335a0bc3c325b475c3274157f30e315dfb6"
+        },
+        "capture/progress.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C358-post-wal-full-data-20261012-01/sql/capture/progress.json",
+          "sha256": "fe9b0193de55bc7915c82bcba07260de10145b400f14655dd4449e65f505e91a"
+        }
+      },
+      "complete.json": {
+        "passed": true,
+        "at": "2026-10-12T09:17:41.322579+00:00",
+        "parentCompletion": false
+      },
+      "qualifiedTerminalPresent": true,
+      "historicalFailureRetained": false,
+      "capture/progress.json": {
+        "at": "2026-10-12T09:17:37.137463+00:00",
+        "table": "tx_kinds",
+        "rows": 6100000,
+        "seconds": 33.083,
+        "complete": false
+      }
+    },
+    "C358-hbase": {
+      "attempt": "C358-post-wal-full-data-20261012-01/hbase",
+      "evidence": {
+        "complete.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C358-post-wal-full-data-20261012-01/hbase/complete.json",
+          "sha256": "ced9e6e40b96d01d899bb14661446799687b95b6a4870082ef732585e3507c94"
+        }
+      },
+      "complete.json": {
+        "passed": true,
+        "at": "2026-10-12T08:54:21.012331+00:00",
+        "parentCompletion": false
+      },
+      "qualifiedTerminalPresent": true,
+      "historicalFailureRetained": false
+    },
+    "C358-rocks": {
+      "attempt": "C358-post-wal-full-data-20261012-01/rocks",
+      "evidence": {
+        "complete.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C358-post-wal-full-data-20261012-01/rocks/complete.json",
+          "sha256": "d81517e86a6ab87baf6a65b7ce73edef3ff1d9629e736fcb8dedb99038a28dd9"
+        }
+      },
+      "complete.json": {
+        "passed": true,
+        "at": "2026-10-12T08:49:11.556244+00:00",
+        "parentCompletion": false
+      },
+      "qualifiedTerminalPresent": true,
+      "historicalFailureRetained": false
+    },
+    "C358-publication": {
+      "attempt": "C358-post-wal-full-data-20261012-01/publication",
+      "evidence": {
+        "complete.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C358-post-wal-full-data-20261012-01/publication/complete.json",
+          "sha256": "763b8f403ec3aa65c0e5fae1781a296616c930b8c03252804219f90b426d4b01"
+        }
+      },
+      "complete.json": {
+        "passed": true,
+        "at": "2026-10-12T08:49:37.675944+00:00",
+        "parentCompletion": false
+      },
+      "qualifiedTerminalPresent": true,
+      "historicalFailureRetained": false
+    },
+    "C358-accounts": {
+      "attempt": "C358-post-wal-full-data-20261012-01/accounts",
+      "evidence": {
+        "complete.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C358-post-wal-full-data-20261012-01/accounts/complete.json",
+          "sha256": "af799065b823b81cf7a05557127a823ca44dd3bccbebc76460abe8fd684a1249"
+        }
+      },
+      "complete.json": {
+        "passed": true,
+        "at": "2026-10-12T08:52:45.273621+00:00",
+        "parentCompletion": false
+      },
+      "qualifiedTerminalPresent": true,
+      "historicalFailureRetained": false
+    },
+    "C359": {
+      "attempt": "C359-restored-historical-fence-20261012-01",
+      "evidence": {
+        "complete.json": {
+          "path": "/Users/changzechuan/.local/state/rtd-wallet-migration/dev-20261006-03/publication-foundation/C359-restored-historical-fence-20261012-01/complete.json",
+          "sha256": "5d324e7f499a18ccc05247f7c75aa87a1a5608f5ff6038baaeb9fdb8f157dbff"
+        }
+      },
+      "complete.json": {
+        "passed": true,
+        "at": "2026-10-12T08:55:36.885746+00:00",
+        "parentCompletion": false
+      },
+      "qualifiedTerminalPresent": true,
+      "historicalFailureRetained": false
+    }
+  },
+  "sourceHistory": "Original failed and superseded attempts remain in their original private directories.",
+  "acceptanceBoundary": "No bytes, watermarks, or prepared artifacts change checklist completion."
+}

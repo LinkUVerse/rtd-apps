@@ -35,7 +35,6 @@ const createTypeToAmpliAccount: Record<CreateType, AddedAccountsProperties['acco
 	'import-mnemonic': 'Derived',
 	'mnemonic-derived': 'Derived',
 	imported: 'Imported',
-	ledger: 'Ledger',
 	qredo: 'Qredo',
 };
 
@@ -87,15 +86,6 @@ export function useCreateAccountsMutation() {
 				createdAccounts = await backgroundClient.createAccounts({
 					type: 'imported',
 					keyPair: accountsFormValues.keyPair,
-					password: password!,
-				});
-			} else if (
-				type === 'ledger' &&
-				validateAccountFormValues(type, accountsFormValues, password)
-			) {
-				createdAccounts = await backgroundClient.createAccounts({
-					type: 'ledger',
-					accounts: accountsFormValues.accounts,
 					password: password!,
 				});
 			} else if (

@@ -50,8 +50,8 @@ function ComboboxItem({ item, onSelect }: ComboboxItemProps) {
 }
 
 const ComboboxContext = createContext<{
-	inputRef: RefObject<HTMLInputElement>;
-	listRef: RefObject<HTMLDivElement>;
+	inputRef: RefObject<HTMLInputElement | null>;
+	listRef: RefObject<HTMLDivElement | null>;
 	value: string;
 	onValueChange(value: string): void;
 	visible: boolean;

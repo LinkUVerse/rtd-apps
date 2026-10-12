@@ -1,21 +1,22 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { useRtdClient } from "rtd-dapp-kit";
-import { type CheckpointPage } from "rtd-typescript/client";
+import { useExplorerClientContext } from "~/rpc/explorer-client";
+import type { CheckpointPage } from "rtd-typescript/jsonRpc";
 import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
 
 export const DEFAULT_CHECKPOINTS_LIMIT = 20;
 
 // Fetch transaction blocks
 export function useGetCheckpoints(cursor?: string, limit = DEFAULT_CHECKPOINTS_LIMIT) {
-	const client = useRtdClient();
+	const { client, network } = useExplorerClientContext();
 
 	return useInfiniteQuery<CheckpointPage>({
-		queryKey: ["get-checkpoints", limit, cursor],
-		queryFn: async ({ pageParam }) =>
+		queryKey: ["get-checkpoints", network, limit, cursor],
+		queryFn: async ({ pageParam, signal }) =>
 			await client.getCheckpoints({
 				descendingOrder: true,
+				signal,
 				cursor: (pageParam as string | null) ?? cursor,
 				limit,
 			}),

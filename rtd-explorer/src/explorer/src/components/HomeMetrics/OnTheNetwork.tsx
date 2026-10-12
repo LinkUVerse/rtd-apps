@@ -2,14 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { CoinFormat, formatBalance } from "rtd-apps-core";
-import { useRtdClientQuery } from "rtd-dapp-kit";
+import { useExplorerQuery } from "~/rpc/explorer-client";
 
 import { StatsWrapper } from "./FormattedStatsAmount";
 import { Card } from "~/ui/Card";
 
 export function OnTheNetwork() {
 	// const { data: networkMetrics } = useGetNetworkMetrics();
-	const { data: referenceGasPrice } = useRtdClientQuery("getReferenceGasPrice");
+	const { data: referenceGasPrice } = useExplorerQuery("getReferenceGasPrice");
 	const gasPriceFormatted =
 		typeof referenceGasPrice === "bigint"
 			? formatBalance(referenceGasPrice, 0, CoinFormat.FULL)

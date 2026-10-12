@@ -1,0 +1,7 @@
+# 单签赞助执行拒绝的真实就绪顺序（C167第二轮）
+
+第二轮failed保持：四项direct有效期实际sender/sponsor同byte签名和40篡改拒绝完成，旧ValidDuring等待点此次正常通过；单签执行拒绝在policy出现后立刻用默认5秒查具名Approve，按钮仍加载/无文字，断言失败。完整弹窗保存policy明确不支持赞助执行、Gas正在估算、Approve标签未出现、仅Reject、prepared为空；Execute0、私有调用4、采集/退出零错误。
+
+生产TransactionRequest的approveLoading来自isPending。单签拒绝仍须真实policy、费用估算失败稳定终态、具名Approve disabled、prepared0、正常Reject和事务清理、Sim/Verify/Execute/新私有入口0全部同时成立。新的helper/actor/auditor-v5只修测试等待顺序：先policy，再Gas estimation failed，再Approve disabled，独立记录两时刻和实际空transactions；不把按钮暂时不存在当作disabled。
+
+先检查四路单签拒绝，再开始16实际正向批准，避免该前置失败后额外签名。完整4×4/160篡改/40模拟/16原生Verify标准不变。预算139000167，先前137000167三摘要和138000167四摘要共7笔已批准摘要全部拒绝重批、原7once-approve输入SHA固定；不重签或合并旧partial为新完整通过。生产代码、journal、alarm和任何保护边界不变。最终100%仍待新的整个实际矩阵与独立审核。

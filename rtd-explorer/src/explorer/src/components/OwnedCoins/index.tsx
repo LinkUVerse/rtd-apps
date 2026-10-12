@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { getCoinSymbol } from "rtd-apps-core";
-import { useRtdClientQuery } from "rtd-dapp-kit";
+import { useExplorerQuery } from "~/rpc/explorer-client";
 import { Info16 } from "rtd-apps-icons";
-import { type CoinBalance } from "rtd-typescript/client";
+import type { CoinBalance } from "rtd-typescript/jsonRpc";
 import { normalizeRtdAddress } from "rtd-typescript/utils";
 import { Heading, Text, LoadingIndicator, RadioGroup, RadioGroupItem } from "@linku/ui";
 import { useMemo, useState } from "react";
@@ -27,7 +27,7 @@ export function OwnedCoins({ id }: { id: string }) {
 	const [currentSlice, setCurrentSlice] = useState(1);
 	const [limit, setLimit] = useState(20);
 	const [filterValue, setFilterValue] = useState(COIN_FILTERS.RECOGNIZED);
-	const { isPending, data, isError } = useRtdClientQuery("getAllBalances", {
+	const { isPending, data, isError } = useExplorerQuery("getAllBalances", {
 		owner: normalizeRtdAddress(id),
 	});
 	const recognizedPackages = useRecognizedPackages();

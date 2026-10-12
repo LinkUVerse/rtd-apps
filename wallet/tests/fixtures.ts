@@ -20,11 +20,15 @@ export const test = base.extend<{
 	// eslint-disable-next-line no-empty-pattern
 	context: async ({}, use) => {
 		const context = await chromium.launchPersistentContext('', {
-			headless: false,
+			headless: process.env.E2E_HEADLESS === 'true',
+			...(process.env.RTD_EXTENSION_CHROMIUM ? { executablePath: process.env.RTD_EXTENSION_CHROMIUM } : {}),
 			args: LAUNCH_ARGS,
 		});
-		await use(context);
-		await context.close();
+		try {
+			await use(context);
+		} finally {
+			await context.close();
+		}
 	},
 	extensionUrl: async ({ context }, use) => {
 		let [background] = context.serviceWorkers();
@@ -38,7 +42,7 @@ export const test = base.extend<{
 	},
 	// eslint-disable-next-line no-empty-pattern
 	demoPageUrl: async ({}, use) => {
-		await use('http://localhost:5181');
+		await use(process.env.E2E_DEMO_URL || 'http://localhost:5181');
 	},
 });
 

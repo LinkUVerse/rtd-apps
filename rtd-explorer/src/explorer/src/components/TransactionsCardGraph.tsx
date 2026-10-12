@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { formatAmount, formatDate } from "rtd-apps-core";
-import { useRtdClientQuery } from "rtd-dapp-kit";
+import { useExplorerQuery } from "~/rpc/explorer-client";
 import { Heading, Text, LoadingIndicator } from "@linku/ui";
 import { ParentSize } from "@visx/responsive";
 import clsx from "clsx";
@@ -39,8 +39,8 @@ function TooltipContent({
 }
 
 function useEpochTransactions() {
-	return useRtdClientQuery(
-		"getEpochMetrics",
+	return useExplorerQuery(
+		"getEpochs",
 		{
 			descendingOrder: true,
 			limit: 31,
@@ -60,7 +60,7 @@ function useEpochTransactions() {
 }
 
 export function TransactionsCardGraph() {
-	const { data: totalTransactions } = useRtdClientQuery(
+	const { data: totalTransactions } = useExplorerQuery(
 		"getTotalTransactionBlocks",
 		{},
 		{

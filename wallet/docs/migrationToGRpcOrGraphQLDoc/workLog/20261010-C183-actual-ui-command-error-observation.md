@@ -1,0 +1,7 @@
+# 第五轮签名返回失败与原始错误观察（C183）
+
+第五轮最终 JSON failed 保持：10对sender/sponsor同byte签名、100原签篡改拒绝、四路单签执行拒绝完成；第11次personal/expirationLargeEpoch实际Imported入口调用发生，原生VerifySignature明确isValid=true，两次Sim成功；dApp最终显示“后台签名或执行未成功”。私有最终计数11/0/0，Execute0，采集/退出均零错误，原Chrome正常退出。不能把已发生签名等同完成交付，也不能从Verify成功推断后台最终授权、合约复核或出口交付成功。11个once全部固定为不可重批；最终对Root cause尚无充分证据。
+
+Transactions.requestApproval在UI的txResultError非空时只返回通用消息。UI实际原始错误会经transaction-request-response带回后台，但旧测试未记录该字段，之后transactions被正常清理。C183只在新受控worker为新UI port增加接收监听，读取txID、approved、txResultError和是否存在txSigned；不复制签名字节、token或密钥，不发送消息、不调用生产方法、不改写源码/权限/期限/journal/水位/fence。测试结束移除自身监听和内存。新的独立审核要求20个不同requestId、16批准结果/4拒绝、全部无原始错误，并核对正常清理。
+
+v8将主窗口在每次正常检查锁定/解锁后导航到已有accounts/manage页面，保持钱包账户和三store读取可用，减少资产页并发查询。此为测试窗口选择，尚未证明它就是上一轮失败根因，不改变任何生产保护。demo等待真实result或error终态，明确error立即拒绝，不把5秒内result为空当最终结论。预算142000167，新profile/全16矩阵；先前9份及本轮11份once共20摘要固定拒绝重复批准。失败旧轮不拼接为新完整结果，最终100%仍待实际完整运行、独立审核和C176汇总。

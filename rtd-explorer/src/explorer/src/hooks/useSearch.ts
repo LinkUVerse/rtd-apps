@@ -2,8 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { isRtdNSName, useRtdNSEnabled } from "rtd-apps-core";
-import { useRtdClientQuery, useRtdClient } from "rtd-dapp-kit";
-import { type RtdClient, type RtdSystemStateSummary } from "rtd-typescript/client";
+import { useExplorerQuery, useExplorerClientContext } from "~/rpc/explorer-client";
+import { type RtdJsonRpcClient as RtdClient } from "rtd-typescript/jsonRpc";
+import type { RtdSystemStateSummary } from "rtd-typescript/jsonRpc";
 import {
 	isValidTransactionDigest,
 	isValidRtdAddress,
@@ -124,12 +125,12 @@ const getResultsForValidatorByPoolIdOrRtdAddress = (
 };
 
 export function useSearch(query: string) {
-	const client = useRtdClient();
-	const { data: systemStateSummery } = useRtdClientQuery("getLatestRtdSystemState");
+	const {client, network} = useExplorerClientContext();
+	const { data: systemStateSummery } = useExplorerQuery("getLatestRtdSystemState");
 	const rtdNSEnabled = useRtdNSEnabled();
 
 	return useQuery({
-		queryKey: ["search", query],
+		queryKey: ["search", network, rtdNSEnabled, query],
 		queryFn: async () => {
 			const results = (
 				await Promise.allSettled([

@@ -1,0 +1,7 @@
+# C51 当前可操作桌面的普通Chrome安装验收
+
+22:38实际Docker Desktop原生AX可读，之前锁屏阻塞已不再代表当前桌面。保留原C47空profile及所有已签名profile，不重开。仅启动新的自有普通Chrome空profile及loopback调试端口41996，无load-extension／ignore-certificate／disable-extensions-except参数。
+
+先封存当前官方Chrome应用包、已构建C46本地钱包产物及MV3权限／来源摘要，再通过原生扩展管理页打开Load unpacked目录选择框，提供完整可审核产物路径。浏览器操作工具政策要求对官方市场外的软件安装在最终操作时确认；在收到该确认前不提交目录安装。本项目真实权限验收与CA信任另按已授权范围执行，未确认CA不导入、不绕过证书告警。
+
+收到具体安装确认后，核对管理页实际ID／manifest及运行worker／UI字节，再启动只服务本来源的自有临时gateway，进行Local只读H0／generation及host permission／CORS检查，0导入钥匙／模拟／签名／Execute。全部接口父合同仍要求完整范围，不能用安装或只读切片提前关闭。临时gateway确认不再用时正常精确清理；仅关闭本次自有Chrome，保留日志及空profile。

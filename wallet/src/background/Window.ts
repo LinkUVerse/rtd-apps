@@ -25,15 +25,12 @@ export class Window {
 	}
 
 	public async show() {
-		const { width = 0, left = 0, top = 0 } = await Browser.windows.getLastFocused();
 		const w = await Browser.windows.create({
 			url: this._url,
 			focused: true,
 			width: POPUP_WIDTH,
 			height: windowHeightWithFrame,
 			type: 'popup',
-			top: top,
-			left: Math.floor(left + width - 450),
 		});
 		this._id = typeof w.id === 'undefined' ? null : w.id;
 		return windowRemovedStream.pipe(

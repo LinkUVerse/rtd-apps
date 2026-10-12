@@ -1,0 +1,35 @@
+// Offline clone observation using retained bytes; fixtures never count as actual browser acceptance.
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),assert=require('node:assert/strict'),cp=require('node:child_process'),vm=require('node:vm');
+const logs=path.resolve(__dirname,'../migrationToGRpcOrGraphQLDoc/workLog'),read=f=>JSON.parse(fs.readFileSync(f)),sha=f=>crypto.createHash('sha256').update(fs.readFileSync(f)).digest('hex');
+async function main(){
+ const[output]=process.argv.slice(2);assert(output&&!fs.existsSync(output));const files=[__filename,path.join(__dirname,'lib/C101-consumer-read-observer.cjs')];let result;
+ try{
+  const load=(name,passed)=>{const f=path.join(logs,name);files.push(f);const p=read(f);if(passed!==undefined)assert.equal(p.passed,passed);for(const[f,h]of Object.entries(p.inputsSha256??{}))assert.equal(sha(f),h);return p;};
+  const old=load('20261008-C101-current-browser-relock-qualification-01.json',true);assert(old.threeExactSourceDeltasOnly);
+  const actual=load('20261008-C101-current-three-owner-browser-02.json',true);assert.equal(actual.profilesOpened,3);assert.equal(actual.requests,730);
+  const denied=load('20261008-C101-current-three-owner-browser-independent-01.json',false);assert.equal(denied.message,'No complete raw history window');
+  for(const role of ['source','existingTarget'])assert.equal(actual.frames.filter(f=>f.role===role&&f.url.endsWith('/account/graphql')).filter(f=>JSON.parse(Buffer.from(f.responseBase64,'base64')).data?.accountHistory).length,0);
+  const delta=load('20261008-C101-browser-v3-source-delta-01.json');assert.equal(delta.changes.length,5);files.push(delta.originalSource,delta.candidateSource);let source=fs.readFileSync(delta.candidateSource,'utf8');for(const[before,after]of delta.changes.slice().reverse()){assert.equal(source.split(after).length,2);source=source.replace(after,before);}assert.equal(source,fs.readFileSync(delta.originalSource,'utf8'));
+  const api=load('20261008-C100-full-post-write-positive-01.json',true),{install}=require('./lib/C101-consumer-read-observer.cjs');let checks=0;
+  async function harness(nativeFetch,record,origins=['http://127.0.0.1:41750']){
+   const context={fetch:nativeFetch,Request,Response,URL,Uint8Array,ArrayBuffer,Date,Object,Set,location:{href:'chrome-extension://nbmpcfknfgjmecallhngcincnhklllpj/ui.html'},btoa};
+   const page={exposeBinding:async(name,callback)=>{context[name]=row=>callback({},row);},addInitScript:async(fn,args)=>{context.__arguments=args;vm.runInNewContext('('+fn.toString()+')(__arguments)',context);}};
+   await install(page,origins,record);return context;
+  }
+  const selected=[api.frames.find(f=>f.url.endsWith('/GetServiceInfo')),api.frames.find(f=>f.url.endsWith('/GetObject')),api.frames.find(f=>f.url.endsWith('/GetCheckpoint')),api.frames.find(f=>f.url.endsWith('/account/graphql')&&JSON.parse(Buffer.from(f.responseBase64,'base64')).data?.accountHistory),api.frames.find(f=>f.url.endsWith('/graphql')&&!f.url.endsWith('/account/graphql'))];
+  assert(selected.every(Boolean));
+  for(const frame of selected){const rows=[],bytes=Buffer.from(frame.responseBase64,'base64'),original=new Response(bytes,{status:frame.status,headers:{'content-type':frame.url.endsWith('/graphql')?'application/json':'application/grpc-web+proto'}}),input=frame.url,init={method:'POST',body:Buffer.from(frame.requestBase64,'base64'),signal:new AbortController().signal,credentials:'omit',redirect:'error'};let calls=0;
+   const h=await harness(async(i,a)=>{assert.equal(i,input);assert.equal(a,init);calls++;return original;},row=>rows.push(row),[new URL(input).origin]);
+   const response=await h.fetch(input,init);assert.equal(response,original);assert.equal(calls,1);assert.equal(response.bodyUsed,false);assert.equal(rows.length,1);assert.equal(rows[0].requestBase64,frame.requestBase64);assert.equal(rows[0].responseBase64,frame.responseBase64);assert.equal(rows[0].status,frame.status);assert.equal(rows[0].observation,'consumer-fetch-clone');assert.deepEqual(Buffer.from(await response.arrayBuffer()),bytes);checks++;
+  }
+  const foreignRows=[],foreignResponse=new Response('foreign'),foreign=await harness(async()=>foreignResponse,row=>foreignRows.push(row));assert.equal(await foreign.fetch('http://localhost:1/other'),foreignResponse);assert.equal(foreignRows.length,0);checks++;
+  const err=new Error('native failure'),rejectedRows=[],bad=await harness(async()=>{throw err;},row=>rejectedRows.push(row));await assert.rejects(()=>bad.fetch('http://127.0.0.1:41750/'),e=>e===err);assert.equal(rejectedRows.length,0);checks++;
+  const recordError=new Error('record failure'),unretained=await harness(async()=>new Response('body'),()=>{throw recordError;});await assert.rejects(()=>unretained.fetch('http://127.0.0.1:41750/'),e=>e===recordError);checks++;
+  const request=new Request('http://127.0.0.1:41750/request',{method:'POST',body:'request-input'}),requestRows=[],requestResponse=new Response('reply'),req=await harness(async i=>{assert.equal(i,request);return requestResponse;},row=>requestRows.push(row));assert.equal(await req.fetch(request),requestResponse);assert.equal(Buffer.from(requestRows[0].requestBase64,'base64').toString(),'request-input');assert.equal(request.bodyUsed,false);checks++;
+  const statusRows=[],statusResponse=new Response('service unavailable',{status:503}),status=await harness(async()=>statusResponse,row=>statusRows.push(row));assert.equal(await status.fetch('http://127.0.0.1:41750/'),statusResponse);assert.equal(statusRows[0].status,503);checks++;
+  const syntax=['test-C101-current-three-owner-browser-v3.cjs','lib/C101-consumer-read-observer.cjs','qualify-C101-consumer-read-observer.cjs','audit-C101-current-three-owner-browser-v2.cjs'];for(const name of syntax){const f=path.join(__dirname,name);files.push(f);cp.execFileSync(process.execPath,['--check',f],{timeout:30000});}
+  result={passed:true,observedAt:new Date().toISOString(),preparedOnly:true,original16AdmissionAndV2RelockSourceHeld:true,exactFiveObservationSourceDeltas:true,actual730ReplyIndependentHistoryFailureHeld:true,offlineObservationChecks:checks,retainedActualBytesOfflineFixtures:5,originalResponseIdentityAndBodyHeld:true,originalInputAndInitIdentityHeld:true,uncapturedResponseNotDelivered:true,syntaxFiles:4,actualNewBrowserExecuted:false,networkRequests:0,profilesOpened:0,signatures:0,executeRequests:0,currentThreeOwnerBrowserAccepted:false,parentCompletion:false,inputsSha256:Object.fromEntries([...new Set(files)].map(f=>[f,sha(f)]))};
+ }catch(error){result={passed:false,observedAt:new Date().toISOString(),errorType:error.name,message:String(error.message).slice(0,900)};process.exitCode=1;}
+ fs.writeFileSync(output,JSON.stringify(result,null,2)+'\n',{flag:'wx',mode:0o600});console.log(JSON.stringify({passed:result.passed,checks:result.offlineObservationChecks,errorType:result.errorType,message:result.message}));
+}
+main().catch(error=>{console.error(JSON.stringify({passed:false,errorType:error.name,message:String(error.message).slice(0,500)}));process.exitCode=1;});

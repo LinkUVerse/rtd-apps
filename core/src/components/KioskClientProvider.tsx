@@ -1,15 +1,15 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { useRtdClientContext } from 'rtd-dapp-kit';
-import { KioskClient, Network } from 'rtd-kiosk';
+import { useExplorerRpcContext as useRtdClientContext } from '../rpc/ExplorerRpcContext';
+import { KioskClient, type KioskClientOptions } from 'rtd-kiosk';
 import { createContext, useMemo, type ReactNode } from 'react';
 
 export const KioskClientContext = createContext<KioskClient | null>(null);
 
-const rtdToKioskNetwork: Record<string, Network> = {
-	mainnet: Network.MAINNET,
-	testnet: Network.TESTNET,
+const rtdToKioskNetwork: Record<string, KioskClientOptions['network']> = {
+	mainnet: 'mainnet',
+	testnet: 'testnet',
 };
 
 export type KioskClientProviderProps = {
@@ -18,7 +18,7 @@ export type KioskClientProviderProps = {
 
 export function KioskClientProvider({ children }: KioskClientProviderProps) {
 	const { client, network } = useRtdClientContext();
-	const kioskNetwork = rtdToKioskNetwork[network.toLowerCase()] || Network.CUSTOM;
+	const kioskNetwork = rtdToKioskNetwork[network.toLowerCase()] || 'custom';
 	const kioskClient = useMemo(
 		() => new KioskClient({ client, network: kioskNetwork }),
 		[client, kioskNetwork],

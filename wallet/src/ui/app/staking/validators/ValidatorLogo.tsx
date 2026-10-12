@@ -1,110 +1,140 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
-import { Heading } from '_app/shared/heading';
-import { ImageIcon } from '_app/shared/image-icon';
-import { Text } from '_app/shared/text';
-import { Badge } from '_src/ui/app/shared/Badge';
-import { useI18n } from '_src/ui/app/i18n';
-import { useRtdClientQuery } from 'rtd-dapp-kit';
-import { formatAddress } from 'rtd-typescript/utils';
-import cl from 'clsx';
-import { useMemo } from 'react';
+import { Heading } from "_app/shared/heading";
+import { ImageIcon } from "_app/shared/image-icon";
+import { Text } from "_app/shared/text";
+import { Badge } from "_src/ui/app/shared/Badge";
+import { useI18n } from "_src/ui/app/i18n";
+import { useStakingView } from "rtd-apps-core/src/rpc/staking-hooks";
+import { formatAddress, normalizeRtdAddress } from "rtd-typescript/utils";
+import cl from "clsx";
+import { useMemo } from "react";
 
 interface ValidatorLogoProps {
-	validatorAddress: string;
-	showAddress?: boolean;
-	stacked?: boolean;
-	isTitle?: boolean;
-	size: 'body' | 'subtitle';
-	iconSize: 'sm' | 'md';
-	showActiveStatus?: boolean;
-	activeEpoch?: string;
+  view?: import("rtd-apps-core/src/rpc/staking-types").WalletStakingView;
+  validatorAddress: string;
+  showAddress?: boolean;
+  stacked?: boolean;
+  isTitle?: boolean;
+  size: "body" | "subtitle";
+  iconSize: "sm" | "md";
+  showActiveStatus?: boolean;
+  activeEpoch?: string;
 }
 
 export function ValidatorLogo({
-	validatorAddress,
-	showAddress,
-	iconSize,
-	isTitle,
-	size,
-	stacked,
-	showActiveStatus = false,
-	activeEpoch,
+  view,
+  validatorAddress,
+  showAddress,
+  iconSize,
+  isTitle,
+  size,
+  stacked,
+  showActiveStatus = false,
+  activeEpoch,
 }: ValidatorLogoProps) {
-	const { t } = useI18n();
-	const { data, isPending } = useRtdClientQuery('getLatestRtdSystemState');
+  const { t } = useI18n();
+  const query = useStakingView(undefined, { enabled: !view });
+  const data = view ?? query.data;
+  const isPending = !view && query.isPending;
+  const isError = !view && query.isError;
 
-	const validatorMeta = useMemo(() => {
-		if (!data) return null;
+  const validatorMeta = useMemo(() => {
+    if (!data) return null;
 
-		return (
-			data.activeValidators.find((validator) => validator.rtdAddress === validatorAddress) || null
-		);
-	}, [validatorAddress, data]);
+    return (
+      data.validators.find(
+        (validator) =>
+          validator.active &&
+          validator.address === normalizeRtdAddress(validatorAddress),
+      ) ||
+      data.validators.find(
+        (validator) =>
+          validator.address === normalizeRtdAddress(validatorAddress),
+      ) ||
+      null
+    );
+  }, [validatorAddress, data]);
 
-	const stakingPoolActivationEpoch = Number(validatorMeta?.stakingPoolActivationEpoch || 0);
-	const currentEpoch = Number(data?.epoch || 0);
+  const activation = validatorMeta?.activationEpoch;
+  const current = data ? BigInt(data.epoch) : null;
+  const newValidator =
+    !!validatorMeta?.active &&
+    activation !== null &&
+    activation !== undefined &&
+    current !== null &&
+    current > 0n &&
+    current >= BigInt(activation) &&
+    current - BigInt(activation) <= 1n;
+  const isAtRisk =
+    validatorMeta?.atRiskEpochs !== null &&
+    validatorMeta?.atRiskEpochs !== undefined;
 
-	// flag as new validator if the validator was activated in the last epoch
-	// for genesis validators, this will be false
-	const newValidator = currentEpoch - stakingPoolActivationEpoch <= 1 && currentEpoch !== 0;
+  if (isPending) {
+    return <div className="flex justify-center items-center">...</div>;
+  }
+  // for inactive validators, show the epoch number
+  const age =
+    activeEpoch &&
+    /^(0|[1-9]\d*)$/.test(activeEpoch) &&
+    current !== null &&
+    current >= BigInt(activeEpoch)
+      ? (current - BigInt(activeEpoch)).toString()
+      : null;
+  const fallBackText =
+    age !== null
+      ? t("staking.stakedEpochsAgo", { count: age })
+      : formatAddress(validatorAddress);
+  const validatorName = isError
+    ? t("common.syncError")
+    : validatorMeta?.name || fallBackText;
 
-	// flag if the validator is at risk of being removed from the active set
-	const isAtRisk = data?.atRiskValidators.some((item) => item[0] === validatorAddress);
+  return (
+    <div
+      className={cl(
+        "w-full flex justify-start font-semibold",
+        stacked ? "flex-col items-start" : "flex-row items-center",
+        isTitle ? "gap-2.5" : "gap-2",
+      )}
+    >
+      <ImageIcon
+        src={validatorMeta?.imageUrl || null}
+        label={validatorMeta?.name || ""}
+        fallback={validatorMeta?.name || ""}
+        size={iconSize}
+        rounded="full"
+      />
+      <div className="flex flex-col gap-1.5 overflow-hidden">
+        <div className="flex">
+          {isTitle ? (
+            <Heading as="h4" variant="heading4" color="steel-darker" truncate>
+              {validatorName}
+            </Heading>
+          ) : (
+            <div className="line-clamp-2 break-all">
+              <Text color="gray-90" variant={size} weight="semibold">
+                {validatorName}
+              </Text>
+            </div>
+          )}
 
-	if (isPending) {
-		return <div className="flex justify-center items-center">...</div>;
-	}
-	// for inactive validators, show the epoch number
-	const fallBackText = activeEpoch
-		? t('staking.stakedEpochsAgo', {
-				count: Number(data?.epoch) - Number(activeEpoch),
-			})
-		: '';
-	const validatorName = validatorMeta?.name || fallBackText;
-
-	return (
-		<div
-			className={cl(
-				'w-full flex justify-start font-semibold',
-				stacked ? 'flex-col items-start' : 'flex-row items-center',
-				isTitle ? 'gap-2.5' : 'gap-2',
-			)}
-		>
-			<ImageIcon
-				src={validatorMeta?.imageUrl || null}
-				label={validatorMeta?.name || ''}
-				fallback={validatorMeta?.name || ''}
-				size={iconSize}
-				rounded="full"
-			/>
-			<div className="flex flex-col gap-1.5 overflow-hidden">
-				<div className="flex">
-					{isTitle ? (
-						<Heading as="h4" variant="heading4" color="steel-darker" truncate>
-							{validatorName}
-						</Heading>
-					) : (
-						<div className="line-clamp-2 break-all">
-							<Text color="gray-90" variant={size} weight="semibold">
-								{validatorName}
-							</Text>
-						</div>
-					)}
-
-					{showActiveStatus && (
-						<div className="ml-1 flex gap-1">
-							{newValidator && <Badge label={t('staking.newValidator')} variant="success" />}
-							{isAtRisk && <Badge label={t('staking.atRisk')} variant="warning" />}
-						</div>
-					)}
-				</div>
-				{showAddress && (
-					<Text variant="body" color="steel-dark" mono>
-						{formatAddress(validatorAddress)}
-					</Text>
-				)}
-			</div>
-		</div>
-	);
+          {showActiveStatus && (
+            <div className="ml-1 flex gap-1">
+              {newValidator && (
+                <Badge label={t("staking.newValidator")} variant="success" />
+              )}
+              {isAtRisk && (
+                <Badge label={t("staking.atRisk")} variant="warning" />
+              )}
+            </div>
+          )}
+        </div>
+        {showAddress && (
+          <Text variant="body" color="steel-dark" mono>
+            {formatAddress(validatorAddress)}
+          </Text>
+        )}
+      </div>
+    </div>
+  );
 }

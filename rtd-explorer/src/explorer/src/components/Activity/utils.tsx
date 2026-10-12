@@ -1,7 +1,7 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { type EpochMetricsPage } from "rtd-typescript/client";
+import { type ExplorerEpochPage } from "~/rpc/epoch-schema";
 import { Text } from "@linku/ui";
 
 import { RtdAmount } from "../Table/RtdAmount";
@@ -11,7 +11,7 @@ import { CheckpointSequenceLink, EpochLink } from "~/ui/InternalLink";
 import { getEpochStorageFundFlow } from "~/utils/getStorageFundFlow";
 
 // Generate table data from the epochs data
-export const genTableDataFromEpochsData = (results: EpochMetricsPage) => ({
+export const genTableDataFromEpochsData = (results: ExplorerEpochPage) => ({
 	data: results?.data.map((epoch) => ({
 		epoch: (
 			<HighlightedTableCol first>

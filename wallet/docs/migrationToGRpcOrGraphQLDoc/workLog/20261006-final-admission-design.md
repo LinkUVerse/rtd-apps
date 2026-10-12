@@ -1,0 +1,11 @@
+# NET-04／TX-01 最终动作准入竞态设计
+
+现authorize最后一次assertClear的只读事务已经结束，签名调用或ExecutionReader内部身份探测的await期间可提交新的Fault；因此前面的正检查不能为稍后的实际动作授权。先实现并验证这一编码缺口，父任务及完整权限／发布pin验收仍按原合同。
+
+- F1 原字节保存；原生Chrome先复现旧assertClear后提交Fault仍可执行无链的合成动作，再证明新门槛在同一状态不调用动作。
+- F2 Store.runIfClear在原生readonly事务的get成功事件内验证持久record并同步启动动作，与同store的readwrite队列排序。动作Promise立即安装拒绝处理，不把IDB事务跨await保持；事务先完成才向调用者交付结果。超时／abort／存储未知失败拒绝，不重复动作，不清Fault／pending。
+- F3 Authorizer.runFinal仅在activate后可用，每次重新检查具体依赖，且callback内同步检查session与caller取消。异步签名的开始与签名结果交付各独立检查，不持有写锁阻塞观察。
+- F4 ExecutionReader在ExecuteTransaction的实际fetch边界使用门槛，覆盖其身份探测await空窗；只读身份／验签／恢复不触发发送门槛。wallet-ui和dApp execute都注入，sign-only签名及返回接入；journal仍先严格落盘，门槛失败保留原摘要恢复，不自动广播。
+- F5 原生两个Store／并发写入／异步动作不阻塞新Fault的证据；单位测试覆盖身份等待中故障、取消、存储失败、签名后新Fault。完整相关回归、类型、稳定构建／当前UI与worker及原七journal核查；双方技术文档与Task／workLog同步。无证据的正常CA／真正权限变化不记通过。
+
+线性化点是原生get成功事件中同步开始实际动作；其之前已提交或排队在该readonly事务之前的Fault／pending必须拒绝。其后的负面观察不得被删除，异步签名完成后的交付须另开门槛。不能把单次检查说成永久授权或阻断已广播交易。

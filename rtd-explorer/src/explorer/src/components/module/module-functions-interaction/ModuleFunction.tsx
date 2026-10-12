@@ -2,14 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { useZodForm } from "rtd-apps-core";
-import {
-    ConnectButton,
-    useCurrentAccount, useSignTransaction,
-    useRtdClient
-} from "rtd-dapp-kit";
+import { useExplorerClient } from "~/rpc/explorer-client";
+import { useExplorerSignTransaction } from "~/rpc/explorer-wallet";
+import { useCurrentAccount } from "rtd-dapp-kit-react";
+import { ConnectButton } from "rtd-dapp-kit-react/ui";
 import { ArrowRight12 } from "rtd-apps-icons";
-import { bcs } from "rtd-typescript/bcs";
-import type { RtdMoveNormalizedFunction } from "rtd-typescript/client";
+import type { RtdMoveNormalizedFunction } from "rtd-typescript/jsonRpc";
 import { Transaction } from "rtd-typescript/transactions";
 import { Button } from "@linku/ui";
 import { useMutation } from "@tanstack/react-query";
@@ -22,7 +20,8 @@ import { DisclosureBox } from "~/ui/DisclosureBox";
 import { Input } from "~/ui/Input";
 import { Label } from "~/ui/utils/Label";
 import { FunctionExecutionResult } from "./FunctionExecutionResult";
-import { SerializationType, getSerializationTypesAndValue } from "./serializer";
+import { getSerializationTypesAndValue } from "./serializer";
+import { createBcsType } from "./bcs-argument";
 import { useFunctionParamsDetails } from "./useFunctionParamsDetails";
 import { useFunctionTypeArguments } from "./useFunctionTypeArguments";
 
@@ -39,29 +38,6 @@ export type ModuleFunctionProps = {
     defaultOpen?: boolean;
 };
 
-function createBcsType(
-    types: (SerializationType|undefined)[],
-): any
-{
-    if (typeof types[0] === "undefined") {
-        throw new Error("Type cannot be undefined");
-    }
-
-    // pure arguments: "Address", "Bool", "U8", "U16", "U32", "U64", "U128", "U256"
-    if (types.length === 1) {
-        return bcs[types[0]];
-    }
-
-    // vectors and options are handled recursively
-    if (types[0] === "vector" || types[0] === "option") {
-        return bcs[types[0]](
-            createBcsType(types.slice(1))
-        );
-    }
-
-    throw new Error(`Unsupported types: [${types.join(", ")}]`);
-}
-
 export function ModuleFunction({
     defaultOpen,
     packageId,
@@ -70,8 +46,8 @@ export function ModuleFunction({
     functionDetails,
 }: ModuleFunctionProps) {
     const currentAccount = useCurrentAccount();
-    const rtdClient = useRtdClient();
-    const { mutateAsync: signTransaction } = useSignTransaction();
+    const rtdClient = useExplorerClient();
+    const { mutateAsync: signTransaction } = useExplorerSignTransaction();
     const { handleSubmit, formState, register, control } = useZodForm({
         schema: argsSchema,
     });
@@ -226,7 +202,7 @@ export function ModuleFunction({
                         Execute
                     </Button>
                     <ConnectButton
-                        connectText={
+                        children={
                             <>
                                 Connect Wallet
                                 <ArrowRight12 fill="currentColor" className="-rotate-45" />

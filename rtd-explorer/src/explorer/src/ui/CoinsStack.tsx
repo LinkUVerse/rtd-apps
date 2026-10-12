@@ -3,7 +3,7 @@
 
 import { useCoinMetadata } from "rtd-apps-core";
 import { Rtd, Unstaked } from "rtd-apps-icons";
-import { type CoinMetadata } from "rtd-typescript/client";
+import type { CoinMetadata } from "rtd-typescript/jsonRpc";
 import clsx from "clsx";
 
 import { Image } from "~/ui/image/Image";

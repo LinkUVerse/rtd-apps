@@ -73,7 +73,7 @@ function AppsPlayGround() {
 					))}
 				</div>
 			) : (
-				<RtdAppEmpty displayType="full" />
+				<RtdAppEmpty kind="catalog" displayType="full" />
 			)}
 		</>
 	);

@@ -1,0 +1,8 @@
+# NET-04／NET-11：已结束身份查询的超时生命周期
+
+当前C12真实只签名准备失败，0模拟／广播；原profile只读确认NC5的24范围pending1／fault0。源码发现身份查询10秒AbortSignal.timeout在查询成功后仍会触发；外层能力fetch保留取消监听至完整聚合，故超过10秒的后续正常子组会被记为interrupted。标准明确timeout安排后续TimeoutError，不知道业务Promise是否完成，见[WHATWG DOM](https://dom.spec.whatwg.org/#dom-abortsignal-timeout)。这解释一个可重复缺陷，不将所有历史失败都归为同一原因。
+
+先以实际identity／SDK夹具与能力fetch复现成功身份查询后旧超时误伤，保存失败；再仅改identity自身期限为可撤销timer，并在身份Promise完成或拒绝后clearTimeout。期限数值、真正到期TimeoutError、外部取消、physical pending／body cancel、SDK解码／结束身份、原ticket与已知Fault规则保持。未完成的Promise不得提前清计时器；旧pending不删除。验证成功之后时间推进不再触发旧信号，真实未完成超时和外部取消仍拒绝；完整钱包／类型／构建、fresh实际只签名继续。
+
+
+同类子探测及GraphQL／账户请求期限具有同一生命周期风险；同步收口九个有限读取路径，用统一createReadDeadline保留原期限与TimeoutError，在owner Promise真正settle后仅清本owner计时器。外层fetch物理完成、取消后EOF、在途cleanup及sticky Fault规则不变。11份阶段原字节另存probe-deadline-before，身份第一阶段前原字节另存identity-deadline-before；受控期限测试改在真实owned helper边界注入，不改变反例合同。

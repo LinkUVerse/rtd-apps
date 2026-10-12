@@ -1,8 +1,8 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { useRtdClient } from 'rtd-dapp-kit';
-import { PaginatedObjectsResponse, type RtdObjectDataFilter } from 'rtd-typescript/client';
+import { useExplorerRpcClient as useRtdClient } from '../rpc/ExplorerRpcContext';
+import type { PaginatedObjectsResponse, RtdObjectDataFilter } from 'rtd-typescript/jsonRpc';
 import { useInfiniteQuery } from '@tanstack/react-query';
 
 const MAX_OBJECTS_PER_REQ = 6;

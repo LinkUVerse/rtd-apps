@@ -1,0 +1,5 @@
+# C21：历史失败回执在当前包的只读回归
+
+使用当前候选05和独立随机未注资账户，正常创建／选择／密码解锁／Local选择及页面重载后，打开原真实失败摘要 d4kE2koaXQ829UWnhXd8exWawWa37zEuzCfA7WLdkRC。只读检查交易失败／MoveAbort和原digest，journal前后相同且为空；禁止Faucet／签名／模拟／Execute，关闭前等待所属观察结束。
+
+复制原C20已经通过的12项harness到新脚本，只更新C21固定build proof和说明；原C20脚本／证明不改。仅对已经关闭的本任务C20成功profile文件做读前读后SHA观察，不打开该profile、不操作原七journal、不重新提交失败交易。失败原native／signature证明为历史；若需要当前全链事实，只读按原摘要重新验证。此回归不补足其他QA／TX／TLS或98任务完整验收。

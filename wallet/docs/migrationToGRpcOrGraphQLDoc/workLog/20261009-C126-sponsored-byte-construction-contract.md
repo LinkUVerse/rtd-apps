@@ -1,0 +1,5 @@
+# C126 赞助字节构造补充合同
+
+在生成器/独立审核编码前固定：费用owner和唯一payment使用inventory02不同dev赞助方真实原生Coin，budget为100000000 MIST，price保持原当前批准参考价格。币/质押原第一SplitCoins的唯一GasCoin改为新增尾部sender真实ImmOrOwnedObject输入，原amount/to/validator/system及其他全部kind字段保持；赎回kind完整不改。原sender/所有stake引用保持，既有四种正面expiry逐一保持完整值。规范输入索引不能复用既有Pure/Shared输入，赞助Coin不能成为业务输入。以上预算变化只属于测试请求的显式费用选择，不改钱包默认gas算法。
+
+独立审核从原内部批准重新推导新增输入并验证其逆变换，同时检查规范Coin内容的ID/余额、Owner、version/digest、TransactionData全字段。使用inventory02原生十帧，inventory01的Owner字段读取错误与完整类型字符串拒绝保留。盘点02证明六个现有dev公开账户，零Faucet/Execute/NFT。实际窗口变化仍由C124原有界重读处理，不扩大总期限。

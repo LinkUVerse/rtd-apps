@@ -1,7 +1,7 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { RtdValidatorSummary } from 'rtd-typescript/client';
+import type { RtdValidatorSummary } from 'rtd-typescript/jsonRpc';
 
 import { calculateStakeShare } from './calculateStakeShare';
 

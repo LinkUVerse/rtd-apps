@@ -1,185 +1,151 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
+import { walletReadErrorMessage } from "_src/shared/rpc/read-error";
 
-import BottomMenuLayout, { Content, Menu } from '_app/shared/bottom-menu-layout';
-import { Button } from '_app/shared/ButtonUI';
-import { Card, CardItem } from '_app/shared/card';
-import { Text } from '_app/shared/text';
-import Alert from '_components/alert';
-import LoadingIndicator from '_components/loading/LoadingIndicator';
-import { ampli } from '_src/shared/analytics/ampli';
-import { useI18n } from '_src/ui/app/i18n';
-import {
-	DELEGATED_STAKES_QUERY_REFETCH_INTERVAL,
-	DELEGATED_STAKES_QUERY_STALE_TIME,
-} from '_src/shared/constants';
-import { useGetDelegatedStake } from 'rtd-apps-core';
-import { useRtdClientQuery } from 'rtd-dapp-kit';
-import { Plus12 } from 'rtd-apps-icons';
-import type { StakeObject } from 'rtd-typescript/client';
-import { useMemo } from 'react';
+import BottomMenuLayout, {
+  Content,
+  Menu,
+} from "_app/shared/bottom-menu-layout";
+import { Button } from "_app/shared/ButtonUI";
+import { Card, CardItem } from "_app/shared/card";
+import { Text } from "_app/shared/text";
+import Alert from "_components/alert";
+import LoadingIndicator from "_components/loading/LoadingIndicator";
+import { ampli } from "_src/shared/analytics/ampli";
+import { useI18n } from "_src/ui/app/i18n";
+import { useStakingView } from "rtd-apps-core/src/rpc/staking-hooks";
+import { stakingTotals } from "rtd-apps-core/src/rpc/staking-view";
+import { Plus12 } from "rtd-apps-icons";
+import { useMemo } from "react";
 
-import { useActiveAddress } from '../../hooks/useActiveAddress';
-import { getAllStakeRtd } from '../getAllStakeRtd';
-import { StakeAmount } from '../home/StakeAmount';
-import { StakeCard, type DelegationObjectWithValidator } from '../home/StakedCard';
+import { useActiveAddress } from "../../hooks/useActiveAddress";
+import { StakeAmount } from "../home/StakeAmount";
+import { StakeCard } from "../home/StakedCard";
 
 export function ValidatorsCard() {
-	const { t } = useI18n();
-	const accountAddress = useActiveAddress();
-	const {
-		data: delegatedStake,
-		isPending,
-		isError,
-		error,
-	} = useGetDelegatedStake({
-		address: accountAddress || '',
-		staleTime: DELEGATED_STAKES_QUERY_STALE_TIME,
-		refetchInterval: DELEGATED_STAKES_QUERY_REFETCH_INTERVAL,
-	});
+  const { t } = useI18n();
+  const accountAddress = useActiveAddress();
+  const {
+    data: system,
+    isPending,
+    isError,
+    error,
+  } = useStakingView(accountAddress, { enabled: !!accountAddress });
+  const delegations = system?.positions;
+  const totals = useMemo(
+    () => (delegations ? stakingTotals(delegations) : null),
+    [delegations],
+  );
+  const totalStake = totals?.principal ?? null;
+  const totalEarnTokenReward = totals?.rewards ?? null;
+  const numberOfValidators = totals?.validators ?? null;
+  const hasInactiveValidatorDelegation = delegations?.some(
+    (position) => position.poolState === "inactive",
+  );
 
-	const { data: system } = useRtdClientQuery('getLatestRtdSystemState');
-	const activeValidators = system?.activeValidators;
+  if (isPending) {
+    return (
+      <div className="p-2 w-full flex justify-center items-center h-full">
+        <LoadingIndicator />
+      </div>
+    );
+  }
 
-	// Total active stake for all Staked validators
-	const totalStake = useMemo(() => {
-		if (!delegatedStake) return 0n;
-		return getAllStakeRtd(delegatedStake);
-	}, [delegatedStake]);
+  if (isError || !system || !delegations) {
+    return (
+      <div className="p-2 w-full flex justify-center items-center h-full mb-2">
+        <Alert>
+          <strong>{walletReadErrorMessage(error)}</strong>
+        </Alert>
+      </div>
+    );
+  }
 
-	const delegations = useMemo(() => {
-		return delegatedStake?.flatMap((delegation) => {
-			return delegation.stakes.map((d) => ({
-				...d,
-				// flag any inactive validator for the stakeRtd object
-				// if the stakingPoolId is not found in the activeValidators list flag as inactive
-				inactiveValidator: !activeValidators?.find(
-					({ stakingPoolId }) => stakingPoolId === delegation.stakingPool,
-				),
-				validatorAddress: delegation.validatorAddress,
-			}));
-		});
-	}, [activeValidators, delegatedStake]);
+  return (
+    <div className="flex flex-col flex-nowrap h-full w-full">
+      <BottomMenuLayout>
+        <Content>
+          <div className="mb-4">
+            {hasInactiveValidatorDelegation ? (
+              <div className="mb-3">
+                <Alert>{t("staking.inactiveValidatorsWarning")}</Alert>
+              </div>
+            ) : null}
+            <div className="grid grid-cols-2 gap-2.5 mb-4">
+              {system &&
+                delegations
+                  ?.filter((position) => position.poolState !== "active")
+                  .map((delegation) => (
+                    <StakeCard
+                      position={delegation}
+                      view={system}
+                      key={delegation.objectId}
+                    />
+                  ))}
+            </div>
+            <Card
+              padding="none"
+              header={
+                <div className="py-2.5 flex px-3.75 justify-center w-full">
+                  <Text
+                    variant="captionSmall"
+                    weight="semibold"
+                    color="steel-darker"
+                  >
+                    {t(
+                      (numberOfValidators ?? 0) > 1
+                        ? "staking.validatorsCountPlural"
+                        : "staking.validatorsCount",
+                      { count: numberOfValidators ?? "--" },
+                    )}
+                  </Text>
+                </div>
+              }
+            >
+              <div className="flex divide-x divide-solid divide-gray-45 divide-y-0">
+                <CardItem title={t("staking.yourStake")}>
+                  <StakeAmount balance={totalStake} variant="heading5" />
+                </CardItem>
+                <CardItem title={t("staking.earned")}>
+                  <StakeAmount
+                    balance={totalEarnTokenReward}
+                    variant="heading5"
+                    isEarnedRewards
+                  />
+                </CardItem>
+              </div>
+            </Card>
 
-	// Check if there are any inactive validators
-	const hasInactiveValidatorDelegation = delegations?.some(
-		({ inactiveValidator }) => inactiveValidator,
-	);
-
-	// Get total rewards for all delegations
-	const totalEarnTokenReward = useMemo(() => {
-		if (!delegatedStake || !activeValidators) return 0n;
-		return (
-			delegatedStake.reduce(
-				(acc, curr) =>
-					curr.stakes.reduce(
-						(total, { estimatedReward }: StakeObject & { estimatedReward?: string }) =>
-							total + BigInt(estimatedReward || 0),
-						acc,
-					),
-				0n,
-			) || 0n
-		);
-	}, [delegatedStake, activeValidators]);
-
-	const numberOfValidators = delegatedStake?.length || 0;
-
-	if (isPending) {
-		return (
-			<div className="p-2 w-full flex justify-center items-center h-full">
-				<LoadingIndicator />
-			</div>
-		);
-	}
-
-	if (isError) {
-		return (
-			<div className="p-2 w-full flex justify-center items-center h-full mb-2">
-				<Alert>
-					<strong>{error?.message}</strong>
-				</Alert>
-			</div>
-		);
-	}
-
-	return (
-		<div className="flex flex-col flex-nowrap h-full w-full">
-			<BottomMenuLayout>
-				<Content>
-					<div className="mb-4">
-						{hasInactiveValidatorDelegation ? (
-							<div className="mb-3">
-								<Alert>{t('staking.inactiveValidatorsWarning')}</Alert>
-							</div>
-						) : null}
-						<div className="grid grid-cols-2 gap-2.5 mb-4">
-							{system &&
-								delegations
-									?.filter(({ inactiveValidator }) => inactiveValidator)
-									.map((delegation) => (
-										<StakeCard
-											delegationObject={delegation as DelegationObjectWithValidator}
-											currentEpoch={Number(system.epoch)}
-											key={delegation.stakedRtdId}
-											inactiveValidator
-										/>
-									))}
-						</div>
-						<Card
-							padding="none"
-							header={
-								<div className="py-2.5 flex px-3.75 justify-center w-full">
-									<Text variant="captionSmall" weight="semibold" color="steel-darker">
-										{t(
-											numberOfValidators > 1
-												? 'staking.validatorsCountPlural'
-												: 'staking.validatorsCount',
-											{ count: numberOfValidators },
-										)}
-									</Text>
-								</div>
-							}
-						>
-							<div className="flex divide-x divide-solid divide-gray-45 divide-y-0">
-								<CardItem title={t('staking.yourStake')}>
-									<StakeAmount balance={totalStake} variant="heading5" />
-								</CardItem>
-								<CardItem title={t('staking.earned')}>
-									<StakeAmount balance={totalEarnTokenReward} variant="heading5" isEarnedRewards />
-								</CardItem>
-							</div>
-						</Card>
-
-						<div className="grid grid-cols-2 gap-2.5 mt-4">
-							{system &&
-								delegations
-									?.filter(({ inactiveValidator }) => !inactiveValidator)
-									.map((delegation) => (
-										<StakeCard
-											delegationObject={delegation as DelegationObjectWithValidator}
-											currentEpoch={Number(system.epoch)}
-											key={delegation.stakedRtdId}
-										/>
-									))}
-						</div>
-					</div>
-				</Content>
-				<Menu stuckClass="staked-cta" className="w-full px-0 pb-0 mx-0">
-					<Button
-						size="tall"
-						variant="secondary"
-						to="new"
-						onClick={() =>
-							ampli.clickedStakeRtd({
-								isCurrentlyStaking: true,
-								sourceFlow: 'Validator card',
-							})
-						}
-						before={<Plus12 />}
-						text={t('staking.stakeRtd')}
-					/>
-				</Menu>
-			</BottomMenuLayout>
-		</div>
-	);
+            <div className="grid grid-cols-2 gap-2.5 mt-4">
+              {system &&
+                delegations
+                  ?.filter((position) => position.poolState === "active")
+                  .map((delegation) => (
+                    <StakeCard
+                      position={delegation}
+                      view={system}
+                      key={delegation.objectId}
+                    />
+                  ))}
+            </div>
+          </div>
+        </Content>
+        <Menu stuckClass="staked-cta" className="w-full px-0 pb-0 mx-0">
+          <Button
+            size="tall"
+            variant="secondary"
+            to="new"
+            onClick={() =>
+              ampli.clickedStakeRtd({
+                isCurrentlyStaking: true,
+                sourceFlow: "Validator card",
+              })
+            }
+            before={<Plus12 />}
+            text={t("staking.stakeRtd")}
+          />
+        </Menu>
+      </BottomMenuLayout>
+    </div>
+  );
 }

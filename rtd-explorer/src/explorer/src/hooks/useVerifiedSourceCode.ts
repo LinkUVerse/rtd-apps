@@ -1,7 +1,7 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { useRtdClientContext } from "rtd-dapp-kit";
+import { useExplorerClientContext } from "~/rpc/explorer-client";
 import { useQuery } from "@tanstack/react-query";
 import { Network } from "~/utils/api/DefaultRpcClient";
 
@@ -25,7 +25,7 @@ const networksWithSourceCodeVerification: Network[] = [
  * Hook that retrieves the source code for verified modules.
  */
 export function useVerifiedSourceCode({ packageId, moduleName }: UseVerifiedSourceCodeArgs) {
-	const { network } = useRtdClientContext();
+	const { network } = useExplorerClientContext();
 	const isEnabled = false;
 
 	return useQuery({

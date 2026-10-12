@@ -24,8 +24,10 @@ export default defineConfig({
         chunkSizeWarningLimit: 2000,
     },
     resolve: {
+        dedupe: ["react", "react-dom"],
         alias: {
             "~": new URL("./src", import.meta.url).pathname,
+            "rtd-apps-core": new URL("../../../core", import.meta.url).pathname,
         },
     },
     preview: {

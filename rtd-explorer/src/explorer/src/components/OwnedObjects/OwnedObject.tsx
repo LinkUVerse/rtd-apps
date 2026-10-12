@@ -1,7 +1,8 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { type RtdObjectResponse } from "rtd-typescript/client";
+import { explorerDisplayString } from "rtd-apps-core/src/utils/explorer-kiosk";
+import type { RtdObjectResponse } from "rtd-typescript/jsonRpc";
 
 import { useResolveVideo } from "~/hooks/useResolveVideo";
 import { ObjectDetails } from "~/ui/ObjectDetails";
@@ -14,7 +15,6 @@ type OwnedObjectTypes = {
 
 export default function OwnedObject({ obj }: OwnedObjectTypes) {
 	const video = useResolveVideo(obj);
-	const displayMeta = obj.data?.display?.data;
 
 	return (
 		<ObjectDetails
@@ -22,8 +22,8 @@ export default function OwnedObject({ obj }: OwnedObjectTypes) {
 			variant="small"
 			id={obj.data?.objectId}
 			type={trimStdLibPrefix(parseObjectType(obj))}
-			name={displayMeta?.name ?? displayMeta?.description ?? "--"}
-			image={displayMeta?.image_url}
+			name={explorerDisplayString(obj, "name") ?? explorerDisplayString(obj, "description") ?? "--"}
+			image={explorerDisplayString(obj, "image_url")}
 			video={video}
 		/>
 	);

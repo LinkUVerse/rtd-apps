@@ -1,9 +1,9 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { useRtdClientQuery } from "rtd-dapp-kit";
+import { useExplorerQuery } from "~/rpc/explorer-client";
 import { ArrowRight12 } from "rtd-apps-icons";
-import { type RtdValidatorSummary } from "rtd-typescript/client";
+import type { RtdValidatorSummary } from "rtd-typescript/jsonRpc";
 import { Text } from "@linku/ui";
 import { useMemo } from "react";
 
@@ -90,7 +90,7 @@ type TopValidatorsCardProps = {
 };
 
 export function TopValidatorsCard({ limit, showIcon }: TopValidatorsCardProps) {
-	const { data, isPending, isSuccess, isError } = useRtdClientQuery("getLatestRtdSystemState");
+	const { data, isPending, isSuccess, isError } = useExplorerQuery("getLatestRtdSystemState");
 
 	const tableData = useMemo(
 		() => (data ? validatorsTable(data.activeValidators, limit, showIcon) : null),

@@ -1,0 +1,13 @@
+# C138冷恢复采集等待的有界诊断
+
+23:51UTC时，cold02 actor 93995已运行超过四分钟，已启动它自己的CFT浏览器94377，但尚未输出首个coin表单阶段。不能将进行中的等待记为通过，也不能由无输出断言产品守卫失败。
+
+v2的drain在循环内直接await全部采集job；job又直接await Response.finished，没有显式上界。循环次数不能约束未返回的Promise，因此这条测试工具路径可能无限等待。下一版只修正工具的等待及诊断：给实际finished/body和drain加入明确超时，记录缺口完整公开元数据，仍只保存真正读取的正文，不编造空响应、不扩大既有404缺口白名单。
+
+为结束此确切测试等待，如果actor在启动五分钟后仍无表单输出，首先核对actor完整命令及CFT子进程PPID、出生时间和profile。只向该actor直接拥有的94377浏览器发正常SIGTERM，让await自然拒绝并由actor保存失败，不向原普通Chrome、两链、indexer、publisher或容器发信号；不使用force，不删除profile/store。此诊断不是业务通过。若退出后profile不再满足正常locked/pending/cipher前置，则停止新的冷恢复步骤并保留现状。
+
+新工具接续原creator-01同一个5nano pending，只做读取与正常Unlock/Reject/Disconnect/relock；禁止新sim/Verify/sign/Execute及creator重跑。失败02必须保留，不覆盖旧记录。产品C136与旧C133 profile保持。
+
+23:54UTC补充：正常SIGTERM后actor已经保存cold02失败，stage=current cold launch、forms=0、normalUnlock=false、initialJournal未读取、348正文/12固定digest缺口、forbidden=0。完整CFT辅助进程已退出，仅主进程94377与一个defunct残留；主进程在正常信号之后超过90秒仍存在，node因此没有结束。没有证据支持新业务动作。为解除该测试profile的占用，可在再次核对原PID/PPID/出生/完整命令/已保存失败后只对94377使用SIGKILL作为测试故障清理；这与最初仅正常退出计划不同，必须按实际记录一条forcedOwnedTestBrowserExit，而不是宣称0强制退出。不强制任何容器/原服务，不删任何数据。下轮真正冷启动仍须实际断言锁定、三store和cipher与原creator完全相等，否则停止。
+
+v2的等待还要求所有HTTP request均finished。自然pending会触发持续只读恢复和轮询，初始恢复页面尚未卸载时，不应把这种无活动条件当作导航的永久前提。下一版在正常导航前有界排空已经开始的response正文读取；对未有response的请求只记录公开元数据，仍由正常产品导航处理取消，不伪造完整capture。所有正面响应必须实际取到body；未知缺口不能通过。

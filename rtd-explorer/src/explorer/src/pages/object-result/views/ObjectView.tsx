@@ -1,9 +1,11 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
+import { explorerDisplayStrings } from "rtd-apps-core/src/utils/explorer-kiosk";
+
 import { CoinFormat, useFormatCoin, useResolveRtdNSName } from "rtd-apps-core";
 import { ArrowUpRight16, Info16 } from "rtd-apps-icons";
-import { type ObjectOwner, type RtdObjectResponse } from "rtd-typescript/client";
+import type { ObjectOwner, RtdObjectResponse } from "rtd-typescript/jsonRpc";
 import {
 	formatAddress,
 	normalizeStructTag,
@@ -90,7 +92,7 @@ function DescriptionCard({
 	objectId,
 }: {
 	name?: string | null;
-	display?: any;
+	display?: Record<string, string> | null;
 	objectType: string;
 	objectId: string;
 }) {
@@ -253,7 +255,7 @@ type ObjectViewProps = {
 
 export function ObjectView({ data }: ObjectViewProps) {
 	const [fileType, setFileType] = useState<undefined | string>(undefined);
-	const display = data.data?.display?.data;
+	const display = explorerDisplayStrings(data);
 	const imgUrl = parseImageURL(display);
 	const video = useResolveVideo(data);
 	const name = extractName(display);

@@ -1,7 +1,7 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
-import { useRtdClient } from "rtd-dapp-kit";
-import { RtdClient } from "rtd-typescript/client";
+import { useExplorerClient } from "~/rpc/explorer-client";
+import { ExplorerRpcClient } from "~/rpc/ExplorerRpcClient";
 import { useMemo } from "react";
 
 import { useNetwork } from "~/context";
@@ -10,10 +10,10 @@ import { Network } from "~/utils/api/DefaultRpcClient";
 // TODO: Use enhanced RPC locally by default
 export function useEnhancedRpcClient() {
 	const [network] = useNetwork();
-	const client = useRtdClient();
+	const client = useExplorerClient();
 	const enhancedRpc = useMemo(() => {
 		if (network === String(Network.LOCAL)) {
-			return new RtdClient({ url: "http://localhost:9124" });
+			return new ExplorerRpcClient({ network: "localnet", url: "http://localhost:9124" });
 		}
 
 		return client;

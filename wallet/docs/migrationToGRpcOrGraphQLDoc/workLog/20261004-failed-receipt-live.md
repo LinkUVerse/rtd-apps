@@ -1,0 +1,27 @@
+# 真实链失败回执：归档读取与Chrome展示
+
+2026-10-04。
+
+## 现有失败交易
+
+复用20261003-originbyte-utils-epoch2-publish.json中已有交易Ag91tYoNP1iPCcFUUmK8Fs77nSsB3DkynZ8NpyyGzUFj，checkpoint20776、epoch2；此交易此前由部署工具提交，链结果InsufficientGas。未重新发送它或为本轮创建新链上失败。
+
+实际WalletArchiveCheckpointReader按高度及摘要核验checkpoint，WalletLedgerReader经Fullnode保留范围证明后从archive读取同digest回执与详情，success=false，source=archive。20261004-live-failed-receipt.json及.log保留实际网络路径。再用SDK解析该新reader返回的effectsBase64，V2.TransactionEffects中transactionDigest一致、Failure.error.$kind=InsufficientGas；20261004-failed-receipt-bcs.json记录。这不是仅依据旧CLI JSON推断新API成功。
+
+追加读取错误详情那次遭真实503，20261004-live-failed-receipt-details.log保留失败，未生成对应成功JSON，不能混入成功记录。
+
+## 浏览器定位与通过范围
+
+新增独立只读RTD_TEST_FAILED_RECEIPT模式，禁止与dApp／coin／staking执行、新助记词或自定义配置模式混用。临时账户档案导入指定开发账户仅用于读取；所有保留执行档案及其pending原样保留，脚本无签名提交分支。新增helper test-failed-receipt-ui.cjs，当前构建原摘要收据路由，验证失败标题／状态与InsufficientGas原因、实际归档请求、journal前后空集合完全一致。
+
+首轮在旧测试工具的余额显示断言处失败，未到收据页。仅专用失败收据模式不再执行这个独立余额渲染断言，仍要求实际UI发出GraphQL同链资产请求；不能据此声称余额显示已验证。
+
+后续诊断显示Fullnode返回200，而archive GetServiceInfo在Chrome报ERR_CERT_AUTHORITY_INVALID。此前精确SPKI仅针对GraphQL叶证书；部署native-archive-bridge/server/tls.crt是另一叶证书。通过openssl实际39603握手与部署证书DER逐字节相等，SHA256=3b66dd39adb60ac57623cb68375db73d86a5fcc3f43f3054a3aeaa16ff64b732。测试增加RTD_TEST_ARCHIVE_CERT，将两张明确开发证书的SPKI逐个加入例外；未关闭全局证书校验，未改变生产代码或系统信任。
+
+最终20261004-failed-receipt-ui-pinned.log退出0，页面交易失败和InsufficientGas可见，确有归档GetTransaction HTTP200响应；GraphQL资产快照93961，完整账户锁定／解锁与整浏览器重启仍通过，0模拟0提交，journal没有生成或改写。派生summary.json再次精确检查GetTransaction响应；原成功日志字段archiveTransactionReads当时统计所有Ledger方法，summary更正为精确方法，helper已同步修正。原失败诊断日志保留，不改写为成功。
+
+## 验证与界限
+
+3文件47项execution-reader／stored-receipt／receipt页测试通过，脚本语法检查通过。业务源码与产物未变，UI仍71f5931fd7daa80c7c92ff8683fea773481410151e14f7b8286345bb1498a49d、background仍3a85161e43e83c72be22dc6808dd20feea7b021ad3605c65bf31d7e45263eb10；未新构建或全量测试。
+
+本轮证明真实链失败经新归档reader和实际Chrome收据展示，不证明新钱包批准一次失败交易、终结失败journal落盘／恢复，也不证明正常CA信任或自定义主机权限。RPC-14、TX-06、TRY-02保留剩余范围，41/98、trial_ready=false不变。

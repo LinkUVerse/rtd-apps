@@ -18,3 +18,6 @@ export const useZodForm = <T extends ZodSchema<any>>({
 		...formConfig,
 		resolver: zodResolver(schema),
 	});
+
+// Schemas and resolver must use the same installed Zod major and type definitions.
+export { z } from 'zod';

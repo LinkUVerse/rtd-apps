@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { GrowthBookContext } from '@growthbook/growthbook-react';
-import { useRtdClient } from 'rtd-dapp-kit';
+import { useExplorerRpcClient as useRtdClient } from '../rpc/ExplorerRpcContext';
 import { normalizeRtdAddress } from 'rtd-typescript/utils';
 import { useQuery } from '@tanstack/react-query';
 import { useContext } from 'react';

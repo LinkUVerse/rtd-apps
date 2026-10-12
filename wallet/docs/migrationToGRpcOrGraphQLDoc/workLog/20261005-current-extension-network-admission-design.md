@@ -1,0 +1,7 @@
+# C10当前准入／后台Move门槛Local产物：构建前设计
+
+2358全量／164定向／14后台native及10当前NC5 native已有限通过，133源码／67原字节／36诊断与21官方来源、双方84共有章节（83完全一致＋1编号链接差异）已核对。当前wallet dist仍是C9 UI3a40822e、background c9e3780e，必须先完整复制dist到新备份，再构建并记录其逐文件SHA。旧C9 Chrome02隔离失败及profile／日志保持，不由新build升级为通过。
+
+只使用已审核的Local profile03原字节构建，SHA318f1d850c95d24afc23561cbce224c87cac79ab4e423d0a6be18fc1f1a32b5d，不合成发布pin、不修改profile／production配置。构建本身不需要启停dev；先133当前源码及1076产品SHA再核对，构建前后同source_hash。完整保存旧产物、当前type／Webpack日志与四入口AST／profile／SDK闭包审计。任何失败保存当前失败产物及日志，修复后另起编号。
+
+实际dev／Chrome之前必须重新核验RTD最新源码与其debug产物，环境部署仍只用link-u-smart-contract脚本；保护PID66145、不resume或修改原journal／genesis／watermarks。构建成功只算当前bundle，不宣称normal CA／核心实链／部署签认／最终原子授权或试用。依序补已授权只读三服务及原journal链事实、不产生重复dispatch，再推进试用／其余RPC和QA。49/98、trial_ready=false暂保持。

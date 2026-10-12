@@ -1,0 +1,5 @@
+# C167首轮赞助矩阵失败边界
+
+实际报告20261010-C167-current-sponsored-nft-authorization-01.json保持failed。前三项direct原Validity/None/LargeEpoch各一次正常sender批准、同byte sponsor签名及合计30篡改旧签拒绝；第四项ValidDuring没有Sim或新私有调用，等待摘要90秒超时。四路内部准备均正常。
+
+失败阶段107原帧：1 GetServiceInfo和106 GraphQL，全部HTTP200，GraphQL无errors；原主体/采集零错误，实际Imported私有调用3、其余两入口0，正常退出、Execute0。仅主页面截图不足以确认弹窗错误；不能把自动锁或后端故障作为已确诊原因。C180新唯一预算137000180做单项真实unsigned-only诊断并捕获完整弹窗状态，任何分支都不点Approve、不签名、不发送。若全矩阵重跑，必须使用新唯一budget/digest，137000167三已批准摘要绝不重批。

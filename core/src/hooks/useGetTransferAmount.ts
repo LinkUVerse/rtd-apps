@@ -1,6 +1,6 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
-import { RtdTransactionBlockResponse } from 'rtd-typescript/client';
+import type { RtdTransactionBlockResponse } from 'rtd-typescript/jsonRpc';
 import { RTD_TYPE_ARG } from 'rtd-typescript/utils';
 import { useMemo } from 'react';
 

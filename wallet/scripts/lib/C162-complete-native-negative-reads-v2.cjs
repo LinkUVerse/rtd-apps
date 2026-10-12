@@ -1,0 +1,12 @@
+// Copyright (c) LinkU Labs, Inc.
+// SPDX-License-Identifier: Apache-2.0
+// Strictly retain complete NotFound entities; none are positive object or checkpoint witnesses.
+const assert=require('./C158-bounded-strict-assert.cjs'),{GrpcTypes}=require('rtd-typescript/grpc'),parser=require('./C88-post-write-bytes.cjs');
+function negative(row,request,p,oracle){
+ assert.equal(row.status,200);assert.equal(row.responseBase64,'');assert.equal(row.headers['content-length'],'0');assert.equal(row.headers['grpc-status'],'5');assert.equal(row.headers['x-rtd-chain-id'],p.h0);const method=new URL(row.url).pathname.split('/').pop(),message=decodeURIComponent(row.headers['grpc-message']);assert(message.length<128);const expected=Buffer.concat([Buffer.from([8,5,18,Buffer.byteLength(message)]),Buffer.from(message)]);const details=row.headers['grpc-status-details-bin'];assert([expected.toString('base64'),expected.toString('base64').replace(/=+$/,'')].includes(details));assert.deepEqual(Buffer.from(details,'base64'),expected);
+ if(method==='GetObject'){assert([p.owner,oracle.addresses.existingTarget].includes(request.objectId));assert.equal(message,'Object '+request.objectId+' not found');return {method,kind:'address-is-not-an-object',objectId:request.objectId,positiveObjectWitness:false};}
+ if(method==='GetTransaction'){assert.equal(request.digest,p.variant.digest);assert.equal(message,'Transaction '+request.digest+' not found');return {method,kind:'fixed-pending-digest-not-found',digest:request.digest,positiveReceiptWitness:false};}
+ assert.equal(method,'GetCheckpoint');assert.equal(new URL(row.url).port,'41750');assert.equal(request.checkpointId.oneofKind,'sequenceNumber');const height=String(request.checkpointId.sequenceNumber);assert.equal(message,'Checkpoint '+height+' not found');assert.deepEqual(request.readMask.paths,['sequence_number','digest']);assert(BigInt(row.headers['x-rtd-lowest-available-checkpoint'])>BigInt(height));
+ const earlier=p.frames.filter(f=>f.url==='http://127.0.0.1:41750/rtd.rpc.v2.LedgerService/GetServiceInfo'&&f.phase===row.phase).map(f=>GrpcTypes.GetServiceInfoResponse.fromBinary(parser.grpcBody(f.responseBase64,true)));assert(earlier.some(r=>r.chainId===p.h0&&String(r.lowestAvailableCheckpoint)===height));return {method,kind:'observed-native-pruning-race',requestedHeight:height,responseLowestHeight:row.headers['x-rtd-lowest-available-checkpoint'],positiveCheckpointWitness:false};
+}
+module.exports={negative};

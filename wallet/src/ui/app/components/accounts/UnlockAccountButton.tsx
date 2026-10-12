@@ -1,37 +1,30 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { type SerializedUIAccount } from '_src/background/accounts/Account';
-import { useI18n } from '_app/i18n';
-import { isZkLoginAccountSerializedUI } from '_src/background/accounts/zklogin/ZkLoginAccount';
+import { type SerializedUIAccount } from "_src/background/accounts/Account";
+import { useI18n } from "_app/i18n";
+import { isZkLoginAccountSerializedUI } from "_src/background/accounts/zklogin/ZkLoginAccount";
 
-import { Button } from '../../shared/ButtonUI';
-import { SocialButton } from '../../shared/SocialButton';
-import { useUnlockAccount } from './UnlockAccountContext';
+import { Button } from "../../shared/ButtonUI";
+import { useUnlockAccount } from "./UnlockAccountContext";
 
 export type UnlockAccountButtonProps = {
-	account: SerializedUIAccount;
-	title?: string;
+  account: SerializedUIAccount;
+  title?: string;
 };
-export function UnlockAccountButton({ account, title }: UnlockAccountButtonProps) {
-	const { t } = useI18n();
-	const buttonTitle = title || t('accounts.unlockAccount');
-	const { isPasswordUnlockable } = account;
-	const { unlockAccount, isPending } = useUnlockAccount();
+export function UnlockAccountButton({
+  account,
+  title,
+}: UnlockAccountButtonProps) {
+  const { t } = useI18n();
+  const buttonTitle = title || t("accounts.unlockAccount");
+  const { isPasswordUnlockable } = account;
+  const { unlockAccount } = useUnlockAccount();
 
-	if (isPasswordUnlockable) {
-		return <Button text={buttonTitle} onClick={() => unlockAccount(account)} />;
-	}
-	if (isZkLoginAccountSerializedUI(account)) {
-		return (
-			<SocialButton
-				provider={account.provider}
-				onClick={() => {
-					unlockAccount(account);
-				}}
-				loading={isPending}
-				showLabel
-			/>
-		);
-	}
+  if (isPasswordUnlockable) {
+    return <Button text={buttonTitle} onClick={() => unlockAccount(account)} />;
+  }
+  if (isZkLoginAccountSerializedUI(account)) {
+    return <Button text={t("accounts.zkUnsupported")} disabled />;
+  }
 }

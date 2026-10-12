@@ -1,0 +1,13 @@
+# RPC-08 动态对象UID与列表／点查核查
+
+日期：2026-10-04，条目继续未勾选。
+
+核查发现通用decodeDynamicField虽然验证了动态包装字段派生ID，但此前仅接受GraphQL返回child address，没有与其内容UID对照。现增加MoveObject contents至少32字节且BCS Address等于childId的约束；普通MoveValue仍保留自身primitive/vector/struct BCS，不错误套用对象布局。修改依据已同步双方合同章节的Sui MoveObject::id_opt固定源码与本地实现。
+
+修正原测试中的无效3字节动态对象fixture，新增截断内容与错子对象UID拒绝回归；现有Kiosk／NFT消费仍独立验证owner、类型与完整对象内容。5文件98项相关测试和完整钱包类型检查通过，见20261004-dynamic-child-tests.log、20261004-dynamic-child-typecheck.log。
+
+真实配置profile03的GraphQL入口：0x5系统对象有1个普通DynamicField，实际WalletAssetReader完整列表与按名称type＋BCS点查的fieldId、kind、value BCS和snapshot cacheKey一致，见20261004-live-dynamic-fields.json。仅覆盖该实际返回kind；不能把普通字段验证当作DynamicObject或Chrome验收。
+
+本轮修改前钱包全量91文件1008项通过，见20261004-wallet-full-regression.log；该全量日志是修改前基线，最终UID改动之后仅做上述98项受影响测试和完整类型检查，未声称修改后全量已跑。
+
+剩余：通过当前认证GraphQL入口补充非空DynamicObject样本及其实际消费者验证，再完成RPC-08整项核验。不得用当前样本缺失作为普通字段与动态对象可互换的理由。
