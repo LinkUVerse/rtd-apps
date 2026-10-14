@@ -1,0 +1,444 @@
+/* Presentation is scoped to the token home, including shared account controls. */
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  min-width: 0;
+  padding-bottom: 24px;
+  color: rgb(var(--rtd-text-rgb));
+
+  &,
+  * {
+    box-sizing: border-box;
+  }
+  > *,
+  form,
+  input {
+    min-width: 0;
+    max-width: 100%;
+  }
+  button,
+  a {
+    -webkit-tap-highlight-color: transparent;
+  }
+  button:focus-visible,
+  a:focus-visible,
+  input:focus-visible {
+    outline: 2px solid rgb(var(--rtd-control-primary-rgb));
+    outline-offset: 3px;
+  }
+
+  :global(.account-list-card) {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr));
+    gap: 4px 8px;
+    padding: 8px 14px;
+    border-radius: 18px;
+    background: var(--rtd-card-background);
+    box-shadow: none;
+    > :first-child {
+      display: none;
+    } // Redundant “Accounts” title; Current remains visible.
+  }
+  :global(.account-list-current) {
+    grid-column: 1 / -1;
+    gap: 0;
+  }
+  :global(.account-list-switch) {
+    min-width: 0;
+    gap: 8px;
+    &[data-state="open"] {
+      grid-column: 1 / -1;
+    }
+  }
+  :global(.account-list-tools) {
+    gap: 4px;
+    align-items: center;
+    justify-content: flex-end;
+    > div {
+      padding: 0;
+      background: transparent;
+      min-width: 0;
+    }
+    a {
+      min-height: 44px;
+      padding: 0 8px;
+      font-size: 0.75rem;
+      text-transform: none;
+    }
+  }
+  :global(.account-list-card) > [data-state] > button {
+    min-height: 44px;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    justify-content: space-between;
+    > :first-child {
+      font-size: 0.75rem;
+      text-transform: none;
+      color: rgb(var(--rtd-muted-foreground-rgb));
+    }
+    > :nth-child(2) {
+      display: none;
+    }
+    > :last-child {
+      color: rgb(var(--rtd-muted-foreground-rgb));
+    }
+  }
+  :global(.account-card-item) {
+    padding: 10px 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    > div {
+      gap: 8px;
+    }
+    > div > :nth-child(2) {
+      flex: 1;
+      min-width: 0;
+      overflow: visible;
+    }
+    input {
+      width: 100%;
+      font-size: 0.9375rem;
+      color: rgb(var(--rtd-text-rgb));
+    }
+    form {
+      width: 100%;
+    }
+    form button {
+      min-height: 0;
+    }
+    :global(.text-steel-dark) {
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 2px 8px;
+      color: rgb(var(--rtd-muted-foreground-rgb));
+      > :last-child {
+        opacity: 1;
+      }
+    }
+    a,
+    button:not([type="submit"]) {
+      min-width: 44px;
+      min-height: 44px;
+    }
+    svg {
+      flex-shrink: 0;
+    }
+  }
+  :global(.account-list-current) :global(.account-card-item) {
+    border-bottom: 1px solid var(--rtd-border-color);
+  }
+  :global(.account-list-switch) :global(.account-card-item) {
+    padding: 12px;
+    border-radius: 12px;
+    background: rgb(var(--rtd-muted-rgb));
+  }
+  > :global(.text-pBodySmall) {
+    padding: 14px;
+    border-radius: 14px;
+    line-height: 1.6;
+    align-items: flex-start;
+    > svg {
+      flex-shrink: 0;
+      margin-top: 3px;
+    }
+  }
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  min-width: 0;
+  > * {
+    min-width: 0;
+  }
+  > div:has(> [data-state]) {
+    padding: 0;
+    border: 1px solid var(--rtd-border-color);
+    border-radius: 18px;
+    background: var(--rtd-card-background);
+    > [data-state] {
+      gap: 0;
+      border-radius: inherit;
+      > div[data-state] {
+        padding: 0 12px 8px;
+        &:has(> :global(.home-token-link)) {
+          padding: 0;
+        }
+      }
+    }
+  }
+  // The whole header is the hover target; token rows own their content inset.
+  .page & > div > [data-state] > button {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    min-height: 52px;
+    margin: 0;
+    padding: 14px 16px;
+    border-radius: 17px;
+    color: rgb(var(--rtd-muted-foreground-rgb));
+    text-align: left;
+    transition: background-color 160ms ease, color 160ms ease;
+    &[data-state="open"] {
+      border-radius: 17px 17px 0 0;
+    }
+    &:hover {
+      background: rgb(var(--rtd-muted-rgb));
+      color: rgb(var(--rtd-text-rgb));
+    }
+    &:focus-visible {
+      outline-offset: -3px;
+      box-shadow: none;
+    }
+    > :first-child {
+      min-width: 0;
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      text-transform: none;
+      overflow-wrap: anywhere;
+      color: inherit;
+    }
+    > :nth-child(2) {
+      display: none;
+    }
+    > :last-child {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      width: 20px;
+      height: 20px;
+      color: inherit;
+      svg {
+        display: block;
+      }
+    }
+  }
+  :global(.home-token-link) {
+    display: block;
+    border-radius: 0;
+    color: rgb(var(--rtd-text-rgb));
+    transition: background-color 160ms ease;
+    &:last-child {
+      border-radius: 0 0 17px 17px;
+    }
+    &:focus-visible {
+      outline-offset: -3px;
+    }
+    &:hover {
+      background: rgb(var(--rtd-muted-rgb));
+    }
+    > div {
+      min-height: 76px;
+      padding: 12px 16px;
+      border-radius: inherit;
+      background: transparent;
+    }
+    > div > div {
+      min-width: 0;
+    }
+    > div > div:last-child {
+      gap: 12px;
+    }
+    :global(.max-w-token-width) {
+      min-width: 0;
+      max-width: 100%;
+    }
+    :global(.text-gray-90) {
+      color: rgb(var(--rtd-text-rgb));
+    }
+    :global(.text-steel-dark) {
+      color: rgb(var(--rtd-muted-foreground-rgb));
+    }
+    [data-testid] {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+    button {
+      min-width: 44px;
+      min-height: 44px;
+    }
+    &:focus-within button {
+      color: rgb(var(--rtd-muted-foreground-rgb));
+    }
+  }
+}
+
+.balanceCard {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 20px;
+  padding: 24px 16px 16px;
+  border: 1px solid var(--rtd-border-color);
+  border-radius: 22px;
+  background: var(--rtd-card-background);
+  box-shadow: var(--rtd-soft-shadow);
+  min-width: 0;
+}
+.balanceHeading {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  min-width: 0;
+  > div {
+    align-items: flex-start;
+    max-width: 100%;
+  }
+  > div > div:first-child {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    align-items: baseline;
+  }
+  :global(.text-heading1) {
+    font-size: 2.375rem;
+    font-weight: 700;
+    letter-spacing: -0.045em;
+    font-variant-numeric: tabular-nums;
+    color: rgb(var(--rtd-text-rgb));
+    overflow-wrap: anywhere;
+    line-height: 1.15 !important;
+  }
+  :global(.text-heading6) {
+    font-size: 1rem;
+    color: rgb(var(--rtd-muted-foreground-rgb));
+  }
+}
+.eyebrow {
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  font-weight: 500;
+  color: rgb(var(--rtd-muted-foreground-rgb));
+}
+.actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  > * {
+    min-width: 0;
+  }
+  :global(.nova-action-card) {
+    min-height: 76px;
+    padding: 12px 4px;
+    border-radius: 14px;
+    box-shadow: none;
+    background: rgb(var(--rtd-muted-rgb));
+    border: 1px solid transparent;
+    color: rgb(var(--rtd-muted-foreground-rgb));
+    > div {
+      flex-direction: column;
+      gap: 8px;
+    }
+    svg {
+      width: 22px;
+      height: 22px;
+    }
+    &:hover:not(:disabled):not([aria-disabled="true"]) {
+      border-color: var(--rtd-border-strong);
+      background: var(--rtd-card-hover-background);
+    }
+    &:disabled,
+    &[aria-disabled="true"] {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+  .sendAction:not(:disabled):not([aria-disabled="true"]),
+  :global(.nova-action-card--primary) {
+    background: rgb(var(--rtd-control-primary-rgb));
+    color: rgb(var(--rtd-control-primary-foreground-rgb));
+    &:hover {
+      background: rgb(var(--rtd-control-primary-rgb));
+      filter: brightness(0.94);
+    }
+  }
+  > :first-child:nth-last-child(4) {
+    grid-column: 1 / -1;
+    min-height: 44px;
+    > div {
+      flex-direction: row;
+    }
+  }
+}
+.availability,
+.notice {
+  padding: 12px;
+  border: 1px solid var(--rtd-border-color);
+  border-radius: 12px;
+  background: rgb(var(--rtd-muted-rgb));
+  color: rgb(var(--rtd-muted-foreground-rgb));
+  font-size: 0.75rem;
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+  p {
+    margin: 0;
+  }
+  p + p {
+    margin-top: 6px;
+  }
+}
+.availability {
+  border: none;
+}
+.retry {
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 1px solid var(--rtd-border-color);
+  border-radius: 12px;
+  background: rgb(var(--rtd-control-primary-rgb));
+  color: rgb(var(--rtd-control-primary-foreground-rgb));
+  font: inherit;
+  cursor: pointer;
+  &:disabled {
+    opacity: 0.5;
+    cursor: wait;
+  }
+}
+@media (max-width: 359px) {
+  .page :global(.account-list-card) {
+    padding-inline: 10px;
+  }
+  .page :global(.account-list-tools) a {
+    padding-inline: 4px;
+  }
+  .balanceCard {
+    padding-inline: 12px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .page *,
+  .page *::before,
+  .page *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* The shared dark theme assumes a light selected account; this page uses a flat surface. */
+:global(:root[data-rtd-theme]) .page {
+  :global(.account-card-item) {
+    box-shadow: none;
+    input,
+    :global(.text-steel-darker) {
+      color: rgb(var(--rtd-text-rgb)) !important;
+    }
+    :global(.text-steel-dark),
+    button,
+    a {
+      color: rgb(var(--rtd-muted-foreground-rgb)) !important;
+    }
+    input {
+      min-height: 44px;
+    }
+  }
+}

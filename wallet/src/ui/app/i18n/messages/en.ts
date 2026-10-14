@@ -88,6 +88,7 @@ const en = {
   "tokens.buyRtd": "Buy RTD to get started",
   "tokens.needRtd":
     "To send transactions on the RTD network, you need RTD in your wallet.",
+  "tokens.balanceLabel": "Balance",
   "tokens.balanceError": "Error updating balance",
   "tokens.balanceAdmissionBlocked":
     "Balance reads have not passed network verification. Check the network status. Local account controls remain available.",
@@ -379,6 +380,7 @@ const en = {
     "The average APY of all validators where you currently stake RTD.",
   "staking.commission": "Commission",
   "staking.commissionDescription": "Validator commission",
+  "staking.overview": "Staking overview",
   "staking.yourStake": "Your Stake",
   "staking.earned": "Earned",
   "staking.inactiveWarning":

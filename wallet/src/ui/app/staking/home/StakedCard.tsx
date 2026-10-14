@@ -4,7 +4,6 @@ import { useI18n } from "_src/ui/app/i18n";
 import { CountDownTimer } from "_src/ui/app/shared/countdown-timer";
 import { estimatedEpochStart } from "rtd-apps-core/src/rpc/staking-view";
 import { IconTooltip } from "_src/ui/app/shared/tooltip";
-import { Text } from "_src/ui/app/shared/text";
 import { useFormatCoin } from "rtd-apps-core/src/rpc/coin";
 import type {
   StakePosition,
@@ -13,6 +12,8 @@ import type {
 import { RTD_TYPE_ARG, formatAddress } from "rtd-typescript/utils";
 import { Link } from "react-router-dom";
 import { ValidatorLogo } from "../validators/ValidatorLogo";
+import { ChevronRight12 } from "rtd-apps-icons";
+import * as styles from "../Staking.module.scss";
 
 export function StakeCard({
   position,
@@ -53,40 +54,59 @@ export function StakeCard({
     <Link
       data-testid="stake-card"
       to={`/stake/delegation-detail?${new URLSearchParams({ staked: position.objectId, ...(position.validatorAddress ? { validator: position.validatorAddress } : {}) })}`}
-      className="no-underline"
+      className={styles.stakeCard}
     >
-      <div className="theme-surface flex flex-col gap-2 p-3 rounded-2xl border border-solid border-gray-45 h-36">
+      <div className={styles.positionHeader}>
         {position.validatorAddress ? (
           <ValidatorLogo
             view={view}
             validatorAddress={position.validatorAddress}
             size="subtitle"
             iconSize="md"
-            stacked
             activeEpoch={position.requestEpoch}
           />
         ) : (
-          <Text variant="body" color="steel-dark">
+          <span className={styles.poolAddress}>
             {formatAddress(position.poolId)}
-          </Text>
+          </span>
         )}
-        <Text variant="body" color="gray-90" weight="semibold">
-          {displayedAmount === undefined ? "--" : principal} {symbol}
-        </Text>
-        <div className="text-subtitle font-medium flex gap-1">
-          {label}
-          <IconTooltip tip={t("staking.objectDescription")} placement="top" />
+        <ChevronRight12 className={styles.chevron} aria-hidden="true" />
+      </div>
+      <div className={styles.positionMetrics}>
+        <div className={styles.principal}>
+          <span className={styles.metricLabel}>
+            {t(
+              position.poolState === "inactive"
+                ? "staking.estimatedWithdraw"
+                : "staking.yourStake",
+            )}
+          </span>
+          <div className={styles.positionAmount}>
+            <strong>{displayedAmount === undefined ? "--" : principal}</strong>
+            <span>{symbol}</span>
+          </div>
         </div>
-        <div className="text-bodySmall">
-          {estimatedStart !== null && estimatedStart > Date.now() ? (
-            <span>
-              {t("staking.estimatedActivation")}{" "}
-              <CountDownTimer timestamp={estimatedStart} variant="bodySmall" />
-            </span>
-          ) : null}
-          {view.safeMode
-            ? `${status} · ${t("staking.safeMode")}`
-            : status}
+        <div className={styles.reward}>
+          <div className={styles.rewardLabel}>
+            <span>{label}</span>
+            <IconTooltip
+              tip={t("staking.objectDescription")}
+              placement="top"
+              noFullWidth
+            />
+          </div>
+          <div className={styles.positionStatus}>
+            {estimatedStart !== null && estimatedStart > Date.now() ? (
+              <span>
+                {t("staking.estimatedActivation")}{" "}
+                <CountDownTimer
+                  timestamp={estimatedStart}
+                  variant="bodySmall"
+                />
+              </span>
+            ) : null}
+            {view.safeMode ? `${status} · ${t("staking.safeMode")}` : status}
+          </div>
         </div>
       </div>
     </Link>

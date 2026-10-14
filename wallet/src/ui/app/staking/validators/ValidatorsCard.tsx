@@ -7,8 +7,6 @@ import BottomMenuLayout, {
   Menu,
 } from "_app/shared/bottom-menu-layout";
 import { Button } from "_app/shared/ButtonUI";
-import { Card, CardItem } from "_app/shared/card";
-import { Text } from "_app/shared/text";
 import Alert from "_components/alert";
 import LoadingIndicator from "_components/loading/LoadingIndicator";
 import { ampli } from "_src/shared/analytics/ampli";
@@ -21,6 +19,7 @@ import { useMemo } from "react";
 import { useActiveAddress } from "../../hooks/useActiveAddress";
 import { StakeAmount } from "../home/StakeAmount";
 import { StakeCard } from "../home/StakedCard";
+import * as styles from "../Staking.module.scss";
 
 export function ValidatorsCard() {
   const { t } = useI18n();
@@ -45,7 +44,11 @@ export function ValidatorsCard() {
 
   if (isPending) {
     return (
-      <div className="p-2 w-full flex justify-center items-center h-full">
+      <div
+        className={styles.loading}
+        role="status"
+        aria-label={t("common.loading")}
+      >
         <LoadingIndicator />
       </div>
     );
@@ -53,7 +56,7 @@ export function ValidatorsCard() {
 
   if (isError || !system || !delegations) {
     return (
-      <div className="p-2 w-full flex justify-center items-center h-full mb-2">
+      <div className={styles.notice} role="alert">
         <Alert>
           <strong>{walletReadErrorMessage(error)}</strong>
         </Alert>
@@ -62,16 +65,52 @@ export function ValidatorsCard() {
   }
 
   return (
-    <div className="flex flex-col flex-nowrap h-full w-full">
-      <BottomMenuLayout>
-        <Content>
-          <div className="mb-4">
+    <div className={styles.overview}>
+      <BottomMenuLayout className={styles.layout}>
+        <Content className={styles.content}>
+          <div className={styles.sections}>
             {hasInactiveValidatorDelegation ? (
-              <div className="mb-3">
-                <Alert>{t("staking.inactiveValidatorsWarning")}</Alert>
+              <div className={styles.notice} role="status">
+                <Alert mode="warning">
+                  {t("staking.inactiveValidatorsWarning")}
+                </Alert>
               </div>
             ) : null}
-            <div className="grid grid-cols-2 gap-2.5 mb-4">
+            <section
+              className={styles.summary}
+              aria-label={t("staking.overview")}
+            >
+              <div className={styles.summaryHeading}>
+                <h2>{t("staking.overview")}</h2>
+                <span className={styles.validatorCount}>
+                  {t(
+                    (numberOfValidators ?? 0) > 1
+                      ? "staking.validatorsCountPlural"
+                      : "staking.validatorsCount",
+                    { count: numberOfValidators ?? "--" },
+                  )}
+                </span>
+              </div>
+              <div className={styles.totals}>
+                <div className={styles.total}>
+                  <span>{t("staking.yourStake")}</span>
+                  <StakeAmount balance={totalStake} variant="heading5" />
+                </div>
+                <div className={styles.total}>
+                  <span>{t("staking.earned")}</span>
+                  <StakeAmount
+                    balance={totalEarnTokenReward}
+                    variant="heading5"
+                    isEarnedRewards
+                  />
+                </div>
+              </div>
+            </section>
+
+            <h2 className={styles.sectionHeading}>
+              {t("staking.currentlyStaked")}
+            </h2>
+            <div className={styles.positions}>
               {system &&
                 delegations
                   ?.filter((position) => position.poolState !== "active")
@@ -83,40 +122,7 @@ export function ValidatorsCard() {
                     />
                   ))}
             </div>
-            <Card
-              padding="none"
-              header={
-                <div className="py-2.5 flex px-3.75 justify-center w-full">
-                  <Text
-                    variant="captionSmall"
-                    weight="semibold"
-                    color="steel-darker"
-                  >
-                    {t(
-                      (numberOfValidators ?? 0) > 1
-                        ? "staking.validatorsCountPlural"
-                        : "staking.validatorsCount",
-                      { count: numberOfValidators ?? "--" },
-                    )}
-                  </Text>
-                </div>
-              }
-            >
-              <div className="flex divide-x divide-solid divide-gray-45 divide-y-0">
-                <CardItem title={t("staking.yourStake")}>
-                  <StakeAmount balance={totalStake} variant="heading5" />
-                </CardItem>
-                <CardItem title={t("staking.earned")}>
-                  <StakeAmount
-                    balance={totalEarnTokenReward}
-                    variant="heading5"
-                    isEarnedRewards
-                  />
-                </CardItem>
-              </div>
-            </Card>
-
-            <div className="grid grid-cols-2 gap-2.5 mt-4">
+            <div className={styles.positions}>
               {system &&
                 delegations
                   ?.filter((position) => position.poolState === "active")
@@ -130,10 +136,10 @@ export function ValidatorsCard() {
             </div>
           </div>
         </Content>
-        <Menu stuckClass="staked-cta" className="w-full px-0 pb-0 mx-0">
+        <Menu stuckClass="staked-cta" className={styles.footer}>
           <Button
             size="tall"
-            variant="secondary"
+            variant="primary"
             to="new"
             onClick={() =>
               ampli.clickedStakeRtd({

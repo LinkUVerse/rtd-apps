@@ -1,0 +1,316 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+  width: 100%;
+  color: rgb(var(--rtd-steel-darker-rgb));
+  overflow-wrap: anywhere;
+
+  // Flex/grid descendants must be allowed to shrink before long identifiers wrap.
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    min-width: 0;
+  }
+
+  a {
+    color: rgb(var(--rtd-control-secondary-foreground-rgb));
+    overflow-wrap: anywhere;
+  }
+
+  a:focus-visible,
+  button:focus-visible {
+    outline: 2px solid rgb(var(--rtd-steel-darker-rgb));
+    outline-offset: 3px;
+  }
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+  width: 100%;
+}
+
+.summary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 24px 16px;
+  text-align: center;
+  border: 1px solid var(--rtd-border-color);
+  border-radius: 20px;
+  background: linear-gradient(
+    150deg,
+    rgb(var(--rtd-primary-subtle-rgb)),
+    var(--rtd-card-background)
+  );
+
+  h2 {
+    margin: 0;
+    font-size: 22px;
+    line-height: 1.4;
+    font-weight: 700;
+  }
+
+  span {
+    white-space: normal;
+  }
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+
+  :global(.text-success-dark) {
+    color: color-mix(
+      in srgb,
+      rgb(var(--rtd-steel-darker-rgb)) 75%,
+      theme("colors.success.dark")
+    );
+  }
+
+  :global(.text-issue-dark) {
+    color: color-mix(
+      in srgb,
+      rgb(var(--rtd-steel-darker-rgb)) 75%,
+      theme("colors.issue.dark")
+    );
+  }
+
+  :global(.nova-card) {
+    width: 100%;
+    border-radius: 16px;
+    box-shadow: var(--rtd-soft-shadow);
+  }
+
+  // Keep the existing shared card footer, with room for wrapped owner values.
+  :global(.nova-card) > :last-child:global(.bg-rtd\/10) {
+    gap: 12px;
+    min-height: 48px;
+    border-top: 1px solid var(--rtd-border-color);
+    border-radius: 0 0 15px 15px;
+    background: rgb(var(--rtd-primary-subtle-rgb) / 65%);
+  }
+
+  :global(.nova-card) > :last-child:global(.bg-rtd\/10) > :last-child {
+    text-align: right;
+  }
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    max-width: 100%;
+  }
+
+  a:global(.nova-card) {
+    justify-content: center;
+    min-height: 52px;
+  }
+}
+
+.object {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 16px;
+}
+
+.identifier {
+  display: block;
+  margin: 0;
+  padding: 12px;
+  max-width: 100%;
+  border: 1px solid var(--rtd-border-color);
+  border-radius: 10px;
+  background: rgb(var(--rtd-primary-subtle-rgb) / 55%);
+  color: rgb(var(--rtd-steel-darker-rgb));
+  font-family: "Red Hat Mono Variable", monospace;
+  font-size: 12px;
+  line-height: 1.7;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  user-select: text;
+}
+
+.notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid var(--rtd-border-color);
+  border-radius: 14px;
+  background: rgb(var(--rtd-primary-subtle-rgb));
+  color: rgb(var(--rtd-steel-darker-rgb));
+  font-size: 14px;
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+
+  &[data-tone="success"] {
+    border-color: color-mix(
+      in srgb,
+      theme("colors.success.dark") 35%,
+      var(--rtd-card-background)
+    );
+    background: color-mix(
+      in srgb,
+      theme("colors.success.DEFAULT") 8%,
+      var(--rtd-card-background)
+    );
+  }
+
+  &[data-tone="warning"] {
+    border-color: color-mix(
+      in srgb,
+      theme("colors.warning.dark") 35%,
+      var(--rtd-card-background)
+    );
+    background: color-mix(
+      in srgb,
+      theme("colors.warning.DEFAULT") 10%,
+      var(--rtd-card-background)
+    );
+  }
+
+  &[data-tone="issue"] {
+    border-color: color-mix(
+      in srgb,
+      theme("colors.issue.dark") 35%,
+      var(--rtd-card-background)
+    );
+    background: color-mix(
+      in srgb,
+      theme("colors.issue.DEFAULT") 8%,
+      var(--rtd-card-background)
+    );
+  }
+}
+
+.noticeIcon {
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+  margin-top: 3px;
+}
+
+.noticeBody {
+  flex: 1;
+  min-width: 0;
+
+  p {
+    margin: 0;
+  }
+
+  p + p {
+    margin-top: 8px;
+  }
+}
+
+.history {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 1px solid var(--rtd-border-strong);
+  border-radius: 12px;
+  background: rgb(var(--rtd-control-secondary-rgb));
+  color: rgb(var(--rtd-control-secondary-foreground-rgb));
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.5;
+  white-space: normal;
+  cursor: pointer;
+  transition:
+    background 180ms ease,
+    opacity 180ms ease;
+
+  &:hover:not(:disabled) {
+    background: var(--rtd-card-hover-background);
+  }
+
+  &:active:not(:disabled) {
+    background: rgb(var(--rtd-primary-soft-rgb));
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: wait;
+  }
+}
+
+.overlay > button {
+  flex-shrink: 0;
+  align-items: center;
+  gap: 8px;
+  width: calc(100% - 40px);
+  min-height: 48px;
+  padding: 10px 16px;
+  border: 1px solid var(--rtd-border-strong);
+  border-radius: 14px;
+  background: rgb(var(--rtd-control-primary-rgb));
+  color: rgb(var(--rtd-control-primary-foreground-rgb));
+  font-size: 16px;
+  font-weight: 600;
+
+  &:hover {
+    filter: brightness(1.08);
+  }
+
+  // The shared overlay highlights hovered icon children in white.
+  // Keep the theme's button foreground, including the light button in dark themes.
+  :hover {
+    color: inherit;
+  }
+
+  &:focus-visible {
+    outline: 2px solid rgb(var(--rtd-control-primary-foreground-rgb));
+    outline-offset: 3px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .action {
+    transition: none;
+  }
+}
+
+.statusBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 1px solid theme("colors.success.dark");
+  background: theme("colors.success.light");
+  color: color-mix(in srgb, theme("colors.success.dark") 75%, black);
+  box-shadow: 0 0 0 6px
+    color-mix(in srgb, theme("colors.success.DEFAULT") 8%, transparent);
+
+  &[data-success="false"] {
+    border-color: theme("colors.issue.dark");
+    background: theme("colors.issue.light");
+    color: color-mix(in srgb, theme("colors.issue.dark") 75%, black);
+    box-shadow: 0 0 0 6px
+      color-mix(in srgb, theme("colors.issue.DEFAULT") 8%, transparent);
+  }
+}

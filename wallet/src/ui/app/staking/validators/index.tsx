@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { useActiveAddress } from "../../hooks/useActiveAddress";
 import { SelectValidatorCard } from "./SelectValidatorCard";
 import { ValidatorsCard } from "./ValidatorsCard";
+import * as styles from "../Staking.module.scss";
 
 export function Validators() {
   const { t } = useI18n();
@@ -33,13 +34,15 @@ export function Validators() {
   return (
     <Overlay
       showModal
+      className={styles.overlay}
+      closeLabel={t("common.close")}
       title={isPending ? t("common.loading") : pageTitle}
       closeOverlay={() => navigate("/")}
     >
-      <div className="w-full h-full flex flex-col flex-nowrap">
+      <div className={styles.page}>
         <Loading loading={isPending}>
           {isError ? (
-            <div className="mb-2">
+            <div className={styles.notice} role="alert">
               <Alert>
                 <strong>{walletReadErrorMessage(error)}</strong>
               </Alert>

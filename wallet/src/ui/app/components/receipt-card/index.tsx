@@ -9,7 +9,8 @@ import {
   receiptObjectEffects,
   receiptStakeEvents,
 } from "rtd-apps-core/src/rpc/transaction-view";
-import Alert from "../alert";
+import { ReceiptNotice } from "./ReceiptNotice";
+import * as styles from "./Receipt.module.scss";
 import { useRecognizedPackages } from "../../hooks/useRecognizedPackages";
 import { useI18n } from "../../i18n";
 import { DateCard } from "../../shared/date-card";
@@ -41,39 +42,41 @@ export function ReceiptCard({
   );
   const gas = useMemo(() => receiptGas(txn), [txn]);
   return (
-    <div className="block relative w-full h-full">
-      <div className="flex flex-col gap-3 items-center justify-center mb-4">
+    <div className={styles.card}>
+      <div className={styles.summary}>
         <StatusIcon status={txn.status.success} />
-        <span data-testid="transaction-status" className="sr-only">
+        <h2 data-testid="transaction-status">
           {t(txn.status.success ? "receipt.success" : "receipt.failed")}
-        </span>
+        </h2>
         {txn.timestampMs !== null && (
           <DateCard timestamp={txn.timestampMs} size="md" />
         )}
       </div>
-      {!txn.status.success && <Alert>{txn.status.error.message}</Alert>}
-      <section className="-mx-5 bg-rtd/10 min-h-full">
-        <div className="px-5 py-8 flex flex-col gap-4">
-          {stakes.map((event) =>
-            event.kind === "stake" ? (
-              <StakeTxnCard key={event.index} event={event} />
-            ) : (
-              <UnStakeTxnCard key={event.index} event={event} />
-            ),
-          )}
-          <BalanceChanges changes={balances} />
-          <ObjectEffects changes={objects} />
-          <GasSummary gasSummary={gas} />
-          {txn.checkpoint === null && (
-            <Alert mode="warning">{t("receipt.checkpointPending")}</Alert>
-          )}
-          <ExplorerLinkCard
-            digest={txn.digest}
-            timestamp={
-              txn.timestampMs === null ? undefined : String(txn.timestampMs)
-            }
-          />
-        </div>
+      {!txn.status.success && (
+        <ReceiptNotice tone="issue">{txn.status.error.message}</ReceiptNotice>
+      )}
+      <section className={styles.details}>
+        {stakes.map((event) =>
+          event.kind === "stake" ? (
+            <StakeTxnCard key={event.index} event={event} />
+          ) : (
+            <UnStakeTxnCard key={event.index} event={event} />
+          ),
+        )}
+        <BalanceChanges changes={balances} />
+        <ObjectEffects changes={objects} />
+        <GasSummary gasSummary={gas} />
+        {txn.checkpoint === null && (
+          <ReceiptNotice tone="warning">
+            {t("receipt.checkpointPending")}
+          </ReceiptNotice>
+        )}
+        <ExplorerLinkCard
+          digest={txn.digest}
+          timestamp={
+            txn.timestampMs === null ? undefined : String(txn.timestampMs)
+          }
+        />
       </section>
     </div>
   );

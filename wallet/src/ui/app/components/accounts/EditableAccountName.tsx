@@ -63,6 +63,7 @@ export function EditableAccountName({
 			<Form className="flex flex-col" form={form} onSubmit={onSubmit}>
 				<Input
 					{...inputFormData}
+					aria-label={t('accounts.nickname')}
 					ref={(instance) => {
 						ref(instance);
 						inputRef.current = instance;

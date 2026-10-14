@@ -7,6 +7,7 @@ import cn from 'clsx';
 import { useState, type ReactNode } from 'react';
 
 interface CollapsibleProps {
+	className?: string;
 	title: string;
 	defaultOpen?: boolean;
 	children: ReactNode | ReactNode[];
@@ -16,6 +17,7 @@ interface CollapsibleProps {
 }
 
 export function Collapsible({
+	className,
 	title,
 	children,
 	defaultOpen,
@@ -32,7 +34,7 @@ export function Collapsible({
 
 	return (
 		<CollapsiblePrimitive.Root
-			className="flex flex-shrink-0 justify-start flex-col w-full gap-3"
+			className={cn("flex flex-shrink-0 justify-start flex-col w-full gap-3", className)}
 			open={isOpen ?? open}
 			onOpenChange={handleOpenChange}
 		>

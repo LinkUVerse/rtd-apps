@@ -1,7 +1,8 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import Alert from "_components/alert";
+import { ReceiptNotice } from "_components/receipt-card/ReceiptNotice";
+import * as styles from "_components/receipt-card/Receipt.module.scss";
 import Loading from "_components/loading";
 import Overlay from "_components/overlay";
 import { ReceiptCard } from "_src/ui/app/components/receipt-card";
@@ -36,8 +37,10 @@ function ReceiptPage() {
   const stored = useStoredTransactionReceipt(transactionId);
   const facts = selectReceiptFacts(details, stored.data);
   const data = facts.transaction;
-  const indexing = useReceiptIndexing(transactionId, facts.conflict ? null :
-    facts.receipt?.checkpoint ?? data?.checkpoint);
+  const indexing = useReceiptIndexing(
+    transactionId,
+    facts.conflict ? null : (facts.receipt?.checkpoint ?? data?.checkpoint),
+  );
 
   const navigate = useNavigate();
   // return to previous route or from param if available
@@ -76,54 +79,78 @@ function ReceiptPage() {
         showModal={showModal}
         setShowModal={setShowModal}
         title={pageTitle}
+        className={styles.overlay}
+        closeLabel={t("common.done")}
         closeOverlay={closeReceipt}
         closeIcon={
-          <Check32 fill="currentColor" className="text-rtd-light w-8 h-8" />
+          <>
+            <Check32
+              fill="currentColor"
+              className="w-5 h-5"
+              aria-hidden="true"
+            />
+            <span>{t("common.done")}</span>
+          </>
         }
       >
-        {isError || rpc.state === "unconfigured" || rpc.state === "invalid" ? (
-          <div className="mb-2 h-fit">
-            <Alert>{t("receipt.detailsUnavailable")}</Alert>
-          </div>
-        ) : null}
-        {facts.conflict && <Alert>{t("receipt.factMismatch")}</Alert>}
-        {facts.confirmed !== undefined && !facts.conflict && indexing.data !== true && (
-          <div role="status" className="mb-3">{t("receipt.indexingPending")}</div>
-        )}
-        {facts.receipt && !data && (
-          <div role="status" className="mb-3 break-all">
-            <p>
-              {facts.receipt.success
-                ? t("receipt.confirmedSuccess")
-                : t("receipt.confirmedFailure")}
-            </p>
-            <p>{facts.receipt.digest}</p>
-            {facts.receipt.checkpoint !== null && (
-              <p>
-                {t("receipt.confirmedCheckpoint", {
-                  checkpoint: facts.receipt.checkpoint,
-                })}
-              </p>
+        <div className={styles.page}>
+          {isError ||
+          rpc.state === "unconfigured" ||
+          rpc.state === "invalid" ? (
+            <ReceiptNotice tone="warning">
+              {t("receipt.detailsUnavailable")}
+            </ReceiptNotice>
+          ) : null}
+          {facts.conflict && (
+            <ReceiptNotice tone="issue">
+              {t("receipt.factMismatch")}
+            </ReceiptNotice>
+          )}
+          {facts.confirmed !== undefined &&
+            !facts.conflict &&
+            indexing.data !== true && (
+              <ReceiptNotice>{t("receipt.indexingPending")}</ReceiptNotice>
             )}
-            <p>{t("receipt.detailsPending")}</p>
-          </div>
-        )}
+          {facts.receipt && !data && (
+            <ReceiptNotice tone={facts.receipt.success ? "success" : "issue"}>
+              <p>
+                {facts.receipt.success
+                  ? t("receipt.confirmedSuccess")
+                  : t("receipt.confirmedFailure")}
+              </p>
+              <p className={styles.identifier}>{facts.receipt.digest}</p>
+              {facts.receipt.checkpoint !== null && (
+                <p>
+                  {t("receipt.confirmedCheckpoint", {
+                    checkpoint: facts.receipt.checkpoint,
+                  })}
+                </p>
+              )}
+              <p>{t("receipt.detailsPending")}</p>
+            </ReceiptNotice>
+          )}
 
-        {details === null && facts.confirmed === undefined && (
-          <Alert mode="warning">{t("receipt.awaitingConfirmation")}</Alert>
-        )}
-        {(isError || details === null || facts.conflict) && (
-          <button
-            className="mb-3 border-0 bg-transparent text-hero-dark"
-            onClick={() => {
-              void refetch();
-              void stored.refetch();
-            }}
-          >
-            {t("receipt.refreshDetails")}
-          </button>
-        )}
-        {data && activeAddress && <ReceiptCard txn={data} activeAddress={activeAddress} />}
+          {details === null && facts.confirmed === undefined && (
+            <ReceiptNotice tone="warning">
+              {t("receipt.awaitingConfirmation")}
+            </ReceiptNotice>
+          )}
+          {(isError || details === null || facts.conflict) && (
+            <button
+              type="button"
+              className={styles.action}
+              onClick={() => {
+                void refetch();
+                void stored.refetch();
+              }}
+            >
+              {t("receipt.refreshDetails")}
+            </button>
+          )}
+          {data && activeAddress && (
+            <ReceiptCard txn={data} activeAddress={activeAddress} />
+          )}
+        </div>
       </Overlay>
     </Loading>
   );

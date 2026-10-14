@@ -1,28 +1,18 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ThumbUpFill32 } from 'rtd-apps-icons';
-import cl from 'clsx';
+import { Check32, X32 } from "rtd-apps-icons";
+import * as styles from "./Receipt.module.scss";
 
 export function StatusIcon({ status }: { status: boolean }) {
-	return (
-		<div
-			className={cl(
-				'rounded-full w-12 h-12 border-dotted  border-2 flex items-center justify-center p-1',
-				status ? 'border-success' : 'border-issue',
-			)}
-		>
-			<div
-				className={cl(
-					'rounded-full h-8 w-8 flex items-center justify-center',
-					status ? 'bg-success' : 'bg-issue',
-				)}
-			>
-				<ThumbUpFill32
-					fill="currentColor"
-					className={cl('text-white text-2xl', !status && 'rotate-180')}
-				/>
-			</div>
-		</div>
-	);
+  const Icon = status ? Check32 : X32;
+  return (
+    <div
+      className={styles.statusBadge}
+      data-success={status}
+      aria-hidden="true"
+    >
+      <Icon fill="currentColor" className="h-8 w-8" />
+    </div>
+  );
 }

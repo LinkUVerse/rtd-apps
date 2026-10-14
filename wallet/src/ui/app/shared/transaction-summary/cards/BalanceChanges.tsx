@@ -32,12 +32,12 @@ function BalanceChangeEntry({ change }: { change: BalanceChange }) {
   const { data: coinMetaData } = useCoinMetadata(coinType);
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex justify-between">
-        <div className="flex items-center gap-2">
-          <div className="w-5">
+      <div className="flex min-w-0 flex-wrap items-start justify-between gap-x-4 gap-y-2">
+        <div className="flex min-w-0 max-w-full flex-1 items-center gap-2">
+          <div className="w-5 shrink-0">
             <CoinIcon size="sm" coinType={coinType} />
           </div>
-          <div className="flex flex-wrap gap-2 gap-y-1 truncate">
+          <div className="flex min-w-0 flex-wrap gap-2 gap-y-1 [overflow-wrap:anywhere]">
             <Text variant="pBody" weight="semibold" color="steel-darker">
               {coinMetaData?.name || symbol}
             </Text>
@@ -50,7 +50,7 @@ function BalanceChangeEntry({ change }: { change: BalanceChange }) {
             )}
           </div>
         </div>
-        <div className="flex justify-end w-full text-right">
+        <div className="flex min-w-0 max-w-full flex-wrap justify-end text-right tabular-nums [overflow-wrap:anywhere]">
           <Text
             variant="pBody"
             weight="medium"

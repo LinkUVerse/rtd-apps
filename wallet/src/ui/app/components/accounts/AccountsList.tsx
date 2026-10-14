@@ -61,7 +61,7 @@ export function AccountsList() {
 				onValueChange={handleSelectAccount}
 			>
 				<>
-					<Collapsible defaultOpen title={t('accounts.current')} shade="darker">
+					<Collapsible className="account-list-current" defaultOpen title={t('accounts.current')} shade="darker">
 						<ToggleGroup.Item asChild value={activeAccount.id}>
 							<div>
 								<AccountListItem account={activeAccount} editable showLock />
@@ -71,6 +71,7 @@ export function AccountsList() {
 
 					{otherAccounts.length ? (
 						<Collapsible
+							className="account-list-switch"
 							isOpen={isSwitchToAccountOpen}
 							onOpenChange={setIsSwitchToAccountOpen}
 							title={t('accounts.switchTo')}
@@ -96,7 +97,7 @@ export function AccountsList() {
 				</>
 			</ToggleGroup.Root>
 
-			<div className="flex justify-between">
+			<div className="account-list-tools flex justify-between">
 				<FooterLink
 					color="steelDarker"
 					icon={<Filter16 />}

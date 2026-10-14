@@ -103,6 +103,7 @@ export const AccountItem = forwardRef<HTMLDivElement, AccountItemProps>(
 									<IconButton
 										variant="transparent"
 										icon={<Copy12 className="w-2.5 h-2.5" />}
+										aria-label={t('common.copy')}
 										onClick={copyAddress}
 									/>
 								)}
@@ -110,6 +111,7 @@ export const AccountItem = forwardRef<HTMLDivElement, AccountItemProps>(
 									<IconButton
 										variant="transparent"
 										title={t('common.viewOnExplorer')}
+										aria-label={t('common.viewOnExplorer')}
 										href={explorerHref}
 										icon={<ArrowUpRight12 className="w-2.5 h-2.5" />}
 										onClick={(e) => e.stopPropagation()}

@@ -82,6 +82,7 @@ const zhCN: Record<keyof typeof en, string> = {
   "tokens.degraded": "当前网络速度比平时慢，我们正在处理中，感谢你的耐心等待。",
   "tokens.buyRtd": "购买 RTD 后即可开始使用",
   "tokens.needRtd": "要在 RTD 网络上发送交易，你的钱包中需要持有 RTD。",
+  "tokens.balanceLabel": "余额",
   "tokens.balanceError": "余额更新失败",
   "tokens.balanceAdmissionBlocked":
     "余额读取尚未通过网络校验，请核对网络状态。本地账户操作仍可使用。",
@@ -354,6 +355,7 @@ const zhCN: Record<keyof typeof en, string> = {
     "你当前质押 RTD 的所有验证者的平均年化收益率。",
   "staking.commission": "佣金",
   "staking.commissionDescription": "验证者佣金",
+  "staking.overview": "质押概览",
   "staking.yourStake": "你的质押",
   "staking.earned": "已赚取",
   "staking.inactiveWarning":

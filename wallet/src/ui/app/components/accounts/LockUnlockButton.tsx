@@ -19,6 +19,7 @@ export function LockUnlockButton({ isLocked, onClick, isLoading }: LockUnlockBut
 		<Tooltip tip={isLocked ? t('accounts.unlockAccount') : t('accounts.lockAccount')}>
 			<button
 				className="appearance-none p-0 bg-transparent border-none cursor-pointer text-steel hover:text-hero-dark ml-auto flex items-center justify-center"
+				aria-label={isLocked ? t('accounts.unlockAccount') : t('accounts.lockAccount')}
 				onClick={onClick}
 				data-testid={isLocked ? 'unlock-account-button' : 'lock-account-button'}
 			>

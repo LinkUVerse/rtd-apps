@@ -9,7 +9,9 @@ import { ExplorerLinkType } from "../explorer-link/ExplorerLinkType";
 import { Card } from "../../shared/transaction-summary/Card";
 import { OwnerFooter } from "../../shared/transaction-summary/OwnerFooter";
 import { Text } from "../../shared/text";
-import { HistoricalObject } from './HistoricalObject';
+import { HistoricalObject } from "./HistoricalObject";
+import { ReceiptNotice } from "./ReceiptNotice";
+import * as styles from "./Receipt.module.scss";
 
 export function ObjectEffects({
   changes,
@@ -36,20 +38,19 @@ export function ObjectEffects({
             />
           }
         >
-          <div className="flex flex-col gap-2 pb-3">
+          <div className={styles.object}>
             <ExplorerLink
               type={ExplorerLinkType.object}
               objectID={change.objectId}
+              title={change.objectId}
               className="text-hero-dark no-underline"
             >
               {formatAddress(change.objectId)}
             </ExplorerLink>
             {change.objectType && (
-              <Text variant="pBody" color="steel-darker">
-                {change.objectType}
-              </Text>
+              <code className={styles.identifier}>{change.objectType}</code>
             )}
-            <Text variant="pBody" color="steel-dark">
+            <ReceiptNotice>
               {t(
                 change.outputState === "NotExist"
                   ? "receipt.objectRemoved"
@@ -59,7 +60,7 @@ export function ObjectEffects({
                       ? "receipt.balanceWritten"
                       : "receipt.objectWritten",
               )}
-            </Text>
+            </ReceiptNotice>
             {change.version !== null && (
               <Text variant="pBody" color="steel-dark">
                 {t("receipt.objectVersion", { version: change.version })}

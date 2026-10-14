@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { walletReadErrorMessage } from "_src/shared/rpc/read-error";
 
-import { useResolveRtdNSName } from "_app/hooks/useAppResolveRtdnsName";
 import { useGetAllBalances } from "_app/hooks/useGetAllBalances";
 import { moveType } from "_src/shared/rpc/asset-reader";
 import { useIsWalletDefiEnabled } from "_app/hooks/useIsWalletDefiEnabled";
@@ -31,7 +30,15 @@ import { useFeature } from "@growthbook/growthbook-react";
 import { useAppsBackend } from "rtd-apps-core/src/hooks/useAppsBackend";
 import { useBalanceInUSD } from "rtd-apps-core/src/rpc/price";
 import { useCoinMetadata, useFormatCoin } from "rtd-apps-core/src/rpc/coin";
-import { Info12, Pin16, Unpin16 } from "rtd-apps-icons";
+import {
+  Info12,
+  Pin16,
+  Unpin16,
+  WalletActionSend24,
+  WalletActionSwap24,
+  WalletActionStake24,
+  WalletActionBuy24,
+} from "rtd-apps-icons";
 import { type RtdClientTypes } from "rtd-typescript/client";
 import {
   formatAddress,
@@ -45,7 +52,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import Interstitial, { type InterstitialConfig } from "../interstitial";
 import { useOnrampProviders } from "../onramp/useOnrampProviders";
 import { CoinBalance } from "./coin-balance";
-import { PortfolioName } from "./PortfolioName";
+import * as styles from "./Home.module.scss";
 import { TokenLink } from "./TokenLink";
 import { TokenList } from "./TokenList";
 
@@ -335,7 +342,6 @@ function TokenDetails({ coinType }: TokenDetailsProps) {
   const activeCoinType = moveType(coinType || RTD_TYPE_ARG);
   const activeAccount = useActiveAccount();
   const activeAccountAddress = activeAccount?.address;
-  const domainName = useResolveRtdNSName(activeAccountAddress);
 
   const {
     data: allBalances,
@@ -429,43 +435,41 @@ function TokenDetails({ coinType }: TokenDetailsProps) {
   // this action behind network loading (including focus-triggered revalidation).
   if (activeAccount.isLocked)
     return (
-      <>
+      <div className={styles.page}>
         <AccountsList />
-        <PortfolioName
-          name={activeAccount.nickname ?? formatAddress(activeAccountAddress)}
-        />
         <UnlockAccountButton account={activeAccount} />
-      </>
+      </div>
     );
   if (balancesReadBlocked)
     return (
-      <>
+      <div className={styles.page}>
         <AccountsList />
         {balancesReadChecking ? (
-          <div role="status" aria-live="polite">
+          <div className={styles.notice} role="status" aria-live="polite">
             {t("tokens.balanceChecking")}
           </div>
         ) : (
           <Alert>{t("tokens.balanceAdmissionBlocked")}</Alert>
         )}
-      </>
+      </div>
     );
   if (isError)
     return (
-      <>
+      <div className={styles.page}>
         <AccountsList />
         <Alert>{walletReadErrorMessage(balanceError)}</Alert>
         <button
           type="button"
+          className={styles.retry}
           disabled={isFetching}
           onClick={() => void refetch()}
         >
           {t("tokens.balanceRetry")}
         </button>
-      </>
+      </div>
     );
   return (
-    <>
+    <div className={styles.page}>
       {isMainnet && data?.degraded && (
         <div className="rounded-2xl bg-warning-light border border-solid border-warning-dark/20 text-warning-dark flex items-center py-2 px-3 mb-4">
           <Info12 className="shrink-0" />
@@ -479,40 +483,25 @@ function TokenDetails({ coinType }: TokenDetailsProps) {
 
       <AccountsList />
       {isFetching && allBalances && (
-        <div role="status" aria-live="polite">
+        <div className={styles.notice} role="status" aria-live="polite">
           {t("tokens.balanceRefreshing")}
         </div>
       )}
       <Loading loading={isFirstTimeLoading}>
         {coinType && <PageTitle title={coinSymbol} back="/tokens" />}
 
-        <div
-          className="flex flex-col h-full flex-1 flex-grow items-center gap-8"
-          data-testid="coin-page"
-        >
+        <div className={styles.content} data-testid="coin-page">
           <BuyNLargeHomePanel />
           <UsdcPromoBanner />
 
           <div className="flex flex-col w-full">
-            <PortfolioName
-              name={
-                activeAccount.nickname ??
-                domainName ??
-                formatAddress(activeAccountAddress)
-              }
-            />
             {activeAccount.isLocked ? null : (
               <>
-                <div
-                  data-testid="coin-balance"
-                  className={clsx(
-                    "rounded-2xl py-5 px-4 flex flex-col w-full gap-3 items-center mt-4",
-                    isDefiWalletEnabled
-                      ? "bg-gradients-graph-cards"
-                      : "bg-hero/5",
-                  )}
-                >
-                  <div className="flex flex-col gap-1 items-center">
+                <div data-testid="coin-balance" className={styles.balanceCard}>
+                  <div className={styles.balanceHeading}>
+                    <span className={styles.eyebrow}>
+                      {t("tokens.balanceLabel")}
+                    </span>
                     <CoinBalance amount={tokenBalance} type={activeCoinType} />
                   </div>
 
@@ -537,10 +526,11 @@ function TokenDetails({ coinType }: TokenDetailsProps) {
                       </div>
                     </Alert>
                   ) : null}
-                  <div className="grid w-full auto-rows-fr grid-cols-3 gap-2 [&>*]:min-w-0">
+                  <div className={styles.actions}>
                     {isMainnet ? (
                       <LargeButton
                         spacing="sm"
+                        before={<WalletActionBuy24 aria-hidden="true" />}
                         className={
                           !accountHasRtd && isMainnet
                             ? "col-span-3 !bg-hero-dark !text-white"
@@ -561,6 +551,8 @@ function TokenDetails({ coinType }: TokenDetailsProps) {
                     <LargeButton
                       center
                       data-testid="send-coin-button"
+                      className={styles.sendAction}
+                      before={<WalletActionSend24 aria-hidden="true" />}
                       to={`/send${
                         coinBalance?.coinType
                           ? `?${new URLSearchParams({
@@ -575,6 +567,7 @@ function TokenDetails({ coinType }: TokenDetailsProps) {
 
                     <LargeButton
                       center
+                      before={<WalletActionSwap24 aria-hidden="true" />}
                       disabled={!isDefiWalletEnabled || !tokenBalance}
                       to={`/swap${
                         coinBalance?.coinType
@@ -601,12 +594,13 @@ function TokenDetails({ coinType }: TokenDetailsProps) {
                       to="/stake"
                       center
                       data-testid="stake-management-button"
+                      before={<WalletActionStake24 aria-hidden="true" />}
                     >
                       {t("tokens.stake")}
                     </LargeButton>
                   </div>
                   <div
-                    className="text-bodySmall text-gray-80"
+                    className={styles.availability}
                     data-testid="action-availability"
                   >
                     {!tokenBalance && <p>{t("tokens.sendNeedsBalance")}</p>}
@@ -630,7 +624,7 @@ function TokenDetails({ coinType }: TokenDetailsProps) {
           )}
         </div>
       </Loading>
-    </>
+    </div>
   );
 }
 

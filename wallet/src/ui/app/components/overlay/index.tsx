@@ -22,6 +22,8 @@ type OverlayProps = {
 	closeIcon?: ReactNode | null;
 	setShowModal?: (showModal: boolean) => void;
 	background?: 'bg-rtd-lightest';
+	className?: string;
+	closeLabel?: string;
 };
 
 function Overlay({
@@ -32,6 +34,8 @@ function Overlay({
 	setShowModal,
 	closeIcon = <X32 fill="currentColor" className="text-rtd-light w-8 h-8" />,
 	background,
+	className,
+	closeLabel,
 }: OverlayProps) {
 	const closeModal = useCallback(
 		(e: React.MouseEvent<HTMLElement>) => {
@@ -46,7 +50,7 @@ function Overlay({
 	return showModal ? (
 		<Portal containerId="overlay-portal-container">
 			<div
-				className={cl(st.container, {
+				className={cl(st.container, className, {
 					[st.fullScreenContainer]: isFullScreen,
 				})}
 			>
@@ -68,7 +72,7 @@ function Overlay({
 				>
 					{children}
 				</div>
-				<button data-testid="close-icon" className={st.closeOverlay} onClick={closeModal}>
+				<button type="button" aria-label={closeLabel} data-testid="close-icon" className={st.closeOverlay} onClick={closeModal}>
 					{closeIcon}
 				</button>
 			</div>
