@@ -40,14 +40,16 @@ interface LedgerRead {
 export class WalletLedgerReadError extends Error {
   constructor(
     readonly role: Role,
-    readonly reason: "unconfigured" | "coverage" | "incompatible",
+    readonly reason: "unconfigured" | "coverage" | "incompatible" | "unsupported",
   ) {
     super(
       reason === "coverage"
         ? "交易详情不在当前服务的已验证覆盖内"
         : reason === "unconfigured"
           ? "当前网络未配置归档查询入口"
-          : "交易详情返回事实不兼容",
+          : reason === "unsupported"
+            ? "该交易没有可解析的调用数据"
+            : "交易详情返回事实不兼容",
     );
     this.name = "WalletLedgerReadError";
   }
@@ -275,6 +277,13 @@ export class WalletLedgerReader {
             throw new WalletLedgerReadError(found.source, "incompatible");
         }
         assertEventEnvelope(raw.events, raw.effects!.eventsDigest);
+        // System transactions (genesis, epoch change, consensus prologue) carry
+        // no programmable body to decode, so the parsed-detail view cannot
+        // represent them. That is a property of the transaction, not a failed
+        // read: report it distinctly so the page can say so instead of
+        // offering a refresh that can never succeed.
+        if (raw.transaction?.kind?.data?.oneofKind !== "programmableTransaction")
+          throw new WalletLedgerReadError(found.source, "unsupported");
         const result = parseGrpcTransactionResponse(raw, {
           include: {
             effects: true,

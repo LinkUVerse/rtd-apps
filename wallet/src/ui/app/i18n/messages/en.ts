@@ -644,6 +644,8 @@ const en = {
   "moreOptions.logoutHint": "You will need to set up all your accounts again.",
   "receipt.detailsUnavailable":
     "Transaction details are unavailable. This does not mean the transaction failed.",
+  "receipt.detailsUnsupported":
+    "This is a system transaction with no decodable call data.",
   "receipt.awaitingConfirmation":
     "This node has not confirmed the transaction. Keep the original digest; do not send it again.",
   "receipt.factMismatch":

@@ -12,6 +12,7 @@ import { useI18n } from "_src/ui/app/i18n";
 import { useStoredTransactionReceipt } from "_src/ui/app/hooks/useStoredTransactionReceipt";
 import { useReceiptIndexing } from "_src/ui/app/hooks/useReceiptIndexing";
 import { selectReceiptFacts } from "_src/shared/rpc/stored-receipt";
+import { WalletLedgerReadError } from "_src/shared/rpc/ledger-reader";
 import { useWalletTransactionDetails } from "rtd-apps-core/src/rpc/receipt-hooks";
 import { useWalletRpc } from "rtd-apps-core/src/rpc/WalletRpcContext";
 import { Check32 } from "rtd-apps-icons";
@@ -32,8 +33,13 @@ function ReceiptPage() {
     data: details,
     isPending,
     isError,
+    error,
     refetch,
   } = useWalletTransactionDetails(transactionId);
+  // A system transaction has no programmable body, so there is nothing to
+  // decode; saying "unreadable" and offering a refresh would mislead.
+  const unsupported =
+    error instanceof WalletLedgerReadError && error.reason === "unsupported";
   const stored = useStoredTransactionReceipt(transactionId);
   const facts = selectReceiptFacts(details, stored.data);
   const data = facts.transaction;
@@ -94,9 +100,13 @@ function ReceiptPage() {
         }
       >
         <div className={styles.page}>
-          {isError ||
-          rpc.state === "unconfigured" ||
-          rpc.state === "invalid" ? (
+          {unsupported ? (
+            <ReceiptNotice>
+              {t("receipt.detailsUnsupported")}
+            </ReceiptNotice>
+          ) : isError ||
+            rpc.state === "unconfigured" ||
+            rpc.state === "invalid" ? (
             <ReceiptNotice tone="warning">
               {t("receipt.detailsUnavailable")}
             </ReceiptNotice>
@@ -135,7 +145,7 @@ function ReceiptPage() {
               {t("receipt.awaitingConfirmation")}
             </ReceiptNotice>
           )}
-          {(isError || details === null || facts.conflict) && (
+          {(isError && !unsupported) || details === null || facts.conflict ? (
             <button
               type="button"
               className={styles.action}
@@ -146,7 +156,7 @@ function ReceiptPage() {
             >
               {t("receipt.refreshDetails")}
             </button>
-          )}
+          ) : null}
           {data && activeAddress && (
             <ReceiptCard txn={data} activeAddress={activeAddress} />
           )}
