@@ -20,7 +20,7 @@ import {
   executionScopeKey,
   assertGenesisDigest,
 } from "../shared/rpc/profile";
-import { selectNetworkProfile } from "../shared/rpc/profile-registry";
+import { resolveNetworkProfile } from "../shared/rpc/profile-registry";
 import { WalletReadSession } from "../shared/rpc/session";
 import { walletAddress } from "../shared/rpc/asset-address";
 import { assertTransactionNetworkIdentity } from "../shared/rpc/transaction-network-identity";
@@ -250,7 +250,7 @@ export async function withExecutionAccount<T>(
   try {
     const network = await NetworkEnv.getActiveNetwork();
     lifetime.signal.throwIfAborted();
-    const selected = selectNetworkProfile(
+    const selected = await resolveNetworkProfile(
       network,
       process.env.WALLET_NETWORK_PROFILES,
     );
@@ -265,7 +265,7 @@ export async function withExecutionAccount<T>(
     ownedSession = session;
     const authorizeLocal = async () => {
       session.assertActive();
-      const current = selectNetworkProfile(
+      const current = await resolveNetworkProfile(
         await NetworkEnv.getActiveNetwork(),
         process.env.WALLET_NETWORK_PROFILES,
       );

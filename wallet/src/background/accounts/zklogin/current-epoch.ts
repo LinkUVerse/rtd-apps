@@ -4,12 +4,12 @@
 import networkEnv from "_src/background/NetworkEnv";
 import { WalletFullnodeReader } from "_src/shared/rpc/fullnode-reader";
 import { networkBindingKey } from "_src/shared/rpc/profile";
-import { selectNetworkProfile } from "_src/shared/rpc/profile-registry";
+import { resolveNetworkProfile } from "_src/shared/rpc/profile-registry";
 import { WalletReadSession } from "_src/shared/rpc/session";
 
 /** Always obtain the currently executed epoch from the configured, H0-verified Fullnode. */
 export async function getCurrentEpoch() {
-  const selected = selectNetworkProfile(
+  const selected = await resolveNetworkProfile(
     await networkEnv.getActiveNetwork(),
     process.env.WALLET_NETWORK_PROFILES,
   );
@@ -19,7 +19,7 @@ export async function getCurrentEpoch() {
   networkEnv.on("changed", close);
   try {
     const epoch = await new WalletFullnodeReader(session).currentEpoch();
-    const current = selectNetworkProfile(
+    const current = await resolveNetworkProfile(
       await networkEnv.getActiveNetwork(),
       process.env.WALLET_NETWORK_PROFILES,
     );

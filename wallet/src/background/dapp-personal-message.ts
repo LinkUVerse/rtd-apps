@@ -15,7 +15,7 @@ import { isSigningAccount } from "./accounts/Account";
 import { accountsEvents } from "./accounts/events";
 import NetworkEnv from "./NetworkEnv";
 import { walletAddress } from "../shared/rpc/asset-address";
-import { selectNetworkProfile } from "../shared/rpc/profile-registry";
+import { resolveNetworkProfile } from "../shared/rpc/profile-registry";
 import { WalletReadSession } from "../shared/rpc/session";
 import { WalletExecutionReader } from "../shared/rpc/execution-reader";
 import type { PrepareDappArgs } from "./dapp-preparation";
@@ -112,7 +112,7 @@ export async function signDappPersonalMessage(input: PrepareDappArgs) {
       () => signingRequests.delete(requestId),
       { once: true },
     );
-    const selected = selectNetworkProfile(
+    const selected = await resolveNetworkProfile(
       await NetworkEnv.getActiveNetwork(),
       process.env.WALLET_NETWORK_PROFILES,
     );
@@ -137,7 +137,7 @@ export async function signDappPersonalMessage(input: PrepareDappArgs) {
     );
     await authorize();
     if (parseSerializedSignature(signature).signatureScheme === "ZkLogin") {
-      const selected = selectNetworkProfile(
+      const selected = await resolveNetworkProfile(
         await NetworkEnv.getActiveNetwork(),
         process.env.WALLET_NETWORK_PROFILES,
       );

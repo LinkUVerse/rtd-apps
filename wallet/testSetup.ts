@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { webcrypto } from "crypto";
+import { setLocalChainDiscoveryEnabled } from "./src/shared/rpc/local-discovery";
 import { exclusiveLockManager } from "./tests/unit/rpc/exclusive-lock-manager";
 
 if (!globalThis.crypto) {
@@ -20,3 +21,7 @@ globalThis.chrome = {
     id: "some-test-id-from-test-setup",
   },
 };
+
+// A chain running on the developer's machine must not leak into unit tests.
+// Production keeps runtime discovery enabled; tests opt out explicitly.
+setLocalChainDiscoveryEnabled(false);

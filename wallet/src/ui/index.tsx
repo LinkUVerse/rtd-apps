@@ -8,9 +8,10 @@ import { ErrorBoundary } from "_components/error-boundary";
 import { initAppType } from "_redux/slices/app";
 import { WalletRpcProvider } from "_src/shared/rpc/WalletRpcProvider";
 import {
-  selectNetworkProfile,
+  resolveNetworkProfile,
   type ProfileSelection,
 } from "_src/shared/rpc/profile-registry";
+import { networkBindingKey } from "_src/shared/rpc/profile";
 import {
   shouldObserveReadCapabilities,
   shouldPreloadAssetSnapshot,
@@ -24,7 +25,13 @@ import { thunkExtras } from "_store/thunk-extras";
 import { GrowthBookProvider } from "@growthbook/growthbook-react";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import cn from "clsx";
-import { Fragment, StrictMode, useMemo, type ReactNode } from "react";
+import {
+  Fragment,
+  StrictMode,
+  useEffect,
+  useState,
+  type ReactNode,
+} from "react";
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { HashRouter, useLocation } from "react-router-dom";
@@ -118,20 +125,67 @@ function AppWrapper() {
   const apiEnv = useAppSelector((state) => state.app.apiEnv);
   const customProfile = useAppSelector((state) => state.app.customProfile);
   const customRpcUrl = useAppSelector((state) => state.app.customRPC);
-  const selection = useMemo(
-    () =>
-      selectNetworkProfile(
-        apiEnv === "customRPC"
-          ? {
-              env: apiEnv,
-              customRpcUrl: customRpcUrl || "",
-              profile: customProfile,
-            }
-          : { env: apiEnv, customRpcUrl: null },
+  // The local dev chain is discovered at runtime, so selection is asynchronous.
+  // The previous selection stays until the next one resolves, which avoids
+  // flashing an "unconfigured" surface on every network change or restart.
+  const [selection, setSelection] = useState<ProfileSelection>({
+    state: "unconfigured",
+    message: "正在校验网络配置…",
+  });
+  useEffect(() => {
+    let active = true;
+    let retry: ReturnType<typeof setTimeout> | undefined;
+    let recheck: ReturnType<typeof setInterval> | undefined;
+    const target =
+      apiEnv === "customRPC"
+        ? {
+            env: apiEnv,
+            customRpcUrl: customRpcUrl || "",
+            profile: customProfile,
+          }
+        : { env: apiEnv, customRpcUrl: null };
+    // `fresh` bypasses the discovery cache. The cache exists to keep one
+    // authorization from probing every endpoint; re-checking an already
+    // configured profile must not be answered from it, because a reset replaces
+    // the chain while the previous digest is still cached.
+    const load = (fresh = false) => {
+      void resolveNetworkProfile(
+        target,
         process.env.WALLET_NETWORK_PROFILES,
-      ),
-    [apiEnv, customProfile, customRpcUrl],
-  );
+        fresh ? { fresh: true } : {},
+      ).then((next) => {
+        if (!active) return;
+        // Keep the current selection when the chain binding is unchanged: the
+        // selection owns the read session, and replacing an equal profile would
+        // tear down every session on each poll.
+        setSelection((current) =>
+          current.state === "configured" &&
+          next.state === "configured" &&
+          networkBindingKey(current.profile) === networkBindingKey(next.profile)
+            ? current
+            : next,
+        );
+        // The local dev stack can start after the wallet does; keep probing until
+        // it answers.
+        if (next.state !== "configured" && apiEnv === "local") {
+          if (retry) clearTimeout(retry);
+          retry = setTimeout(() => load(), 3_000);
+        }
+      });
+    };
+    load();
+    // A long-lived panel keeps the profile it resolved at mount, and a reset
+    // does not change any dependency of this effect, so nothing would ever
+    // re-read the chain. Poll the loopback endpoints and adopt a new binding as
+    // soon as one appears; the binding keys on the genesis digest, so this is
+    // also what invalidates the stored read observations of the old chain.
+    if (apiEnv === "local") recheck = setInterval(() => load(true), 10_000);
+    return () => {
+      active = false;
+      if (retry) clearTimeout(retry);
+      if (recheck) clearInterval(recheck);
+    };
+  }, [apiEnv, customProfile, customRpcUrl]);
   const network = useAppSelector(
     ({ app: { apiEnv, customRPC } }) => `${apiEnv}_${customRPC}`,
   );

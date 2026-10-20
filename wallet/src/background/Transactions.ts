@@ -29,7 +29,7 @@ import Browser from "webextension-polyfill";
 import { Window } from "./Window";
 import NetworkEnv from "./NetworkEnv";
 import { accountsEvents } from "./accounts/events";
-import { selectNetworkProfile } from "../shared/rpc/profile-registry";
+import { resolveNetworkProfile } from "../shared/rpc/profile-registry";
 import { bindDappRequest } from "../shared/rpc/dapp-request-binding";
 import { getDappEgressBroker } from "./dapp-egress-runtime";
 import type { WalletDappEgressClaim } from "./dapp-egress-peer";
@@ -281,7 +281,7 @@ class Transactions {
     let binding: ApprovalRequest["binding"];
     if (tx.type === "transaction") {
       const network = await NetworkEnv.getActiveNetwork();
-      const selected = selectNetworkProfile(
+      const selected = await resolveNetworkProfile(
         network,
         process.env.WALLET_NETWORK_PROFILES,
       );
