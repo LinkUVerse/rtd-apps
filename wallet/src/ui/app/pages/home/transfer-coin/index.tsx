@@ -102,6 +102,9 @@ function TransferCoinPage() {
     queryClient.removeQueries({ queryKey: ["wallet-fresh-balance"] });
     queryClient.invalidateQueries({ queryKey: ["wallet-assets"] });
     queryClient.invalidateQueries({ queryKey: ["wallet-current-balances"] });
+    // The Activity tab reads its own service; without this a confirmed transfer
+    // stayed invisible until its 20 s poll happened to land.
+    queryClient.invalidateQueries({ queryKey: ["wallet-account-history"] });
   };
 
   const transaction = useMemo(() => {

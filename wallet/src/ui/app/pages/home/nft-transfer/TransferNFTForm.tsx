@@ -111,6 +111,7 @@ function NftTransferSession({
       setApproval(null);
       void queryClient.invalidateQueries({ queryKey: ["wallet-assets"] });
       void queryClient.invalidateQueries({ queryKey: ["wallet-current-balances"] });
+      void queryClient.invalidateQueries({ queryKey: ["wallet-account-history"] });
       if (sentHere && result.receipt.success)
         ampli.sentCollectible({ objectId });
       navigate(
