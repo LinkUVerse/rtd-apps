@@ -167,36 +167,48 @@ export function assertNativeExecutedTransaction(
     )
       throw new WalletSimulationError("incompatible", "final");
   }
-  for (const change of effects.changedObjects) {
-    walletAddress(change.objectId);
-    if (
-      change.inputState === undefined ||
-      change.outputState === undefined ||
-      change.idOperation === undefined ||
-      change.idOperation ===
-        GrpcTypes.ChangedObject_IdOperation.ID_OPERATION_UNKNOWN
-    )
-      throw new WalletSimulationError("incompatible", "final");
-  }
+  // The account-history projection omits the JSON object list because the
+  // canonical BCS already carries it in a fraction of the bytes; a single
+  // contract initialization otherwise repeats 1024 created shards as JSON.
+  // An empty mirror therefore means "not supplied", and validation falls back
+  // to the bytes that are the trust anchor. A populated mirror — every Fullnode
+  // and archive read — is still cross-checked entry by entry.
+  const mirroredObjects = effects.changedObjects.length > 0;
+  const mirroredConsensus = effects.unchangedConsensusObjects.length > 0;
+  if (mirroredObjects)
+    for (const change of effects.changedObjects) {
+      walletAddress(change.objectId);
+      if (
+        change.inputState === undefined ||
+        change.outputState === undefined ||
+        change.idOperation === undefined ||
+        change.idOperation ===
+          GrpcTypes.ChangedObject_IdOperation.ID_OPERATION_UNKNOWN
+      )
+        throw new WalletSimulationError("incompatible", "final");
+    }
   if (
     parsed.$kind === "V2" &&
+    mirroredObjects &&
     effects.changedObjects.length !== parsed.V2.changedObjects.length
   )
     throw new WalletSimulationError("incompatible", "final");
   if (parsed.$kind === "V2") {
     if (
       u64(effects.lamportVersion).toString() !== parsed.V2.lamportVersion ||
-      effects.changedObjects.some(
-        (change, i) =>
-          walletAddress(change.objectId) !== parsed.V2.changedObjects[i][0],
-      ) ||
-      effects.unchangedConsensusObjects.length !==
-        parsed.V2.unchangedConsensusObjects.length ||
-      effects.unchangedConsensusObjects.some(
-        (change, i) =>
-          walletAddress(change.objectId) !==
-          parsed.V2.unchangedConsensusObjects[i][0],
-      )
+      (mirroredObjects &&
+        effects.changedObjects.some(
+          (change, i) =>
+            walletAddress(change.objectId) !== parsed.V2.changedObjects[i][0],
+        )) ||
+      (mirroredConsensus &&
+        (effects.unchangedConsensusObjects.length !==
+          parsed.V2.unchangedConsensusObjects.length ||
+          effects.unchangedConsensusObjects.some(
+            (change, i) =>
+              walletAddress(change.objectId) !==
+              parsed.V2.unchangedConsensusObjects[i][0],
+          )))
     )
       throw new WalletSimulationError("incompatible", "final");
   }

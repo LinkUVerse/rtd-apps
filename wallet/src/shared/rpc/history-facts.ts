@@ -327,6 +327,20 @@ export async function admitHistoryTransaction(
     });
     historyCheck(new Set(types.map(([id]) => id)).size === types.length);
     transaction.objectTypes = Object.fromEntries(types);
+    // The history projection omits the repeated changed-object list, so the
+    // SDK has no JSON types to map. Only in that trimmed shape is the BCS
+    // output state allowed to stand in for the marker: a row that still carries
+    // the mirror but drops a type must stay rejected below, because an index
+    // that cannot name the type it observed has not proved the fact.
+    const mirrored =
+      Array.isArray(
+        (effects.effectsJson as Record<string, unknown> | undefined)
+          ?.changedObjects,
+      );
+    if (!mirrored)
+      for (const change of changes)
+        if (change.outputState === "PackageWrite")
+          transaction.objectTypes[change.objectId] = "package";
     for (const change of changes)
       if (change.outputState === "PackageWrite")
         historyCheck(transaction.objectTypes[change.objectId] === "package");
