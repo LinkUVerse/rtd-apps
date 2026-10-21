@@ -366,8 +366,16 @@ export class WalletAccountHistoryProtocol {
     return this.#query("accountHistory", variables);
   }
   async #finishWindow(window: HistoryWindow): Promise<void> {
-    const before = window.coverage,
-      after = await this.coverage();
+    const before = window.coverage;
+    // The account index and the public GraphQL window are independent proofs,
+    // and each is a full round trip (two index reads plus two GraphQL queries
+    // for coverage alone). Running them in sequence doubled the trailing cost
+    // of every page for no ordering guarantee: both must hold the same window,
+    // and either failing rejects the page.
+    const [after] = await Promise.all([
+      this.coverage(),
+      window.native.revalidate(this.signal),
+    ]);
     if (
       after.lower !== before.lower ||
       after.upper < before.upper ||
@@ -375,7 +383,6 @@ export class WalletAccountHistoryProtocol {
       (after.upper === before.upper && after.digest !== before.digest)
     )
       throw new WalletHistoryError("changed");
-    await window.native.revalidate(this.signal);
     this.fence();
   }
   async inWindow<T>(

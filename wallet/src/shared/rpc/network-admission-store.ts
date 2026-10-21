@@ -115,6 +115,17 @@ export class WalletNetworkAdmissionStore {
   readonly #database: string;
   readonly #timeout: number;
   readonly #owners = new WeakMap<NetworkAdmissionTicket, Owner>();
+  /**
+   * One open handle per session.
+   *
+   * Every admission check used to open and close its own connection, so a single
+   * Activity page issued roughly twenty opens against a five-second deadline.
+   * Each open re-runs the upgrade checks, and one miss under a busy main thread
+   * was enough to mark the whole session unavailable — the "网络校验记录暂不可用"
+   * users saw. The handle is still validated on first open and re-opened after a
+   * version change or close; only the repeated open/close per read goes away.
+   */
+  #connection: Promise<IDBDatabase> | undefined;
   constructor(
     options: {
       indexedDB?: IDBFactory;
@@ -137,7 +148,38 @@ export class WalletNetworkAdmissionStore {
     return deadline - performance.now();
   }
   async #open(deadline: number): Promise<IDBDatabase> {
-    return openAdmissionDatabase(this.#factory, this.#database, deadline);
+    const cached = this.#connection;
+    if (cached) {
+      try {
+        const db = await cached;
+        if (this.#remaining(deadline) > 0) return db;
+        // Out of budget: fall back to a fresh open, which reports the deadline.
+      } catch {
+        this.#connection = undefined;
+      }
+    }
+    const opening = openAdmissionDatabase(
+      this.#factory,
+      this.#database,
+      deadline,
+    );
+    this.#connection = opening;
+    let db: IDBDatabase;
+    try {
+      db = await opening;
+    } catch (error) {
+      // Never cache a failed open: the next read is allowed to try again.
+      if (this.#connection === opening) this.#connection = undefined;
+      throw error;
+    }
+    db.addEventListener("close", () => {
+      if (this.#connection === opening) this.#connection = undefined;
+    });
+    db.onversionchange = () => {
+      db.close();
+      if (this.#connection === opening) this.#connection = undefined;
+    };
+    return db;
   }
   async #transaction<T>(
     profile: ValidatedNetworkProfile,
@@ -155,19 +197,15 @@ export class WalletNetworkAdmissionStore {
   ): Promise<T> {
     const deadline = performance.now() + this.#timeout;
     const db = await this.#open(deadline);
-    if (this.#remaining(deadline) <= 0) {
-      db.close();
-      throw failure();
-    }
+    if (this.#remaining(deadline) <= 0) throw failure();
     return new Promise((resolve, reject) => {
       let tx: IDBTransaction | undefined;
       let settled = false;
       let filled = false;
       let result: T;
-      const close = () => {
-        clearTimeout(timer);
-        db.close();
-      };
+      // The connection is shared across reads in this session; only the timer
+      // belongs to this transaction.
+      const close = () => clearTimeout(timer);
       const fail = (error?: unknown) => {
         if (settled) return;
         settled = true;

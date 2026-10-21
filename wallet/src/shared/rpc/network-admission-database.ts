@@ -140,7 +140,8 @@ export function openAdmissionDatabase(
         }
         settled = true;
         clearTimeout(timer);
-        db.onversionchange = () => db.close();
+        // The caller installs its own onversionchange so a shared handle can be
+        // dropped from its cache as well as closed.
         resolve(db);
       };
     } catch {

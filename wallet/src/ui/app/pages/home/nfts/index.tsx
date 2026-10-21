@@ -1,6 +1,7 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 import { useWalletRpc } from "rtd-apps-core/src/rpc/WalletRpcContext";
+import { walletReadAllowed } from "rtd-apps-core/src/rpc/read-admission";
 import { walletReadErrorMessage } from "_src/shared/rpc/read-error";
 
 import { useActiveAddress } from "_app/hooks/useActiveAddress";
@@ -54,7 +55,13 @@ function NftsPage() {
   }, [ownedAssets, filterType, blockedObjectList]);
   const { hiddenAssetIds } = useHiddenAssets();
 
-  if (isLoading) {
+  // A query disabled by read admission stays `pending` forever, because React
+  // Query never starts it. Treating that as loading is why a withdrawn read
+  // showed "正在加载" with no end instead of the error branch below.
+  const blocked =
+    (rpc.state === "configured" || rpc.state === "initializing") &&
+    !walletReadAllowed(rpc, "assets");
+  if (isLoading && !blocked) {
     return (
       <div className="mt-1 flex w-full justify-center">
         <LoadingSpinner />
@@ -67,6 +74,13 @@ function NftsPage() {
     { name: t("assets.other"), link: "nfts/other" },
   ];
 
+  if (blocked)
+    return (
+      <div className="flex min-h-full flex-col flex-nowrap items-center gap-4">
+        <PageTitle title={t("assets.title")} />
+        <Alert>{t("activity.admissionBlocked")}</Alert>
+      </div>
+    );
   return (
     <div className="flex min-h-full flex-col flex-nowrap items-center gap-4">
       <PageTitle

@@ -16,8 +16,30 @@ export function decodeHiddenAssets(value: unknown): string[] {
   return [...new Set(value.ids.map(walletAddress))];
 }
 
-export async function readHiddenAssets(key: string) {
-  return decodeHiddenAssets(await get(key));
+/**
+ * idb-keyval settles neither way when the database open is blocked by another
+ * extension context. The Assets tab renders "正在加载" until this resolves, so an
+ * unsettled read is a terminal state — bound it and let the caller show its
+ * failure branch with a retry instead.
+ */
+export async function readHiddenAssets(key: string, timeoutMs = 5_000) {
+  if (!Number.isSafeInteger(timeoutMs) || timeoutMs < 1 || timeoutMs > 30_000)
+    throw new RangeError("Invalid hidden asset read budget");
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    const value = await Promise.race([
+      get(key),
+      new Promise<never>((_, reject) => {
+        timer = setTimeout(
+          () => reject(new Error("Hidden asset preferences did not settle")),
+          timeoutMs,
+        );
+      }),
+    ]);
+    return decodeHiddenAssets(value);
+  } finally {
+    if (timer !== undefined) clearTimeout(timer);
+  }
 }
 
 /** Atomic read-modify-write prevents two extension windows from losing each other's edits. */
