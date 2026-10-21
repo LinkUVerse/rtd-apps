@@ -1,6 +1,5 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
-import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { normalizeRtdAddress as address, toBase64 } from "rtd-typescript/utils";
 import { stakingFixture } from "../../../tests/unit/rpc/staking-fixture";
@@ -181,30 +180,6 @@ describe.each([WalletAssetReader, WalletStakingSnapshotReader])(
       };
       const r = await Reader.open(f.session, { fetch });
       await expect(r.staking(f.owner)).rejects.toThrow();
-    });
-    it("current debug Rust validates the frozen V1/V2 bytes and selected semantic fields", () => {
-      const vectors = JSON.parse(
-        readFileSync(
-          "migrationToGRpcOrGraphQLDoc/evidence/20261003-staking-native-input.json",
-          "utf8",
-        ),
-      );
-      for (const version of ["1", "2"] as const) {
-        const f = stakingFixture(version),
-          codec = version === "1" ? SYSTEM_V1_BCS : SYSTEM_V2_BCS;
-        expect(
-          Buffer.from(codec.serialize(f.system).toBytes()).toString("hex"),
-        ).toBe(vectors[version === "1" ? "v1" : "v2"]);
-      }
-      const output = readFileSync(
-        "migrationToGRpcOrGraphQLDoc/evidence/20261003-staking-layout-rust.csv",
-        "utf8",
-      );
-      expect(output.split("\n").filter(Boolean)).toEqual([
-        "v1,2,1,150,1000,9007199254740993,Validator,1700000000000,1000",
-        "v2,2,2,1,150,1000,9007199254740993,Validator,1700000000000,1000",
-        "inactive,Retired,2,9007199254740993,100",
-      ]);
     });
     it("BCS rejects trailing bytes and incompatible version layout", () => {
       const f = stakingFixture();

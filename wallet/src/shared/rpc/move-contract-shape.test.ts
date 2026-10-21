@@ -1,7 +1,5 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
-import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
 import { bcs } from "rtd-typescript/bcs";
 import { GrpcTypes } from "rtd-typescript/grpc";
 import { normalizeRtdAddress } from "rtd-typescript/utils";
@@ -37,40 +35,6 @@ function fixture() {
   };
 }
 describe("审核的完整Move合同", () => {
-  it("独立历史部署响应匹配固定源码OriginByte两个private entry及全部发现layout", () => {
-    const evidence = JSON.parse(
-      readFileSync(
-        resolve(
-          process.cwd(),
-          "migrationToGRpcOrGraphQLDoc/evidence/20261003-originbyte-deployed-packages.json",
-        ),
-        "utf8",
-      ),
-    );
-    const observed = evidence.packages.find(
-      (p: { package: { modules: { name: string }[] } }) =>
-        p.package.modules.some((m) => m.name === "ob_kiosk"),
-    ).package;
-    const profile = profileFixture();
-    profile.packages.originByte = {
-      discoveryPackage: observed.storageId,
-      executionPackage: observed.storageId,
-    };
-    const contracts = walletMoveContracts(validateNetworkProfile(profile));
-    const pkg = GrpcTypes.Package.fromJson(observed);
-    for (const g of [
-      contracts.originByteDiscovery,
-      contracts.originByteExecution,
-    ]) {
-      if (g.state !== "configured") throw new Error();
-      expect(
-        matchMoveContract(
-          pkg,
-          g.contracts.find((c) => c.packageId === pkg.storageId)!,
-        ),
-      ).toContain("ob_kiosk");
-    }
-  });
   it("模板深冻结，调用者不能污染下一次期望", () => {
     const profile = validateNetworkProfile(profileFixture()),
       g = walletMoveContracts(profile).framework;

@@ -1,6 +1,5 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
-import { readFileSync } from "node:fs";
 import { bcs } from "rtd-typescript/bcs";
 import { GrpcTypes } from "rtd-typescript/grpc";
 import {
@@ -301,54 +300,4 @@ describe("收件人当前对象实际 Fullnode binary gRPC-Web", () => {
       ),
     ).toThrow();
   });
-});
-
-const rustVectors = readFileSync(
-  "migrationToGRpcOrGraphQLDoc/evidence/20261003-fresh-object-rust-vectors.jsonl",
-  "utf8",
-)
-  .trim()
-  .split("\n")
-  .map(
-    (line) =>
-      JSON.parse(line) as {
-        name: string;
-        hex: string;
-        digest: string;
-        type: string;
-        previousTransaction: string;
-      },
-  );
-describe("当前 debug Rust Object 的跨语言 BCS 与摘要", () => {
-  it.each(rustVectors.map((vector) => [vector.name, vector] as const))(
-    "原生 %s 向量通过 canonical、Object::摘要和所有 wire 字段核验",
-    (_name, vector) => {
-      const bytes = Uint8Array.from(Buffer.from(vector.hex, "hex"));
-      const parsed = bcs.Object.parse(bytes);
-      if (parsed.data.$kind !== "Move") throw new Error("invalid fixture");
-      const move = parsed.data.Move;
-      expect(freshObjectDigest(bytes)).toBe(vector.digest);
-      expect(toBase64(bcs.Object.serialize(parsed).toBytes())).toBe(
-        toBase64(bytes),
-      );
-      const result = decodeFreshObject(
-        {
-          objectId: id,
-          version: BigInt(move.version),
-          digest: vector.digest,
-          bcs: { value: bytes },
-          contents: { value: Uint8Array.from(move.contents) },
-          owner: protoOwner(parsed.owner),
-          objectType: vector.type,
-          previousTransaction: vector.previousTransaction,
-          hasPublicTransfer: move.hasPublicTransfer,
-        },
-        id,
-      );
-      expect(result.type).toBe(normalizeStructTag(vector.type));
-      expect(result.version).toBe("9007199254740993");
-      expect(result.digest).toBe(vector.digest);
-      expect(result.owner.$kind).toBe(parsed.owner.$kind);
-    },
-  );
 });

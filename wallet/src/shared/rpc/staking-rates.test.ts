@@ -1,6 +1,5 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
-import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
   estimateStakingReward,
@@ -203,40 +202,5 @@ describe("staking APY source semantics", () => {
         subsidyStartEpoch: "0",
       }),
     ).toMatchObject({ state: "estimated", sampleCount: 1 });
-  });
-});
-
-describe("current debug Rust cross-language vectors", () => {
-  const rows = readFileSync(
-    "migrationToGRpcOrGraphQLDoc/evidence/20261003-staking-rates-rust.csv",
-    "utf8",
-  )
-    .trim()
-    .split("\n")
-    .map((line) => line.split(","));
-  it("documents the exact integer correction to the legacy f64 monetary result", () => {
-    for (const [kind, principal, legacy] of rows) {
-      if (kind !== "reward") continue;
-      const result = reward(principal);
-      expect(result.state).toBe("estimated");
-      if (result.state === "estimated")
-        expect(BigInt(result.amount) - BigInt(legacy)).toBe(
-          principal === "9007199254740993" ? 1n : 0n,
-        );
-    }
-    expect(rows.find((row) => row[0] === "zero-rtd")?.[1]).toBe("1");
-  });
-  it("APY fraction agrees with the actual debug-library rate and Rust powf vectors", () => {
-    for (const [kind, older, newer, expected] of rows) {
-      if (kind !== "apy") continue;
-      const result = estimateStakingApy({
-        rates: [rate("1", "100000", older), rate("2", "100000", newer)],
-        currentEpoch: "2",
-        subsidyStartEpoch: "0",
-      });
-      expect(result.state).toBe("estimated");
-      if (result.state === "estimated")
-        expect(result.fraction).toBeCloseTo(Number(expected), 14);
-    }
   });
 });

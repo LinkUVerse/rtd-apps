@@ -1,0 +1,48 @@
+"Checkpoint sequence represented as a JSON integer in [0, 2^53)."
+scalar Checkpoint
+"Native facts retained without lossy translation into legacy RPC types."
+scalar JSON
+
+enum ExecutionStatus { SUCCESS FAILURE }
+type AccountTransaction {
+  digest: String!
+  checkpoint: Checkpoint!
+  sender: String
+  status: ExecutionStatus!
+  origins: [String!]!
+  transaction: JSON!
+  eventFacts: JSON!
+  kioskTransfers: JSON
+}
+type AccountHistoryPage {
+  chainId: String!
+  address: String!
+  checkpointLo: Checkpoint!
+  checkpointHi: Checkpoint!
+  limit: Int!
+  snapshot: String!
+  transactions: [AccountTransaction!]!
+  hasNextPage: Boolean!
+  nextCursor: String
+  totalTransactions: Int!
+  registrationComplete: Boolean!
+  completeForRegisteredKiosks: Boolean!
+  completeForDiscoveredOwnerTokens: Boolean
+  completeForDiscoveredCapabilities: Boolean
+  allAccountActivityCertified: Boolean!
+  allAccountTransfersCertified: Boolean
+}
+"Observed range intersection; every history page revalidates coverage and scan budgets."
+type AccountHistoryCoverage {
+  chainId: String!
+  checkpointLo: Checkpoint!
+  checkpointHi: Checkpoint!
+  checkpointDigest: String!
+  allAccountActivityCertified: Boolean!
+}
+type Query {
+  accountHistoryCoverage(chainId: String!): AccountHistoryCoverage!
+  "Fixed-window account union. Completeness flags must be interpreted separately from pagination."
+  accountHistory(chainId: String!, address: String!, checkpointLo: Checkpoint!, checkpointHi: Checkpoint!,
+                 limit: Int! = 20, cursor: String): AccountHistoryPage!
+}

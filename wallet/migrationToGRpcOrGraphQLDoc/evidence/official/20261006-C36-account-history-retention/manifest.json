@@ -1,0 +1,18 @@
+{
+  "_comment": "Restored 2026-10-17. The official array is empty because the historical official account-history-retention fixtures (SDL/hash evidence) were not recoverable and must not be fabricated. The local array fixes the SHA256 of the three self-hosted source files that the suite still verifies: schema.graphql (two-root GraphQL SDL), graphql_api.py (one-query gate), and activity_pages.py (scope snapshot HMAC/SHA). See workLog/2026-10-17-376-CLIENT-001-fixture-recovery.md.",
+  "official": [],
+  "local": [
+    {
+      "file": "/Users/changzechuan/WenchuanProjects/RTD-Blockchain/rtd-archive-service/modules/account-activity/schema.graphql",
+      "sha256": "773f6f564f75df9a03723bd31ce19f6d986fd04da2f32a1413b592e9f476a1ee"
+    },
+    {
+      "file": "/Users/changzechuan/WenchuanProjects/RTD-Blockchain/rtd-archive-service/modules/account-activity/graphql_api.py",
+      "sha256": "f558b0e9fcb5f44d5fee252f857cb4e09170f7368b1ef460f3c6f7bfbededee0"
+    },
+    {
+      "file": "/Users/changzechuan/WenchuanProjects/RTD-Blockchain/rtd-archive-service/modules/account-activity/activity_pages.py",
+      "sha256": "4ec02a190668cb7bf16192388f085064c99b0b0cf67616b1b2dfb73bdf201414"
+    }
+  ]
+}
