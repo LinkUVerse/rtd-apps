@@ -32,6 +32,7 @@ import {
 } from "_src/shared/rpc/nft-transfer-preparation";
 import type { WalletExecutionOutcome } from "_src/shared/rpc/execution-coordinator";
 import { createValidationSchema } from "./validation";
+import { expectHistoryTransaction } from "rtd-apps-core/src/rpc/history-hooks";
 
 type Props = {
   objectId: string;
@@ -111,6 +112,8 @@ function NftTransferSession({
       setApproval(null);
       void queryClient.invalidateQueries({ queryKey: ["wallet-assets"] });
       void queryClient.invalidateQueries({ queryKey: ["wallet-current-balances"] });
+      // Poll Activity quickly until this confirmed transfer appears.
+      expectHistoryTransaction(account?.address, result.receipt.digest);
       void queryClient.invalidateQueries({ queryKey: ["wallet-account-history"] });
       if (sentHere && result.receipt.success)
         ampli.sentCollectible({ objectId });

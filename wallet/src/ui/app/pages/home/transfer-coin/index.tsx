@@ -33,6 +33,7 @@ import { SendTokenForm } from "./SendTokenForm";
 import type { SubmitProps } from "./SendTokenForm";
 import { Transaction } from "rtd-typescript/transactions";
 import { revalidateCoinTransfer } from "_src/shared/rpc/coin-transfer-preparation";
+import { expectHistoryTransaction } from "rtd-apps-core/src/rpc/history-hooks";
 
 const TRANSFER_DEBUG_PREFIX = "[RTD Wallet Transfer Debug]";
 
@@ -185,6 +186,8 @@ function TransferCoinPage() {
       if (!response.receipt.success) {
         toast.error("交易已入链但执行失败，请查看回执");
       }
+      // Poll Activity quickly until this confirmed transaction appears.
+      expectHistoryTransaction(address, response.receipt.digest);
       resetCoinQueries();
 
       ampli.sentCoins({
@@ -245,6 +248,7 @@ function TransferCoinPage() {
                   });
                 if (result?.state === "confirmed") {
                   setPending(null);
+                  expectHistoryTransaction(address, result.receipt.digest);
                   resetCoinQueries();
                   navigate(
                     `/receipt?txdigest=${encodeURIComponent(result.receipt.digest)}&from=transactions`,
