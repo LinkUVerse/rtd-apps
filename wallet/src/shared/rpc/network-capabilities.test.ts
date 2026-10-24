@@ -238,7 +238,6 @@ describe("四入口完整有限能力聚合", () => {
       state: "observed",
       value: {
         state: "scoped-window-verified",
-        totalTransactions: 1,
         accountSha256: expect.stringMatching(/^[a-f0-9]{64}$/),
         allAccountHistoryVerified: false,
       },

@@ -39,7 +39,11 @@ export async function inspectRecipient(
     if (object.objectId !== address) throw new Error("收件人对象响应不匹配");
     return { kind: "object", address };
   }
-  const history = await rpc.readAccountHistory(address, signal);
+  // The first page is enough: the recipient only needs to know whether any
+  // supported activity exists in the fixed window.
+  const history = await rpc.readAccountHistory(address, signal, {
+    continuation: null,
+  });
   signal.throwIfAborted();
   if (
     history.address !== address ||
@@ -48,7 +52,7 @@ export async function inspectRecipient(
   )
     throw new Error("收件人历史响应绑定不匹配");
   return {
-    kind: history.totalTransactions
+    kind: history.transactions.length
       ? "history-observed"
       : "no-supported-activity",
     address,

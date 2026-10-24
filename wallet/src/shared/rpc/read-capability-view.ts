@@ -204,11 +204,6 @@ function account(
     }
   }
   if (value.state === "scoped-window-verified") {
-    if (
-      !Number.isSafeInteger(value.totalTransactions) ||
-      value.totalTransactions < 0
-    )
-      throw new NetworkIdentityError("accountHistory", "incompatible");
     for (const key of [
       "registrationComplete",
       "completeForRegisteredKiosks",
@@ -242,7 +237,6 @@ function account(
     return {
       ...base,
       accountScope: "scoped-window-verified",
-      totalTransactions: value.totalTransactions,
       window: {
         checkpointLo: value.window.checkpointLo,
         checkpointHi: value.window.checkpointHi,

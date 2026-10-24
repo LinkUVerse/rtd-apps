@@ -38,7 +38,7 @@ export const HISTORY_COVERAGE_QUERY = `query WalletHistoryCoverage($chain: Strin
 }`;
 export const HISTORY_PAGE_QUERY = `query WalletAccountHistory($chain: String!, $address: String!, $lo: Checkpoint!, $hi: Checkpoint!, $limit: Int!, $cursor: String) {
   accountHistory(chainId: $chain, address: $address, checkpointLo: $lo, checkpointHi: $hi, limit: $limit, cursor: $cursor) {
-    chainId address checkpointLo checkpointHi limit snapshot totalTransactions hasNextPage nextCursor
+    chainId address checkpointLo checkpointHi limit snapshot hasNextPage nextCursor
     registrationComplete completeForRegisteredKiosks completeForDiscoveredOwnerTokens completeForDiscoveredCapabilities
     allAccountActivityCertified allAccountTransfersCertified
     transactions { digest checkpoint sender status origins transaction eventFacts kioskTransfers }
@@ -385,11 +385,27 @@ export class WalletAccountHistoryProtocol {
       throw new WalletHistoryError("changed");
     this.fence();
   }
+  /**
+   * Run `read` inside one admitted window. `fixed` continues the window a
+   * previous page was bound to: the current coverage must still contain it
+   * (same lower bound and certification, upper not behind, same digest at the
+   * same upper), and the native snapshot is opened at the fixed upper bound.
+   */
   async inWindow<T>(
     read: (window: HistoryWindow) => Promise<T>,
     minimumCheckpoint?: number,
+    fixed?: HistoryWindowCoverage,
   ): Promise<T> {
-    const coverage = await this.coverage();
+    const current = await this.coverage();
+    if (
+      fixed &&
+      (current.lower !== fixed.lower ||
+        current.upper < fixed.upper ||
+        current.certified !== fixed.certified ||
+        (current.upper === fixed.upper && current.digest !== fixed.digest))
+    )
+      throw new WalletHistoryError("changed");
+    const coverage = fixed ?? current;
     if (minimumCheckpoint !== undefined && coverage.upper < minimumCheckpoint)
       throw new WalletHistoryError("coverage");
     const native = await GraphQLSnapshot.open(

@@ -66,7 +66,29 @@ beforeEach(() => {
           allAccountTransfersCertified: false,
         },
         transactions: [],
-        totalTransactions: 0,
+      };
+    },
+  );
+  vi.spyOn(WalletAccountHistoryReader.prototype, "readPage").mockImplementation(
+    async function (this: WalletAccountHistoryReader, address) {
+      return {
+        bindingKey: this.session.bindingKey,
+        readSessionKey: this.session.cacheKey,
+        address,
+        checkpointLo: 0,
+        checkpointHi: 10,
+        checkpointDigest: snapshotDigest,
+        snapshot: "public-snapshot",
+        coverage: {
+          registrationComplete: true,
+          completeForRegisteredKiosks: true,
+          completeForDiscoveredOwnerTokens: null,
+          completeForDiscoveredCapabilities: null,
+          allAccountActivityCertified: false,
+          allAccountTransfersCertified: false,
+        },
+        transactions: [],
+        continuation: null,
       };
     },
   );
@@ -324,6 +346,9 @@ describe("actual Provider durable negative consumption and current UI values", (
     await wait(() => expect(view.history.data).toBeDefined());
     await wait(() => expect(view.receipt.data).toBeNull());
     vi.mocked(WalletAccountHistoryReader.prototype.read).mockRejectedValue(
+      new Error("public history failure"),
+    );
+    vi.mocked(WalletAccountHistoryReader.prototype.readPage).mockRejectedValue(
       new Error("public history failure"),
     );
     vi.mocked(WalletLedgerReader.prototype.details).mockRejectedValue(

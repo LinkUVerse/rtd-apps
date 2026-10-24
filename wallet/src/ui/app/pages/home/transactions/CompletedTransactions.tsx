@@ -26,6 +26,10 @@ export function CompletedTransactions() {
     isFetching,
     error,
     refetch,
+    hasMore,
+    loadMore,
+    loadingMore,
+    loadMoreError,
   } = useQueryTransactionsByAddress(activeAddress);
   const allowed = walletReadAllowed(rpc, "history");
   // Returning to the tab is the moment a just-sent transfer is expected. The
@@ -101,6 +105,28 @@ export function CompletedTransactions() {
       ) : (
         <NoActivityCard message={t("activity.windowEmpty")} />
       )}
+      {/* Older rows are read page by page inside the same verified window; a
+          failed page keeps the rows already shown and can simply be retried. */}
+      {loadMoreError ? (
+        <p role="alert" className="px-4 text-sm text-issue-dark">
+          {walletReadErrorMessage(loadMoreError)}
+        </p>
+      ) : null}
+      {hasMore ? (
+        <div className="flex justify-center px-4 py-3">
+          <button
+            type="button"
+            data-testid="load-more-activity"
+            aria-busy={loadingMore}
+            disabled={loadingMore}
+            onClick={() => void loadMore?.()}
+            className="flex items-center gap-2 rounded-full border border-gray-45 bg-white px-4 py-2 text-sm font-semibold text-steel-darker disabled:opacity-60"
+          >
+            {loadingMore ? <LoadingIndicator /> : null}
+            {loadingMore ? t("activity.loadingMore") : t("activity.loadMore")}
+          </button>
+        </div>
+      ) : null}
     </Loading>
   );
 }

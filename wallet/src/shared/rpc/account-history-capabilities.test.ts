@@ -70,7 +70,6 @@ describe("账户能力复用生产协议／全分页reader", () => {
     expect(r).toMatchObject({
       state: "scoped-window-verified",
       accountSha256: createHash("sha256").update(sender).digest("hex"),
-      totalTransactions: 2,
       snapshotVerification: "service-binding-only",
       cursorVerification: "service-authenticated-opaque",
       coverage: {
@@ -81,9 +80,11 @@ describe("账户能力复用生产协议／全分页reader", () => {
       },
       allAccountHistoryVerified: false,
     });
+    // Capability is decided by the first page; no total means no full scan.
     expect(
       f.requests.filter((p) => p.query === HISTORY_PAGE_QUERY),
-    ).toHaveLength(2);
+    ).toHaveLength(1);
+    expect(r).not.toHaveProperty("totalTransactions");
     expect(r).not.toHaveProperty("address");
     expect(r).not.toHaveProperty("transactions");
     expect(Object.isFrozen(r)).toBe(true);
@@ -92,7 +93,8 @@ describe("账户能力复用生产协议／全分页reader", () => {
       address: sender,
       pageSize: 1,
     });
-    expect(f.requests).toHaveLength(8);
+    // Two probes, each coverage + first page + revalidation: no full scan.
+    expect(f.requests).toHaveLength(6);
   });
   it("真实协议空页可以是声明范围的零计数，但不能宣称全集", async () => {
     const f = await historyFixture({ rows: [] }),
@@ -102,7 +104,6 @@ describe("账户能力复用生产协议／全分页reader", () => {
       });
     expect(r).toMatchObject({
       state: "scoped-window-verified",
-      totalTransactions: 0,
       allAccountHistoryVerified: false,
     });
     expect(
@@ -152,7 +153,7 @@ describe("账户能力复用生产协议／全分页reader", () => {
             );
           if (fault === "chain-page" && data.accountHistory) {
             data.accountHistory.chainId = toBase58(new Uint8Array(32).fill(9));
-            data.accountHistory.totalTransactions = -1;
+            data.accountHistory.snapshot = "wrong";
           }
         },
         nativeAlter: (data) => {
@@ -471,7 +472,7 @@ describe("账户能力复用生产协议／全分页reader", () => {
           if (fault === "flag-missing")
             delete p.completeForDiscoveredOwnerTokens;
           if (fault === "snapshot") p.snapshot = "wrong";
-          if (fault === "count") p.totalTransactions = 2;
+          if (fault === "count") p.hasNextPage = true;
           if (fault === "facts")
             p.transactions[0].transaction.effects.effectsBcs = "AA==";
         },
@@ -514,7 +515,7 @@ describe("账户能力复用生产协议／全分页reader", () => {
   it("局部page失败后结束extension错链仍优先，部分页不泄露", async () => {
     const f = await historyFixture({
       alter: (data, _request, round) => {
-        if (data.accountHistory) data.accountHistory.totalTransactions = -1;
+        if (data.accountHistory) data.accountHistory.snapshot = "wrong";
         if (data.accountHistoryCoverage && round > 1)
           data.accountHistoryCoverage.chainId = toBase58(
             new Uint8Array(32).fill(9),
@@ -534,7 +535,7 @@ describe("账户能力复用生产协议／全分页reader", () => {
   it("非空错误页后结束native错链仍优先", async () => {
     const f = await historyFixture({
       alter: (data) => {
-        if (data.accountHistory) data.accountHistory.totalTransactions = -1;
+        if (data.accountHistory) data.accountHistory.snapshot = "wrong";
       },
       nativeAlter: (data, request) => {
         if (request.query.includes("Revalidate"))

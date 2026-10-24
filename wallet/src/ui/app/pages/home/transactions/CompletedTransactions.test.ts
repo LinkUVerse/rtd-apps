@@ -52,7 +52,7 @@ it('刷新失败不展示缓存中的历史记录或空窗口结论',async()=>{
 });
 it('成功空集合只表示当前受支持窗口为空，继续显示覆盖限制',async()=>{
   const fixture=await historyFixture();const history=await fixture.reader.read(sender);
-  m.history={...history,transactions:[],totalTransactions:0};
+  m.history={...history,transactions:[]};
   await render(node=>{
     expect(node.textContent).toContain('activity.windowEmpty');
     expect(node.textContent).toContain('activity.limited');

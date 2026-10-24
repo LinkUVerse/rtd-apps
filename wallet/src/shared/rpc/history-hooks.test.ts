@@ -55,7 +55,7 @@ describe("Provider到账户历史Hook的实际接入", () => {
           : query.isError
             ? "error"
             : query.data
-              ? `history:${query.data.totalTransactions}:${query.data.coverage.allAccountActivityCertified}`
+              ? `history:${query.data.transactions.length}:${query.data.coverage.allAccountActivityCertified}`
               : "loading",
       );
     }

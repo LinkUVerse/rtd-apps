@@ -33,7 +33,6 @@ type Assessment = Readonly<
       window: Window;
       accountSha256: string;
       snapshot: string;
-      totalTransactions: number;
       coverage: WalletHistoryCoverage;
     }
   | { state: "syncing"; reason: "coverage" }
@@ -126,7 +125,7 @@ export async function probeAccountHistoryCapabilities(
             pageSize: options.pageSize,
             maxPages: options.maxPages,
             minimumCheckpoint: options.minimumCheckpoint,
-          }).read(address, signal);
+          }).readPage(address, null, signal);
           const accountSha256 = await deploymentSha256(
             new TextEncoder().encode(address),
           );
@@ -142,7 +141,6 @@ export async function probeAccountHistoryCapabilities(
             }),
             accountSha256,
             snapshot: result.snapshot,
-            totalTransactions: result.totalTransactions,
             coverage: result.coverage,
           });
         }

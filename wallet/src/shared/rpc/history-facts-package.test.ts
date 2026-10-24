@@ -138,12 +138,11 @@ describe("账户历史原生package标记与权威BCS输出对应", () => {
     });
     expect(r).toMatchObject({
       state: "scoped-window-verified",
-      totalTransactions: 2,
       allAccountHistoryVerified: false,
     });
     expect(r).not.toHaveProperty("transactions");
     expect(
       f.requests.filter((p) => p.query.includes("WalletAccountHistory")),
-    ).toHaveLength(2);
+    ).toHaveLength(1);
   });
 });

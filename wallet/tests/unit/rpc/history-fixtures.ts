@@ -144,7 +144,6 @@ export async function historyFixture(
             checkpointHi: variables.hi,
             limit: variables.limit,
             snapshot: "a".repeat(64),
-            totalTransactions: rows.length,
             registrationComplete: true,
             completeForRegisteredKiosks: true,
             completeForDiscoveredOwnerTokens: true,

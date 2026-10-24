@@ -3,7 +3,8 @@
 import { walletReadAllowed, walletReadKeyParts } from "./read-admission";
 
 import { useQuery } from "@tanstack/react-query";
-import { useWalletRpc } from "./WalletRpcContext";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useWalletRpc, type WalletAccountHistory } from "./WalletRpcContext";
 
 /** Poll interval while a just-confirmed transaction is not yet in the window. */
 export const EXPECTED_HISTORY_POLL_MS = 2_000;
@@ -63,6 +64,14 @@ export function clearExpectedHistoryTransactions(): void {
   expected.clear();
 }
 
+/**
+ * The Activity list reads one verified page at a time. The query holds only
+ * the first page, so polling, focus and manual refresh re-read just that page
+ * (newest first, where a new transaction appears). Older pages are appended on
+ * demand with `loadMore`, each continuing the first page's fixed window; they
+ * are dropped as soon as the first page moves to another window or snapshot,
+ * so rows of two different windows are never shown together.
+ */
 export function useWalletAccountHistory(
   address?: string | null,
   refreshInterval = 20_000,
@@ -76,7 +85,8 @@ export function useWalletAccountHistory(
       ...walletReadKeyParts(rpc, "history"),
       address,
     ],
-    queryFn: ({ signal }) => rpc.readAccountHistory(address!, signal),
+    queryFn: ({ signal }) =>
+      rpc.readAccountHistory(address!, signal, { continuation: null }),
     enabled:
       walletReadAllowed(rpc, "history") && rpc.hasFullnodeSession && !!address,
     retry: false,
@@ -95,11 +105,76 @@ export function useWalletAccountHistory(
       previousQuery?.queryKey.at(-1) === address ? previous : undefined,
     meta: { skipPersistedCache: true, walletReadOperation: "history" },
   });
+  const first =
+    !walletReadAllowed(rpc, "history") || query.isError ? undefined : query.data;
+  // Older pages belong to the exact window and snapshot of the first page.
+  const windowKey = first
+    ? `${first.bindingKey}|${first.readSessionKey}|${first.address}|${first.checkpointHi}|${first.snapshot}`
+    : null;
+  const [more, setMore] = useState<{
+    key: string | null;
+    pages: readonly WalletAccountHistory[];
+  }>({ key: null, pages: [] });
+  const [moreError, setMoreError] = useState<unknown>(null);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const pages = more.key === windowKey ? more.pages : [];
+  const inFlight = useRef<AbortController | null>(null);
+  useEffect(() => {
+    // A new window invalidates any page still being fetched for the old one.
+    inFlight.current?.abort();
+    inFlight.current = null;
+    setLoadingMore(false);
+    setMoreError(null);
+  }, [windowKey]);
+  useEffect(() => () => inFlight.current?.abort(), []);
+  const tail = pages.at(-1) ?? first;
+  const continuation = tail?.continuation ?? null;
+  const loadMore = useCallback(async () => {
+    if (!address || !continuation || inFlight.current) return;
+    const controller = new AbortController();
+    inFlight.current = controller;
+    const key = windowKey;
+    setLoadingMore(true);
+    setMoreError(null);
+    try {
+      const page = await rpc.readAccountHistory(address, controller.signal, {
+        continuation,
+      });
+      if (controller.signal.aborted) return;
+      setMore((current) => ({
+        key,
+        pages: [...(current.key === key ? current.pages : []), page],
+      }));
+    } catch (error) {
+      if (!controller.signal.aborted) setMoreError(error);
+    } finally {
+      if (inFlight.current === controller) {
+        inFlight.current = null;
+        setLoadingMore(false);
+      }
+    }
+  }, [address, continuation, rpc, windowKey]);
+  const data = useMemo(
+    () =>
+      first && pages.length
+        ? Object.freeze({
+            ...first,
+            transactions: Object.freeze(
+              [first, ...pages].flatMap((page) => page.transactions),
+            ),
+            continuation,
+          })
+        : first,
+    [first, pages, continuation],
+  );
   return {
     ...query,
-    data:
-      !walletReadAllowed(rpc, "history") || query.isError
-        ? undefined
-        : query.data,
+    data,
+    /** Whether older verified pages of the same window remain to be read. */
+    hasMore: !!continuation,
+    loadMore,
+    loadingMore,
+    /** A failed older page; the loaded rows stay valid and loading can be retried. */
+    loadMoreError: moreError,
   };
 }

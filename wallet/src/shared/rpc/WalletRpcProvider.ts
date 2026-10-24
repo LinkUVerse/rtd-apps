@@ -373,9 +373,11 @@ export function WalletRpcProvider({
           if (!receipts) throw new Error("钱包查询会话正在初始化");
           return receipts.details(digest, signal);
         },
-        readAccountHistory: async (address, signal) => {
+        readAccountHistory: async (address, signal, page) => {
           if (!history) throw new Error("钱包查询会话正在初始化");
-          return history.read(address, signal);
+          return page
+            ? history.readPage(address, page.continuation, signal)
+            : history.read(address, signal);
         },
         readHistoricalObjects: archiveObjects
           ? (selectors, signal) => archiveObjects.objects(selectors, signal)
@@ -451,7 +453,10 @@ export function WalletRpcProvider({
         ),
       readTransactionDetails: (digest, signal) =>
         receipts!.details(digest, signal),
-      readAccountHistory: (address, signal) => history!.read(address, signal),
+      readAccountHistory: (address, signal, page) =>
+        page
+          ? history!.readPage(address, page.continuation, signal)
+          : history!.read(address, signal),
       readHistoricalObjects: archiveObjects
         ? (selectors, signal) => archiveObjects.objects(selectors, signal)
         : undefined,

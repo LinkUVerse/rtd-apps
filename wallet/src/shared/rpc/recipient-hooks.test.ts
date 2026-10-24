@@ -26,8 +26,8 @@ function fixture(count = 0, alter: Partial<WalletAccountHistory> = {}) {
       allAccountActivityCertified: false,
       allAccountTransfersCertified: false,
     },
-    totalTransactions: count,
-    transactions: [],
+    // Only presence matters to recipient inspection; rows stay opaque here.
+    transactions: Array.from({ length: count }, () => ({})) as never,
     ...alter,
   };
   const readFreshObject = vi

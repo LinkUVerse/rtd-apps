@@ -305,7 +305,6 @@ describe("core只读状态投影", () => {
         state: "observed",
         value: {
           state: "scoped-window-verified",
-          totalTransactions: 1,
           accountScope: "scoped-window-verified",
           allAccountHistoryVerified: false,
           coverage: {

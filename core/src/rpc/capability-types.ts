@@ -172,7 +172,6 @@ export interface WalletAccountCapabilitiesView {
   readonly scope: "declared-fixed-window-union";
   readonly allAccountHistoryVerified: false;
   readonly accountScope: "not-probed" | "scoped-window-verified";
-  readonly totalTransactions?: number;
   readonly window?: Readonly<{
     checkpointLo: number;
     checkpointHi: number;

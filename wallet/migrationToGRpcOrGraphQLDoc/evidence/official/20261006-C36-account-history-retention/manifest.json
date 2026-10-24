@@ -4,7 +4,7 @@
   "local": [
     {
       "file": "/Users/changzechuan/WenchuanProjects/RTD-Blockchain/rtd-archive-service/modules/account-activity/schema.graphql",
-      "sha256": "773f6f564f75df9a03723bd31ce19f6d986fd04da2f32a1413b592e9f476a1ee"
+      "sha256": "a7f822ce089cdbe54c96ec556e3a43aeab3f673d015b3a00b18ac8901b506177"
     },
     {
       "file": "/Users/changzechuan/WenchuanProjects/RTD-Blockchain/rtd-archive-service/modules/account-activity/graphql_api.py",
@@ -12,7 +12,7 @@
     },
     {
       "file": "/Users/changzechuan/WenchuanProjects/RTD-Blockchain/rtd-archive-service/modules/account-activity/activity_pages.py",
-      "sha256": "4ec02a190668cb7bf16192388f085064c99b0b0cf67616b1b2dfb73bdf201414"
+      "sha256": "5757353389a26a2775c10daa8230165f1d28b18e0aad284158fda839aa87cd27"
     }
   ]
 }

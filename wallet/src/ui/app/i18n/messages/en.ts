@@ -447,6 +447,8 @@ const en = {
     "This history covers supported account activity in the displayed window. Complete account history has not been certified.",
   "activity.windowEmpty": "No supported activity was found in this window.",
   "activity.refresh": "Refresh activity",
+  "activity.loadMore": "Load earlier activity",
+  "activity.loadingMore": "Loading earlier activity",
   "activity.refreshing": "Refreshing activity; showing the previous result.",
   "activity.admissionBlocked":
     "Activity reads have not passed network verification. Check the network status; transaction history cannot be confirmed yet.",

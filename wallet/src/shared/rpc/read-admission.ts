@@ -445,8 +445,8 @@ export function guardWalletRpc(
       gate.run("names", () => rpc.resolveRecipientName(name, signal), signal),
     readDefaultName: (owner, signal) =>
       gate.run("names", () => rpc.readDefaultName(owner, signal), signal),
-    readAccountHistory: (owner, signal) =>
-      gate.run("history", () => rpc.readAccountHistory(owner, signal), signal),
+    readAccountHistory: (owner, signal, page) =>
+      gate.run("history", () => rpc.readAccountHistory(owner, signal, page), signal),
     readTransactionDetails: (digest, signal) =>
       gate.run(
         "receipts",

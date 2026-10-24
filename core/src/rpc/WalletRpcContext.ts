@@ -80,7 +80,38 @@ export interface WalletAccountHistory {
   readonly snapshot: string;
   readonly coverage: WalletHistoryCoverage;
   readonly transactions: readonly WalletHistoryTransaction[];
-  readonly totalTransactions: number;
+  /**
+   * Page mode only: how to read the next page of the same fixed window, or
+   * `null` when this page completes it. Absent for a whole-window read.
+   */
+  readonly continuation?: WalletHistoryContinuation | null;
+}
+
+/**
+ * Opaque state binding a later history page to the first page's window,
+ * snapshot and completeness flags. A continuation is only valid for the
+ * read session and address it came from.
+ */
+export interface WalletHistoryContinuation {
+  readonly bindingKey: string;
+  readonly readSessionKey: string;
+  readonly address: string;
+  readonly window: {
+    readonly lower: number;
+    readonly upper: number;
+    readonly digest: string;
+    readonly certified: boolean;
+  };
+  readonly snapshot: string;
+  readonly flags: string;
+  readonly last: { readonly checkpoint: number; readonly digest: string };
+  readonly cursor: string;
+  readonly cursors: readonly string[];
+}
+
+/** `continuation: null` reads the first page; a continuation reads the next one. */
+export interface WalletHistoryPageRequest {
+  readonly continuation: WalletHistoryContinuation | null;
 }
 
 export interface AssetSnapshotProof {
@@ -282,9 +313,14 @@ export interface WalletRpc {
     digest: string,
     signal?: AbortSignal,
   ): Promise<WalletTransactionDetails | null>;
+  /**
+   * Without `page`, reads and verifies the whole window. With `page`, reads a
+   * single verified page: the first one, or the next one of a continuation.
+   */
   readAccountHistory(
     address: string,
     signal?: AbortSignal,
+    page?: WalletHistoryPageRequest,
   ): Promise<WalletAccountHistory>;
   readFreshObject(
     id: string,

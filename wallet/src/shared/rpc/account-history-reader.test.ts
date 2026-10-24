@@ -79,7 +79,6 @@ describe("独立账户历史窗口准入", () => {
       address: sender,
       checkpointLo: 0,
       checkpointHi: 25,
-      totalTransactions: 2,
       coverage: { allAccountActivityCertified: false },
     });
     expect(result.transactions.map((row) => row.status)).toEqual([
@@ -104,7 +103,6 @@ describe("独立账户历史窗口准入", () => {
   it("有范围和限定旗标的真实空集合被接纳，不伪造全集", async () => {
     const f = await historyFixture({ rows: [] });
     expect(await f.reader.read(sender)).toMatchObject({
-      totalTransactions: 0,
       transactions: [],
       coverage: { allAccountActivityCertified: false },
     });
@@ -125,7 +123,6 @@ describe("独立账户历史窗口准入", () => {
     "address",
     "window",
     "snapshot",
-    "count",
     "duplicate",
     "order",
     "cursor",
@@ -145,7 +142,6 @@ describe("独立账户历史窗口准入", () => {
         if (failure === "address") page.address = "0x" + "0".repeat(64);
         if (failure === "window") page.checkpointLo = 1;
         if (failure === "snapshot") page.snapshot = "b".repeat(64);
-        if (failure === "count") page.totalTransactions = 3;
         if (failure === "duplicate") page.transactions = [a];
         if (failure === "order")
           page.transactions = [
@@ -164,7 +160,6 @@ describe("独立账户历史窗口准入", () => {
         if (failure === "cursor") {
           page.hasNextPage = true;
           page.nextCursor = "p1.sig";
-          page.totalTransactions = 3;
         }
         if (failure === "continuation") page.nextCursor = "bad.sig";
         if (failure === "flags") page.completeForDiscoveredCapabilities = false;

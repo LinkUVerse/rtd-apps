@@ -418,6 +418,8 @@ const zhCN: Record<keyof typeof en, string> = {
     "此记录覆盖所示窗口内受支持的账户活动，尚不能证明账户历史全集。",
   "activity.windowEmpty": "此窗口内未发现受支持的账户活动。",
   "activity.refresh": "刷新活动",
+  "activity.loadMore": "加载更早的活动",
+  "activity.loadingMore": "正在加载更早的活动",
   "activity.refreshing": "正在刷新活动，当前显示上次结果。",
   "activity.admissionBlocked":
     "交易活动读取尚未通过网络校验，请核对网络状态。暂时无法确认历史记录。",
