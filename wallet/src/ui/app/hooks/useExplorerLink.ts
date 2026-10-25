@@ -46,9 +46,8 @@ export function useExplorerLink(linkConfig: ExplorerLinkConfig) {
 	const moduleName = type === ExplorerLinkType.object ? linkConfig.moduleName : null;
 
 	// fallback to localhost if customRPC is not set
-	const customRPCUrl = customRPC || 'http://localhost:3000/';
+	const customRPCUrl = customRPC || 'http://127.0.0.1:5180/';
 	return useMemo(() => {
-		if (!address) return null;
 		switch (type) {
 			case ExplorerLinkType.address:
 				return address && getAddressUrl(address, selectedApiEnv, customRPCUrl);

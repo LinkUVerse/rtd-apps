@@ -232,6 +232,7 @@ const commonConfig: () => Promise<Configuration> = async () => {
       }),
       environment,
       new DefinePlugin({
+        __EXPLORER_DEV_URL__: JSON.stringify(process.env.EXPLORER_DEV_URL ?? ""),
         __WALLET_EXTERNAL_SERVICES_ENABLED__:
           IS_PROD && process.env.WALLET_EXTERNAL_SERVICES === "true",
         __WALLET_REVIEWED_DEPLOYMENTS__: JSON.stringify(

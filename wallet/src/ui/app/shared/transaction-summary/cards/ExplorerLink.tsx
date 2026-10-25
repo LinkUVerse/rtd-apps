@@ -34,7 +34,7 @@ export function ExplorerLinkCard({ digest, timestamp }: { digest?: string; times
 		type: ExplorerLinkType.transaction,
 		transactionID: digest!,
 	});
-	if (!shouldShowExplorerLink) return null;
+	if (!shouldShowExplorerLink || !explorerHref) return null;
 	return (
 		<Card as="a" href={explorerHref!} target="_blank">
 			<div className="flex items-center justify-center gap-1 tracking-wider w-full">
