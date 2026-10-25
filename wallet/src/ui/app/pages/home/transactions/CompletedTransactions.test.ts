@@ -10,8 +10,8 @@ import {historyFixture} from '../../../../../../tests/unit/rpc/history-fixtures'
 import {sender} from '../../../../../../tests/unit/rpc/execution-fixtures';
 import {CompletedTransactions} from './CompletedTransactions';
 
-const m=vi.hoisted(()=>({history:undefined as WalletAccountHistory|undefined,error:null as Error|null,address:'',state:'configured',isPending:false,readAdmission:undefined as WalletReadAdmissionView|undefined}));
-vi.mock('_hooks',()=>({useQueryTransactionsByAddress:()=>({data:m.history,error:m.error,isPending:m.isPending})}));
+const m=vi.hoisted(()=>({history:undefined as WalletAccountHistory|undefined,cached:undefined as any,error:null as Error|null,address:'',state:'configured',isPending:false,readAdmission:undefined as WalletReadAdmissionView|undefined}));
+vi.mock('_hooks',()=>({useQueryTransactionsByAddress:()=>({data:m.history,cached:m.cached,error:m.error,isPending:m.isPending,isFetching:m.isPending})}));
 vi.mock('_src/ui/app/hooks/useActiveAddress',()=>({useActiveAddress:()=>m.address}));
 vi.mock('rtd-apps-core/src/rpc/WalletRpcContext',()=>({useWalletRpc:()=>({state:m.state,message:'unconfigured',readAdmission:m.readAdmission})}));
 vi.mock('_app/i18n',()=>({useI18n:()=>({t:(key:string,vars?:Record<string,string>)=>key+(vars?JSON.stringify(vars):'')})}));
@@ -21,7 +21,7 @@ vi.mock('_components/error-boundary',()=>({ErrorBoundary:({children}:{children:R
 vi.mock('_components/transactions-card/NoActivityCard',()=>({NoActivityCard:({message}:{message:string})=>h('div',null,message)}));
 vi.mock('_app/shared/date-card',()=>({DateCard:()=>h('time',null,'timestamp')}));
 Object.assign(globalThis,{IS_REACT_ACT_ENVIRONMENT:true});
-beforeEach(()=>{m.history=undefined;m.error=null;m.address=sender;m.state='configured';m.isPending=false;m.readAdmission=undefined;});
+beforeEach(()=>{m.history=undefined;m.cached=undefined;m.error=null;m.address=sender;m.state='configured';m.isPending=false;m.readAdmission=undefined;});
 async function render(check:(node:HTMLElement)=>void){
   const node=document.createElement('div'),root=createRoot(node);
   try{
@@ -79,5 +79,33 @@ it('其他读取被阻断不影响已准入历史窗口',async()=>{
     expect(node.textContent).toContain('activity.window');
     expect(node.textContent).toContain('activity.limited');
     expect(node.textContent).not.toContain('activity.admissionBlocked');
+  });
+});
+it('首次读取进行中时先展示上次缓存的活动，并在列表上方提示正在刷新',async()=>{
+  const fixture=await historyFixture();const h=await fixture.reader.read(sender);
+  m.isPending=true;
+  m.cached={savedAt:1_700_000_000_000,checkpointLo:h.checkpointLo,checkpointHi:h.checkpointHi,coverage:h.coverage,transactions:h.transactions};
+  await render(node=>{
+    expect(node.textContent).not.toContain('loading');
+    expect(node.querySelector('[data-testid="activity-cached-banner"]')?.textContent).toContain('activity.showingCached');
+    expect(node.querySelector('a')?.getAttribute('href')).toBe(`/receipt?txdigest=${h.transactions[0].digest}`);
+    expect(node.querySelector('[data-testid="load-more-activity"]')).toBeNull();
+  });
+});
+it('经验证的新结果到达后替换缓存并去掉提示',async()=>{
+  const fixture=await historyFixture();const h=await fixture.reader.read(sender);
+  m.history=h;m.cached={savedAt:1,checkpointLo:0,checkpointHi:1,coverage:h.coverage,transactions:[]};
+  await render(node=>{
+    expect(node.querySelector('[data-testid="activity-cached-banner"]')).toBeNull();
+    expect(node.querySelector('a')).not.toBeNull();
+  });
+});
+it('读取失败时不展示缓存的旧活动',async()=>{
+  const fixture=await historyFixture();const h=await fixture.reader.read(sender);
+  m.error=new Error('unavailable');
+  m.cached={savedAt:1,checkpointLo:h.checkpointLo,checkpointHi:h.checkpointHi,coverage:h.coverage,transactions:h.transactions};
+  await render(node=>{
+    expect(node.querySelector('a')).toBeNull();
+    expect(node.querySelector('[data-testid="activity-cached-banner"]')).toBeNull();
   });
 });

@@ -6,6 +6,7 @@ import { useI18n } from "_app/i18n";
 import { useNextMenuUrl } from "_components/menu/hooks";
 import { resetAnalytics } from "_src/shared/analytics/amplitude";
 import { persister } from "_src/ui/app/helpers/queryClient";
+import { clearActivityCache } from "_src/shared/rpc/activity-cache";
 import { useBackgroundClient } from "_src/ui/app/hooks/useBackgroundClient";
 import { ConfirmationModal } from "_src/ui/app/shared/ConfirmationModal";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -26,6 +27,7 @@ export function MoreOptions() {
       queryClient.cancelQueries();
       queryClient.clear();
       await persister.removeClient();
+      await clearActivityCache();
       await backgroundClient.clearWallet();
     },
   });

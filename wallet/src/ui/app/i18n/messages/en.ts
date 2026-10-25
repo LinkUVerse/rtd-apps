@@ -447,6 +447,7 @@ const en = {
     "This history covers supported account activity in the displayed window. Complete account history has not been certified.",
   "activity.windowEmpty": "No supported activity was found in this window.",
   "activity.refresh": "Refresh activity",
+  "activity.showingCached": "Refreshing activity; showing results from {time}",
   "activity.loadMore": "Load earlier activity",
   "activity.loadingMore": "Loading earlier activity",
   "activity.refreshing": "Refreshing activity; showing the previous result.",

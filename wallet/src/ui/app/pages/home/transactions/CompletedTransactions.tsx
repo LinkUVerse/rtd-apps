@@ -30,6 +30,7 @@ export function CompletedTransactions() {
     loadMore,
     loadingMore,
     loadMoreError,
+    cached,
   } = useQueryTransactionsByAddress(activeAddress);
   const allowed = walletReadAllowed(rpc, "history");
   // Returning to the tab is the moment a just-sent transfer is expected. The
@@ -57,14 +58,19 @@ export function CompletedTransactions() {
   // as placeholder data). A *failed* one must not: an unreadable window cannot
   // stand in for a verified one, so the error replaces the rows.
   if (error) return <Alert>{walletReadErrorMessage(error)}</Alert>;
+  // Until the first verified page arrives, the last visit's rows are shown so
+  // the tab is not blank; a banner says they are being refreshed. They are
+  // replaced by the verified page, or by the error if the read fails.
+  const shown = history ?? cached;
+  const showingCached = !history && !!cached;
   return (
-    <Loading loading={isPending && !history}>
+    <Loading loading={isPending && !shown}>
       <div className="flex items-center justify-between gap-3 px-4">
-        {history ? (
+        {shown ? (
           <span role="status" className="text-sm text-steel-darker">
             {t("activity.window", {
-              lo: String(history.checkpointLo),
-              hi: String(history.checkpointHi),
+              lo: String(shown.checkpointLo),
+              hi: String(shown.checkpointHi),
             })}
           </span>
         ) : (
@@ -87,17 +93,32 @@ export function CompletedTransactions() {
           {isFetching ? t("activity.refreshing") : t("activity.refresh")}
         </button>
       </div>
-      {history &&
-        (!history.coverage.allAccountActivityCertified ||
-          !history.coverage.registrationComplete ||
-          !history.coverage.completeForDiscoveredOwnerTokens ||
-          !history.coverage.completeForDiscoveredCapabilities) && (
+      {showingCached ? (
+        <div
+          role="status"
+          aria-live="polite"
+          data-testid="activity-cached-banner"
+          className="mx-4 flex items-center gap-2 rounded-lg bg-gray-40 px-3 py-2 text-xs text-steel-darker"
+        >
+          <LoadingIndicator />
+          <span>
+            {t("activity.showingCached", {
+              time: new Date(cached!.savedAt).toLocaleString(),
+            })}
+          </span>
+        </div>
+      ) : null}
+      {shown &&
+        (!shown.coverage.allAccountActivityCertified ||
+          !shown.coverage.registrationComplete ||
+          !shown.coverage.completeForDiscoveredOwnerTokens ||
+          !shown.coverage.completeForDiscoveredCapabilities) && (
           <p className="px-4 text-sm text-steel-darker">
             {t("activity.limited")}
           </p>
         )}
-      {history?.transactions.length && activeAddress ? (
-        history.transactions.map((txn) => (
+      {shown?.transactions.length && activeAddress ? (
+        shown.transactions.map((txn) => (
           <ErrorBoundary key={txn.digest}>
             <TransactionCard txn={txn} address={activeAddress} />
           </ErrorBoundary>
@@ -112,7 +133,7 @@ export function CompletedTransactions() {
           {walletReadErrorMessage(loadMoreError)}
         </p>
       ) : null}
-      {hasMore ? (
+      {hasMore && !showingCached ? (
         <div className="flex justify-center px-4 py-3">
           <button
             type="button"
