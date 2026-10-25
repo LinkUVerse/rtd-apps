@@ -7,13 +7,13 @@
         "clean": "rm -rf dist/ node_modules/ .turbo/ .wrangler/ storybook-static/ test-results/",
         "deploy-dev": "pnpm build && wrangler pages deploy dist/ --project-name polymedia-explorer --branch dev",
         "deploy-prod": "pnpm build && wrangler pages deploy dist/ --project-name polymedia-explorer --branch main",
-        "dev": "vite --port 3000",
+        "dev": "vite --host 0.0.0.0",
         "lint": "eslint src/ *.ts --report-unused-disable-directives --max-warnings 0",
         "preview-storybook": "pnpm dlx serve ./storybook-static",
         "preview": "pnpm build && vite preview",
         "storybook": "storybook dev",
         "test": "vitest run",
-        "tunnel": "lt --port 3000",
+        "tunnel": "lt --port 5180",
         "typecheck": "tsc -b"
     },
     "dependencies": {

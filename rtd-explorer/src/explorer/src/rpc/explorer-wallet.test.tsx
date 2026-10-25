@@ -15,7 +15,6 @@ import {
   ExplorerWalletProvider,
   useExplorerSignTransaction,
 } from "./explorer-wallet";
-import type { ExplorerRpcClient } from "./ExplorerRpcClient";
 
 const caches: QueryClient[] = [];
 afterEach(() => {
@@ -46,7 +45,7 @@ function wrapper(network: string, burner = false) {
 }
 function consumer() {
   return {
-    kit: useDAppKit<DAppKit<string[], ExplorerRpcClient>>(),
+    kit: useDAppKit<DAppKit<string[], any>>(),
     account: useCurrentAccount(),
     client: useExplorerClient(),
     sign: useExplorerSignTransaction(),

@@ -5,6 +5,7 @@ import { useState } from "react";
 
 import { genTableDataFromTxData } from "~/components/transactions/TxCardUtils";
 import { useGetTransactionBlocks } from "~/hooks/useGetTransactionBlocks";
+import { useI18n } from "~/i18n";
 import { Pagination, useCursorPagination } from "~/ui/Pagination";
 import { PlaceholderTable } from "~/ui/PlaceholderTable";
 import { TableCard } from "~/ui/TableCard";
@@ -13,6 +14,7 @@ const DEFAULT_TRANSACTIONS_LIMIT = 20;
 
 export function CheckpointTransactionBlocks({ id }: { id: string }) {
 	const [limit, setLimit] = useState(DEFAULT_TRANSACTIONS_LIMIT);
+	const { t } = useI18n();
 	const transactions = useGetTransactionBlocks(
 		{
 			Checkpoint: id,
@@ -22,7 +24,7 @@ export function CheckpointTransactionBlocks({ id }: { id: string }) {
 
 	const { data, isFetching, pagination, isPending } = useCursorPagination(transactions);
 
-	const cardData = data ? genTableDataFromTxData(data.data) : undefined;
+	const cardData = data ? genTableDataFromTxData(data.data, t) : undefined;
 
 	return (
 		<div className="flex flex-col space-y-5 text-left xl:pr-10">
@@ -30,7 +32,7 @@ export function CheckpointTransactionBlocks({ id }: { id: string }) {
 				<PlaceholderTable
 					rowCount={20}
 					rowHeight="16px"
-					colHeadings={["Digest", "Sender", "Txns", "Gas", "Time"]}
+					colHeadings={[t("Digest"), t("Sender"), t("Txns"), t("Gas"), t("Time")]}
 					colWidths={["30%", "30%", "10%", "20%", "10%"]}
 				/>
 			) : (
@@ -48,9 +50,9 @@ export function CheckpointTransactionBlocks({ id }: { id: string }) {
 						pagination.onFirst();
 					}}
 				>
-					<option value={20}>20 Per Page</option>
-					<option value={40}>40 Per Page</option>
-					<option value={60}>60 Per Page</option>
+					<option value={20}>{`${20} ${t("Per Page")}`}</option>
+					<option value={40}>{`${40} ${t("Per Page")}`}</option>
+					<option value={60}>{`${60} ${t("Per Page")}`}</option>
 				</select>
 			</div>
 		</div>

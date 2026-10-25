@@ -2,66 +2,68 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { CoinFormat, formatBalance } from "rtd-apps-core";
-import { useExplorerQuery } from "~/rpc/explorer-client";
 
-import { StatsWrapper } from "./FormattedStatsAmount";
+import { useI18n } from "~/i18n";
+import { useExplorerQuery } from "~/rpc/explorer-client";
 import { Card } from "~/ui/Card";
 
 export function OnTheNetwork() {
-	// const { data: networkMetrics } = useGetNetworkMetrics();
+	const { t } = useI18n();
 	const { data: referenceGasPrice } = useExplorerQuery("getReferenceGasPrice");
+	const { data: systemState } = useExplorerQuery("getLatestRtdSystemState");
 	const gasPriceFormatted =
 		typeof referenceGasPrice === "bigint"
 			? formatBalance(referenceGasPrice, 0, CoinFormat.FULL)
 			: null;
+	const protocolVersion =
+		systemState?.protocolVersion !== undefined
+			? String(systemState.protocolVersion)
+			: "—";
+
 	return (
-		<Card bg="white/80" spacing="lg" height="full">
-			<div className="flex flex-col gap-4">
-				{/* <Heading variant="heading4/semibold" color="steel-darker">
-					Network Activity
-				</Heading> */}
-				{/* <div className="flex gap-6">
-					<FormattedStatsAmount
-						label="TPS now"
-						amount={networkMetrics?.currentTps ? Math.floor(networkMetrics.currentTps) : undefined}
-						size="md"
-					/>
-					<FormattedStatsAmount
-						label="Peak 30d TPS"
-						tooltip="Peak TPS in the past 30 days excluding this epoch"
-						amount={networkMetrics?.tps30Days ? Math.floor(networkMetrics?.tps30Days) : undefined}
-						size="md"
-					/>
+		<Card bg="white/80" spacing="lg" height="full" className="flex flex-col">
+			<div className="flex items-start justify-between gap-3">
+				<div>
+					<div className="section-kicker">{t("Network pulse")}</div>
+					<h3 className="mt-2 text-[15px] font-semibold text-ink">
+						{t("Reference gas price")}
+					</h3>
 				</div>
-				<Divider color="hero/10" /> */}
-
-				<StatsWrapper
-					orientation="horizontal"
-					label="Reference Gas Price"
-					tooltip="The reference gas price of the current epoch"
-					postfix={gasPriceFormatted !== null ? "MIST" : null}
-					size="sm"
-				>
-					{gasPriceFormatted}
-				</StatsWrapper>
-
-				{/* <Divider color="hero/10" />
-
-				<div className="flex flex-1 flex-col gap-2">
-					<FormattedStatsAmount
-						orientation="horizontal"
-						label="Total Packages"
-						amount={networkMetrics?.totalPackages}
-						size="sm"
-					/>
-					<FormattedStatsAmount
-						orientation="horizontal"
-						label="Objects"
-						amount={networkMetrics?.totalObjects}
-						size="sm"
-					/>
-				</div> */}
+				<span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-emerald-700">
+					<span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+					{t("Online")}
+				</span>
 			</div>
+
+			<div className="mt-5 flex items-baseline gap-2">
+				<span className="mono-num text-[36px] font-semibold leading-none tracking-[-0.03em] text-ink">
+					{gasPriceFormatted ?? "—"}
+				</span>
+				<span className="font-mono text-[10px] uppercase tracking-[0.14em] text-steel">
+					MIST
+				</span>
+			</div>
+			<p className="mt-2 text-[12px] leading-relaxed text-steel-dark">
+				{t("The reference price applied to every transaction in the current epoch.")}
+			</p>
+
+			<dl className="mt-auto grid grid-cols-2 gap-3 border-t border-line/70 pt-4">
+				<div>
+					<dt className="font-mono text-[10px] uppercase tracking-[0.12em] text-steel">
+						{t("Protocol")}
+					</dt>
+					<dd className="mt-1 text-sm font-semibold text-ink">v{protocolVersion}</dd>
+				</div>
+				<div>
+					<dt className="font-mono text-[10px] uppercase tracking-[0.12em] text-steel">
+						{t("Transport")}
+					</dt>
+					<dd className="mt-1 flex items-center gap-1.5 text-sm font-semibold text-ink">
+						<span className="h-1.5 w-1.5 rounded-full bg-rtd" />
+						gRPC
+					</dd>
+				</div>
+			</dl>
 		</Card>
 	);
 }

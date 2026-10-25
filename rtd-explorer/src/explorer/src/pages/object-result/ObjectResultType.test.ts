@@ -1,6 +1,6 @@
 import { expect, it } from 'vitest';
 import { translate } from './ObjectResultType';
-import type { RtdObjectResponse } from 'rtd-typescript/jsonRpc';
+import type { RtdObjectResponse } from '~/types/explorerViewModels';
 
 it('projects only strings into the detail view while retaining structured metadata and partial errors',()=>{
  const display={data:{name:'NFT name',attributes:{level:2,tags:['a','b']},image_url:7,description:false},error:{code:'displayError' as const,error:'partial template failure'}};

@@ -3,7 +3,7 @@
 
 import { useGetValidatorsApy, useGetValidatorsEvents } from "rtd-apps-core";
 import { useExplorerQuery } from "~/rpc/explorer-client";
-import type { RtdSystemStateSummary } from "rtd-typescript/jsonRpc";
+import type { RtdSystemStateSummary } from "~/types/explorerViewModels";
 import { LoadingIndicator, Text } from "@linku/ui";
 import { useMemo } from "react";
 import { useParams } from "react-router-dom";
@@ -11,6 +11,7 @@ import { useParams } from "react-router-dom";
 import { PageLayout } from "~/components/Layout/PageLayout";
 import { ValidatorMeta } from "~/components/validator/ValidatorMeta";
 import { ValidatorStats } from "~/components/validator/ValidatorStats";
+import { useI18n } from "~/i18n";
 import { Banner } from "~/ui/Banner";
 import { getValidatorMoveEvent } from "~/utils/getValidatorMoveEvent";
 import { VALIDATOR_LOW_STAKE_GRACE_PERIOD } from "~/utils/validatorConstants";
@@ -26,13 +27,14 @@ const getAtRiskRemainingEpochs = (
 
 function ValidatorDetails() {
 	const { id } = useParams();
+	const { t } = useI18n();
 	const { data, isPending } = useExplorerQuery("getLatestRtdSystemState");
 
 	const validatorData = useMemo(() => {
 		if (!data) return null;
 		return (
 			data.activeValidators.find(
-				({ rtdAddress, stakingPoolId }) => rtdAddress === id || stakingPoolId === id,
+				({ rtdAddress, stakingPoolId }: any) => rtdAddress === id || stakingPoolId === id,
 			) || null
 		);
 	}, [id, data]);
@@ -73,8 +75,7 @@ function ValidatorDetails() {
 				content={
 					<div className="mb-10 flex items-center justify-center">
 						<Banner variant="error" spacing="lg" fullWidth>
-							No validator data found for {id}
-						</Banner>
+							{t("No validator data found for {id}", { id: id ?? "" })}</Banner>
 					</div>
 				}
 			/>
@@ -114,13 +115,12 @@ function ValidatorDetails() {
 								variant="error"
 								title={
 									<Text uppercase variant="bodySmall/semibold">
-										at risk of being removed as a validator after {atRiskRemainingEpochs} epoch
-										{atRiskRemainingEpochs > 1 ? "s" : ""}
+										{t("at risk of being removed as a validator after {epochs} epoch{plural}", { epochs: atRiskRemainingEpochs, plural: atRiskRemainingEpochs > 1 ? "s" : "" })}
 									</Text>
 								}
 							>
 								<Text variant="bodySmall/medium">
-									Staked RTD is below the minimum RTD stake threshold to remain a validator.
+									{t("Staked RTD is below the minimum RTD stake threshold to remain a validator.")}
 								</Text>
 							</Banner>
 						</div>

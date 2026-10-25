@@ -1,10 +1,12 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
-import { formatDate, useResolveRtdNSName } from "rtd-apps-core";
+import { useResolveRtdNSName } from "rtd-apps-core";
+import { format } from "date-fns";
 import { Heading, Text } from "@linku/ui";
 import { type ReactNode } from "react";
 
 import { useBreakpoint } from "~/hooks/useBreakpoint";
+import { useDateLocale, useI18n } from "~/i18n";
 import { AddressLink, CheckpointSequenceLink, EpochLink } from "~/ui/InternalLink";
 import { CollapsibleCard } from "~/ui/collapsible/CollapsibleCard";
 import { CollapsibleSection } from "~/ui/collapsible/CollapsibleSection";
@@ -36,6 +38,8 @@ export function TransactionDetailCard({
 	timestamp,
 }: TransactionDetailsProps) {
 	const md = useBreakpoint("md");
+	const { t } = useI18n();
+	const dateLocale = useDateLocale();
 	const { data: domainName } = useResolveRtdNSName(sender);
 
 	return (
@@ -44,19 +48,19 @@ export function TransactionDetailCard({
 				<div className="flex flex-col gap-6">
 					{timestamp && (
 						<Text variant="pBody/medium" color="steel-dark">
-							{formatDate(Number(timestamp))}
+							{format(Number(timestamp), "PPpp", { locale: dateLocale })}
 						</Text>
 					)}
 					<div className="flex justify-between gap-3 divide-x divide-gray-45 md:gap-5">
 						{sender && (
 							<TransactionDetail
-								label="Sender"
+								label={t("Sender")}
 								value={<AddressLink address={domainName ?? sender} />}
 							/>
 						)}
 						{checkpoint && (
 							<TransactionDetail
-								label="Checkpoint"
+								label={t("Checkpoint")}
 								value={
 									<CheckpointSequenceLink
 										sequence={checkpoint}
@@ -66,7 +70,7 @@ export function TransactionDetailCard({
 							/>
 						)}
 						{executedEpoch && (
-							<TransactionDetail label="Epoch" value={<EpochLink epoch={executedEpoch} />} />
+							<TransactionDetail label={t("Epoch")} value={<EpochLink epoch={executedEpoch} />} />
 						)}
 					</div>
 				</div>

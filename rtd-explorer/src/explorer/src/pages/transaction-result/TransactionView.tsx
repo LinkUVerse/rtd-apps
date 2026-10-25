@@ -1,12 +1,13 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import type { RtdTransactionBlockResponse } from "rtd-typescript/jsonRpc";
+import type { RtdTransactionBlockResponse } from "~/types/explorerViewModels";
 import clsx from "clsx";
 import { type ReactNode, useState } from "react";
 
 import { Signatures } from "./Signatures";
 import { ErrorBoundary } from "~/components/error-boundary/ErrorBoundary";
+import { useI18n } from "~/i18n";
 import { useBreakpoint } from "~/hooks/useBreakpoint";
 import { Events } from "~/pages/transaction-result/Events";
 import { TransactionData } from "~/pages/transaction-result/TransactionData";
@@ -25,6 +26,7 @@ function TabsContentContainer({ value, children }: { value: string; children: Re
 }
 
 export function TransactionView({ transaction }: { transaction: RtdTransactionBlockResponse }) {
+	const { t } = useI18n();
 	const isMediumOrAbove = useBreakpoint("md");
 	const [isCollapsed, setIsCollapsed] = useState(false);
 
@@ -39,9 +41,9 @@ export function TransactionView({ transaction }: { transaction: RtdTransactionBl
 			<div className="h-full overflow-y-auto rounded-2xl border border-transparent bg-gray-40 p-6 md:h-full md:max-h-screen md:p-10">
 				<Tabs size="lg" defaultValue="summary">
 					<TabsList>
-						<TabsTrigger value="summary">Summary</TabsTrigger>
-						{hasEvents && <TabsTrigger value="events">Events</TabsTrigger>}
-						{isProgrammableTransaction && <TabsTrigger value="signatures">Signatures</TabsTrigger>}
+						<TabsTrigger value="summary">{t("Summary")}</TabsTrigger>
+						{hasEvents && <TabsTrigger value="events">{t("Events")}</TabsTrigger>}
+						{isProgrammableTransaction && <TabsTrigger value="signatures">{t("Signatures")}</TabsTrigger>}
 					</TabsList>
 					<TabsContentContainer value="summary">
 						<TransactionSummary transaction={transaction} />

@@ -2,12 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { useGetDynamicFields, useOnScreen } from "rtd-apps-core";
-import type { DynamicFieldInfo } from "rtd-typescript/jsonRpc";
+import type { DynamicFieldInfo } from "~/types/explorerViewModels";
 import { LoadingIndicator } from "@linku/ui";
 import { useRef, useEffect, useState, useMemo } from "react";
 
 import { UnderlyingObjectCard } from "./UnderlyingObjectCard";
 import { FieldsCard, FieldCollapsible, FieldsContainer } from "~/components/Object/FieldsUtils";
+import { useI18n } from "~/i18n";
 import { ObjectLink } from "~/ui/InternalLink";
 
 function DynamicFieldRow({
@@ -21,6 +22,7 @@ function DynamicFieldRow({
 	noMarginBottom: boolean;
 	defaultOpen: boolean;
 }) {
+	const { t } = useI18n();
 	const [open, onOpenChange] = useState(defaultOpen);
 
 	return (
@@ -32,7 +34,7 @@ function DynamicFieldRow({
 				<div className="flex items-center gap-1 truncate break-words text-body font-medium leading-relaxed text-steel-dark">
 					<div className="block w-full truncate break-words">
 						{typeof result.name?.value === "object" ? (
-							<>Struct {result.name.type}</>
+							<>{t("Struct {type}", { type: result.name.type })}</>
 						) : result.name?.value ? (
 							String(result.name.value)
 						) : null}
@@ -49,6 +51,7 @@ function DynamicFieldRow({
 }
 
 export function DynamicFieldsCard({ id }: { id: string }) {
+	const { t } = useI18n();
 	const { data, isInitialLoading, isFetchingNextPage, hasNextPage, fetchNextPage } =
 		useGetDynamicFields(id);
 
@@ -87,7 +90,7 @@ export function DynamicFieldsCard({ id }: { id: string }) {
 				<div ref={observerElem}>
 					{isSpinnerVisible ? (
 						<div className="mt-1 flex w-full justify-center">
-							<LoadingIndicator text="Loading data" />
+							<LoadingIndicator text={t("Loading data")} />
 						</div>
 					) : null}
 				</div>

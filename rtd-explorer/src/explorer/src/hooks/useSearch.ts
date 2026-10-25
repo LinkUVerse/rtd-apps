@@ -3,8 +3,8 @@
 
 import { isRtdNSName, useRtdNSEnabled } from "rtd-apps-core";
 import { useExplorerQuery, useExplorerClientContext } from "~/rpc/explorer-client";
-import { type RtdJsonRpcClient as RtdClient } from "rtd-typescript/jsonRpc";
-import type { RtdSystemStateSummary } from "rtd-typescript/jsonRpc";
+import type { ExplorerRpcClient as RtdClient } from "~/rpc/ExplorerRpcClient";
+import type { RtdSystemStateSummary } from "~/types/explorerViewModels";
 import {
 	isValidTransactionDigest,
 	isValidRtdAddress,

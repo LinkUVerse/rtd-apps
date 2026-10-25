@@ -5,7 +5,7 @@ import { explorerDisplayStrings } from "rtd-apps-core/src/utils/explorer-kiosk";
 
 import { CoinFormat, useFormatCoin, useResolveRtdNSName } from "rtd-apps-core";
 import { ArrowUpRight16, Info16 } from "rtd-apps-icons";
-import type { ObjectOwner, RtdObjectResponse } from "rtd-typescript/jsonRpc";
+import type { ObjectOwner, RtdObjectResponse } from "~/types/explorerViewModels";
 import {
 	formatAddress,
 	normalizeStructTag,
@@ -18,6 +18,7 @@ import clsx from "clsx";
 import { type ReactNode, useEffect, useState } from "react";
 
 import { useResolveVideo } from "~/hooks/useResolveVideo";
+import { useI18n } from "~/i18n";
 import { Card } from "~/ui/Card";
 import { Description } from "~/ui/Description";
 import { Divider } from "~/ui/Divider";
@@ -96,6 +97,7 @@ function DescriptionCard({
 	objectType: string;
 	objectId: string;
 }) {
+	const { t } = useI18n();
 	const { address, module, typeParams, ...rest } = parseStructTag(objectType);
 
 	const formattedTypeParams = typeParams.map((typeParam) => {
@@ -133,7 +135,7 @@ function DescriptionCard({
 				</Text>
 			)}
 
-			<Description title="Object ID">
+			<Description title={t("Object ID")}>
 				<ObjectLink objectId={objectId} />
 			</Description>
 
@@ -141,7 +143,7 @@ function DescriptionCard({
 				title={
 					<div className="flex items-center gap-1">
 						<Text variant="pBodySmall/medium" color="steel-dark">
-							Type
+							{t("Type")}
 						</Text>
 
 						<Tooltip tip={<div className="flex flex-wrap break-all">{objectType}</div>}>
@@ -160,15 +162,16 @@ function DescriptionCard({
 }
 
 function VersionCard({ version, digest }: { version?: string; digest: string }) {
+	const { t } = useI18n();
 	return (
 		<ObjectViewCard>
-			<Description title="Version">
+			<Description title={t("Version")}>
 				<Text variant="pBodySmall/medium" color="gray-90">
 					{version}
 				</Text>
 			</Description>
 
-			<Description title="Last Transaction Block Digest">
+			<Description title={t("Last Transaction Block Digest")}>
 				<TransactionLink digest={digest} />
 			</Description>
 		</ObjectViewCard>
@@ -190,6 +193,7 @@ function OwnerCard({
 	display?: Record<string, string> | null;
 	storageRebate?: string | null;
 }) {
+	const { t } = useI18n();
 	const [storageRebateFormatted] = useFormatCoin(storageRebate, RTD_TYPE_ARG, CoinFormat.FULL);
 
 	if (!objOwner && !display) {
@@ -199,14 +203,14 @@ function OwnerCard({
 	return (
 		<ObjectViewCard>
 			{objOwner && (
-				<Description title="Owner">
+				<Description title={t("Owner")}>
 					{objOwner === "Immutable" ? (
 						<Text variant="pBodySmall/medium" color="gray-90">
-							Immutable
+							{t("Immutable")}
 						</Text>
 					) : "Shared" in objOwner ? (
 						<Text variant="pBodySmall/medium" color="gray-90">
-							Shared
+							{t("Shared")}
 						</Text>
 					) : "ObjectOwner" in objOwner ? (
 						<ObjectLink objectId={objOwner.ObjectOwner} />
@@ -214,7 +218,7 @@ function OwnerCard({
 						<AddressOwner address={objOwner.AddressOwner} />
 					) : (
 						<Text variant="pBodySmall/medium" color="gray-90">
-							Unknown
+							{t("Unknown")}
 						</Text>
 					)}
 				</Description>
@@ -225,13 +229,13 @@ function OwnerCard({
 					<Divider />
 
 					{display.link && (
-						<Description title="Link">
+						<Description title={t("Link")}>
 							<LinkWebsite value={display.link} />
 						</Description>
 					)}
 
 					{display.project_url && (
-						<Description title="Website">
+						<Description title={t("Website")}>
 							<LinkWebsite value={display.project_url} />
 						</Description>
 					)}
@@ -240,7 +244,7 @@ function OwnerCard({
 
 			<Divider />
 
-			<Description title="Storage Rebate">
+			<Description title={t("Storage Rebate")}>
 				<Text variant="pBodySmall/medium" color="steel-darker">
 					-{storageRebateFormatted} RTD
 				</Text>
@@ -254,6 +258,7 @@ type ObjectViewProps = {
 };
 
 export function ObjectView({ data }: ObjectViewProps) {
+	const { t } = useI18n();
 	const [fileType, setFileType] = useState<undefined | string>(undefined);
 	const display = explorerDisplayStrings(data);
 	const imgUrl = parseImageURL(display);
@@ -266,7 +271,7 @@ export function ObjectView({ data }: ObjectViewProps) {
 	const lastTransactionBlockDigest = data.data?.previousTransaction;
 
 	const heroImageTitle = name || display?.description || trimStdLibPrefix(objectType);
-	const heroImageSubtitle = video ? "Video" : fileType ?? "";
+	const heroImageSubtitle = video ? t("Video") : fileType ?? "";
 	const heroImageProps = {
 		title: heroImageTitle,
 		subtitle: heroImageSubtitle,

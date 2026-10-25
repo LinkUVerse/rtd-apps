@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { useTransactionSummary } from "rtd-apps-core";
-import type { ProgrammableTransaction, RtdTransactionBlockResponse } from "rtd-typescript/jsonRpc";
+import type { ProgrammableTransaction, RtdTransactionBlockResponse } from "~/types/explorerViewModels";
 
 import { TransactionDetailCard } from "./transaction-summary/TransactionDetailCard";
 import { GasBreakdown } from "~/components/GasBreakdown";

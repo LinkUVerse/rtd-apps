@@ -3,11 +3,12 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import type { TransactionFilter } from "rtd-typescript/jsonRpc";
+import type { TransactionFilter } from "~/types/explorerViewModels";
 import { Heading, RadioGroup, RadioGroupItem } from "@linku/ui";
 import clsx from "clsx";
 import { useReducer, useState } from "react";
 import { DEFAULT_TRANSACTIONS_LIMIT, useGetTransactionBlocks } from "~/hooks/useGetTransactionBlocks";
+import { useI18n } from "~/i18n";
 import { Pagination } from "~/ui/Pagination";
 import { PlaceholderTable } from "~/ui/PlaceholderTable";
 import { TableCard } from "~/ui/TableCard";
@@ -102,6 +103,7 @@ function TransactionBlocksForAddress({
 	header,
 }: TransactionBlocksForAddressProps) {
 	const [filterValue, setFilterValue] = useState(filter);
+	const { t } = useI18n();
 	const [currentPageState, dispatch] = useReducer(reducer, {
 		InputObject: 0,
 		ChangedObject: 0,
@@ -121,16 +123,16 @@ function TransactionBlocksForAddress({
 	const currentPage = currentPageState[filterValue];
 	const cardData =
 		data?.pages[currentPage]
-			? genTableDataFromTxData(data.pages[currentPage].data)
+			? genTableDataFromTxData(data.pages[currentPage].data, t)
 			: undefined;
 
 	const filterOptions: FilterRadioOption[] = type === "object"
 		? [
-			{ label: "Input Objects", value: "InputObject" },
-			{ label: "Updated Objects", value: "ChangedObject" },
+			{ label: t("Input Objects"), value: "InputObject" },
+			{ label: t("Updated Objects"), value: "ChangedObject" },
 		] : [
-			{ label: "From Address", value: "FromAddress" },
-			{ label: "To Address", value: "ToAddress" },
+			{ label: t("From Address"), value: "FromAddress" },
+			{ label: t("To Address"), value: "ToAddress" },
 		];
 
 	return (
@@ -154,7 +156,7 @@ function TransactionBlocksForAddress({
 					<PlaceholderTable
 						rowCount={DEFAULT_TRANSACTIONS_LIMIT}
 						rowHeight="16px"
-						colHeadings={["Digest", "Sender", "Txns", "Gas", "Time"]}
+						colHeadings={[t("Digest"), t("Sender"), t("Txns"), t("Gas"), t("Time")]}
 						colWidths={["30%", "30%", "10%", "20%", "10%"]}
 					/>
 				) : (

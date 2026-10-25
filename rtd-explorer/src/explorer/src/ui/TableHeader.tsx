@@ -12,8 +12,8 @@ export type TableHeaderProps = {
 
 export function TableHeader({ as = "h3", children, subText, after }: TableHeaderProps) {
 	return (
-		<div className="flex items-center border-b border-gray-45 pb-5">
-			<div className="flex flex-1">
+		<div className="flex flex-wrap items-center gap-3 border-b border-line/80 pb-5">
+			<div className="flex flex-1 items-baseline gap-2">
 				<Heading as={as} variant="heading4/semibold" color="gray-90">
 					{children}
 				</Heading>

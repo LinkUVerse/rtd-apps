@@ -3,16 +3,22 @@
 
 import { getTotalGasUsed } from "rtd-apps-core";
 import { X12, Dot12 } from "rtd-apps-icons";
-import { type RtdJsonRpcClient as RtdClient } from "rtd-typescript/jsonRpc";
-import type { RtdTransactionBlockResponse } from "rtd-typescript/jsonRpc";
+import type { ExplorerRpcClient as RtdClient } from "~/rpc/ExplorerRpcClient";
+import type { RtdTransactionBlockResponse } from "~/types/explorerViewModels";
 
 import { RtdAmount } from "../Table/RtdAmount";
 import { TxTimeType } from "../tx-time/TxTimeType";
 import { HighlightedTableCol } from "~/components/Table/HighlightedTableCol";
+import type { Translate } from "~/i18n";
 import { AddressLink, TransactionLink } from "~/ui/InternalLink";
 
+const identity: Translate = (source) => source;
+
 // Generate table data from the transaction data
-export const genTableDataFromTxData = (results: RtdTransactionBlockResponse[]) => ({
+export const genTableDataFromTxData = (
+	results: RtdTransactionBlockResponse[],
+	t: Translate = identity,
+) => ({
 	data: results.map((transaction) => {
 		const status = transaction.effects?.status.status;
 		const sender = transaction.transaction?.data.sender;
@@ -52,23 +58,23 @@ export const genTableDataFromTxData = (results: RtdTransactionBlockResponse[]) =
 	}),
 	columns: [
 		{
-			header: "Digest",
+			header: t("Digest"),
 			accessorKey: "digest",
 		},
 		{
-			header: "Sender",
+			header: t("Sender"),
 			accessorKey: "sender",
 		},
 		{
-			header: "Txns",
+			header: t("Txns"),
 			accessorKey: "txns",
 		},
 		{
-			header: "Gas",
+			header: t("Gas"),
 			accessorKey: "gas",
 		},
 		{
-			header: "Time",
+			header: t("Time"),
 			accessorKey: "date",
 		},
 	],

@@ -106,7 +106,7 @@ export function useGetKioskContents(address?: string | null, disableOriginByteKi
 		queryKey: ['get-kiosk-contents', address, disableOriginByteKiosk, network, kioskClient.network],
 		queryFn: async () => {
 			const rtdKiosks = await getRtdKioskContents(address!, kioskClient);
-			const obKiosks = disableOriginByteKiosk ? [] : await getOriginByteKioskContents(address!, rtdClient);
+			const obKiosks = disableOriginByteKiosk ? [] : await getOriginByteKioskContents(address!, rtdClient as any);
 			return [...rtdKiosks, ...obKiosks];
 		},
 		select(data) {

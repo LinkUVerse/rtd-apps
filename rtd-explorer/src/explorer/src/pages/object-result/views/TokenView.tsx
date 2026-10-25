@@ -3,12 +3,13 @@
 
 import { useGetDynamicFields, useGetObject } from "rtd-apps-core";
 import { useExplorerQuery } from "~/rpc/explorer-client";
-import type { RtdObjectResponse } from "rtd-typescript/jsonRpc";
+import type { RtdObjectResponse } from "~/types/explorerViewModels";
 import { Heading } from "@linku/ui";
 import { useState, type ReactNode } from "react";
 import { DynamicFieldsCard } from "~/components/Object/DynamicFieldsCard";
 import { ObjectFieldsCard } from "~/components/Object/ObjectFieldsCard";
 import TransactionBlocksForAddress, { FILTER_VALUES } from "~/components/TransactionBlocksForAddress";
+import { useI18n } from "~/i18n";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/ui/Tabs";
 
 function FieldsContainer({ children }: { children: ReactNode }) {
@@ -62,6 +63,7 @@ function useObjectFieldsCard(id: string) {
 }
 
 export function FieldsContent({ objectId }: { objectId: string }) {
+	const { t } = useI18n();
 	const {
 		normalizedStructData,
 		rtdObjectResponseData,
@@ -82,12 +84,12 @@ export function FieldsContent({ objectId }: { objectId: string }) {
 		<Tabs size="lg" value={activeTab} onValueChange={setActiveTab}>
 			<TabsList>
 				<TabsTrigger value={TABS_VALUES.FIELDS}>
-					<Heading variant="heading4/semibold">{fieldsCount} Fields</Heading>
+					<Heading variant="heading4/semibold">{t("{count} Fields", { count: fieldsCount ?? 0 })}</Heading>
 				</TabsTrigger>
 
 				{renderDynamicFields && (
 					<TabsTrigger value={TABS_VALUES.DYNAMIC_FIELDS}>
-						<Heading variant="heading4/semibold">Dynamic Fields</Heading>
+						<Heading variant="heading4/semibold">{t("Dynamic Fields")}</Heading>
 					</TabsTrigger>
 				)}
 			</TabsList>
@@ -116,6 +118,7 @@ export function FieldsContent({ objectId }: { objectId: string }) {
 }
 
 export function TokenView({ data }: { data: RtdObjectResponse }) {
+	const { t } = useI18n();
 	const objectId = data.data!.objectId;
 
 	return (
@@ -126,7 +129,7 @@ export function TokenView({ data }: { data: RtdObjectResponse }) {
 				type="object"
 				address={objectId}
 				filter={FILTER_VALUES.CHANGED}
-				header="Transaction Blocks"
+				header={t("Transaction Blocks")}
 			/>
 		</div>
 	);

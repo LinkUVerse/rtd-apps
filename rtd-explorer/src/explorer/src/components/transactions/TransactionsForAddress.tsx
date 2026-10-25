@@ -5,12 +5,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { useExplorerClient } from "~/rpc/explorer-client";
-import type { RtdTransactionBlockResponse } from "rtd-typescript/jsonRpc";
+import type { RtdTransactionBlockResponse } from "~/types/explorerViewModels";
 import { LoadingIndicator, Text } from "@linku/ui";
 import { useQuery } from "@tanstack/react-query";
 import { Banner } from "~/ui/Banner";
 import { TableCard } from "~/ui/TableCard";
 import { genTableDataFromTxData } from "./TxCardUtils";
+import { useI18n } from "~/i18n";
 
 type Props = {
 	address: string;
@@ -28,6 +29,8 @@ export function TransactionsForAddressTable({
 	isError: boolean;
 	address: string;
 }) {
+	const { t } = useI18n();
+
 	if (isPending) {
 		return (
 			<div>
@@ -39,19 +42,19 @@ export function TransactionsForAddressTable({
 	if (isError) {
 		return (
 			<Banner variant="error" fullWidth>
-				Transactions could not be extracted on the following specified address: {address}
+				{t("Transactions could not be extracted on the following specified address: {address}", { address })}
 			</Banner>
 		);
 	}
 
-	const tableData = genTableDataFromTxData(data);
+	const tableData = genTableDataFromTxData(data, t);
 	const hasTxns = data?.length > 0;
 
 	if (!hasTxns) {
 		return (
 			<div className="flex h-20 items-center justify-center md:h-full">
 				<Text variant="body/medium" color="steel-dark">
-					No transactions found
+					{t("No transactions found")}
 				</Text>
 			</div>
 		);

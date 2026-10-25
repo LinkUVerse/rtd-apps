@@ -1,7 +1,7 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import type { ObjectOwner, RtdObjectResponse } from "rtd-typescript/jsonRpc";
+import type { ObjectOwner, RtdObjectResponse } from "~/types/explorerViewModels";
 
 import { findIPFSvalue } from "./stringUtils";
 

@@ -1,7 +1,7 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import type { RtdTransactionBlockResponse } from "rtd-typescript/jsonRpc";
+import type { RtdTransactionBlockResponse } from "~/types/explorerViewModels";
 import {
 	parseSerializedSignature,
 	type SignatureScheme,
@@ -12,6 +12,7 @@ import { toBase64, normalizeRtdAddress } from "rtd-typescript/utils";
 import { publicKeyFromRawBytes } from "rtd-typescript/verify";
 import { Text } from "@linku/ui";
 
+import { useI18n } from "~/i18n";
 import { DescriptionItem, DescriptionList } from "~/ui/DescriptionList";
 import { AddressLink } from "~/ui/InternalLink";
 import { TabHeader } from "~/ui/Tabs";
@@ -28,29 +29,30 @@ function SignaturePanel({
 	title: string;
 	signature: SignaturePubkeyPair;
 }) {
+	const { t } = useI18n();
 	const { signature, signatureScheme } = data;
 	return (
 		<TabHeader title={title}>
 			<DescriptionList>
-				<DescriptionItem title="Scheme" align="start" labelWidth="sm">
+				<DescriptionItem title={t("Scheme")} align="start" labelWidth="sm">
 					<Text variant="pBody/medium" color="steel-darker">
 						{signatureScheme}
 					</Text>
 				</DescriptionItem>
-				<DescriptionItem title="Address" align="start" labelWidth="sm">
+				<DescriptionItem title={t("Address")} align="start" labelWidth="sm">
 					<AddressLink
 						noTruncate
 						address={"address" in data ? data.address : data.publicKey.toRtdAddress()}
 					/>
 				</DescriptionItem>
 				{"publicKey" in data ? (
-					<DescriptionItem title="Rtd Public Key" align="start" labelWidth="sm">
+					<DescriptionItem title={t("Rtd Public Key")} align="start" labelWidth="sm">
 						<Text variant="pBody/medium" color="steel-darker">
 							{data.publicKey.toRtdPublicKey()}
 						</Text>
 					</DescriptionItem>
 				) : null}
-				<DescriptionItem title="Signature" align="start" labelWidth="sm">
+				<DescriptionItem title={t("Signature")} align="start" labelWidth="sm">
 					<Text variant="pBody/medium" color="steel-darker">
 						{toBase64(signature)}
 					</Text>
@@ -83,6 +85,7 @@ type Props = {
 };
 
 export function Signatures({ transaction }: Props) {
+	const { t } = useI18n();
 	const sender = transaction.transaction?.data.sender;
 	const gasData = transaction.transaction?.data.gasData;
 	const transactionSignatures = transaction.transaction?.txSignatures;
@@ -126,14 +129,14 @@ export function Signatures({ transaction }: Props) {
 				<div className="flex flex-col gap-8">
 					{userSignatures.map((signature, index) => (
 						<div key={index}>
-							<SignaturePanel title="User Signature" signature={signature} />
+							<SignaturePanel title={t("User Signature")} signature={signature} />
 						</div>
 					))}
 				</div>
 			)}
 
 			{sponsorSignature && (
-				<SignaturePanel title="Sponsor Signature" signature={sponsorSignature} />
+				<SignaturePanel title={t("Sponsor Signature")} signature={sponsorSignature} />
 			)}
 		</div>
 	);

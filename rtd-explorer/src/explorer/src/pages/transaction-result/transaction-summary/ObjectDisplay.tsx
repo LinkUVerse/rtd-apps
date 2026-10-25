@@ -1,7 +1,7 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import type { DisplayFieldsResponse } from "rtd-typescript/jsonRpc";
+import type { DisplayFieldsResponse } from "~/types/explorerViewModels";
 import { useState } from "react";
 
 import { ObjectLink } from "~/ui/InternalLink";

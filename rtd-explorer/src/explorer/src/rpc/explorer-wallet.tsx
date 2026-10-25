@@ -16,7 +16,7 @@ import { useExplorerClient, useExplorerClientContext } from "./explorer-client";
 // The Kit has no disposal API; reuse one instance per stable client instead of leaking render-created instances.
 const kits = new WeakMap<
   ExplorerRpcClient,
-  Map<boolean, DAppKit<string[], ExplorerRpcClient>>
+  Map<boolean, DAppKit<string[], any>>
 >();
 export function ExplorerWalletProvider({
   children,
@@ -35,7 +35,7 @@ export function ExplorerWalletProvider({
   if (!kit) {
     kit = createDAppKit({
       networks: [client.network],
-      createClient: () => client,
+      createClient: () => client as any,
       autoConnect: true,
       slushWalletConfig: null,
       enableBurnerWallet: enableUnsafeBurner,
@@ -50,14 +50,14 @@ export type ExplorerSignInput = {
   signal?: AbortSignal;
 };
 export type ExplorerSignResult = Awaited<
-  ReturnType<DAppKit<string[], ExplorerRpcClient>["signTransaction"]>
+  ReturnType<DAppKit<string[], any>["signTransaction"]>
 >;
 export function useExplorerSignTransaction(): UseMutationResult<
   ExplorerSignResult,
   Error,
   ExplorerSignInput
 > {
-  const kit = useDAppKit<DAppKit<string[], ExplorerRpcClient>>();
+  const kit = useDAppKit<DAppKit<string[], any>>();
   const account = useCurrentAccount();
   const client = useExplorerClient();
   return useMutation<ExplorerSignResult, Error, ExplorerSignInput>({

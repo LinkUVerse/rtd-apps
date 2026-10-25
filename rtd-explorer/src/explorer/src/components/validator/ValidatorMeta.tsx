@@ -2,19 +2,21 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ArrowUpRight12 } from "rtd-apps-icons";
-import type { RtdValidatorSummary } from "rtd-typescript/jsonRpc";
+import type { RtdValidatorSummary } from "~/types/explorerViewModels";
 import { Heading, Text } from "@linku/ui";
 
 import { CopyToClipboard } from "~/ui/CopyToClipboard";
 import { DescriptionList, DescriptionItem } from "~/ui/DescriptionList";
 import { ImageIcon } from "~/ui/ImageIcon";
 import { AddressLink } from "~/ui/InternalLink";
+import { useI18n } from "~/i18n";
 
 type ValidatorMetaProps = {
 	validatorData: RtdValidatorSummary;
 };
 
 export function ValidatorMeta({ validatorData }: ValidatorMetaProps) {
+	const { t } = useI18n();
 	const validatorPublicKey = validatorData.protocolPubkeyBytes;
 	const validatorName = validatorData.name;
 	const logo = validatorData.imageUrl;
@@ -44,17 +46,17 @@ export function ValidatorMeta({ validatorData }: ValidatorMetaProps) {
 			</div>
 			<div className="min-w-0 basis-full break-words md:basis-2/3">
 				<DescriptionList>
-					<DescriptionItem title="Description" align="start">
+					<DescriptionItem title={t("Description")} align="start">
 						<Text variant="pBody/medium" color="gray-90">
 							{description || "--"}
 						</Text>
 					</DescriptionItem>
-					<DescriptionItem title="Location" align="start">
+					<DescriptionItem title={t("Location")} align="start">
 						<Text variant="pBody/medium" color="gray-90">
 							--
 						</Text>
 					</DescriptionItem>
-					<DescriptionItem title="Pool ID" align="start">
+					<DescriptionItem title={t("Pool ID")} align="start">
 						<div className="flex items-start gap-1 break-all">
 							<Text variant="pBody/medium" color="steel-darker">
 								{validatorData.stakingPoolId}
@@ -62,13 +64,13 @@ export function ValidatorMeta({ validatorData }: ValidatorMetaProps) {
 							<CopyToClipboard size="md" color="steel" copyText={validatorData.stakingPoolId} />
 						</div>
 					</DescriptionItem>
-					<DescriptionItem title="Address" align="start">
+					<DescriptionItem title={t("Address")} align="start">
 						<div className="flex items-start gap-1">
 							<AddressLink address={validatorData.rtdAddress} noTruncate />
 							<CopyToClipboard size="md" color="steel" copyText={validatorData.rtdAddress} />
 						</div>
 					</DescriptionItem>
-					<DescriptionItem title="Public Key" align="start">
+					<DescriptionItem title={t("Public Key")} align="start">
 						<Text variant="pBody/medium" color="steel-darker">
 							{validatorPublicKey}
 						</Text>

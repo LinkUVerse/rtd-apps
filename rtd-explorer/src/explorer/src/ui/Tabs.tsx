@@ -22,15 +22,15 @@ const TabSizeContext = createContext<TabSize | null | undefined>(null);
 
 const tabStyles = cva(
 	[
-		"flex items-center gap-1 border-b border-transparent -mb-px",
-		"font-semibold text-steel-dark disabled:text-steel-dark disabled:pointer-events-none hover:text-steel-darker data-[state=active]:border-gray-65",
+		"flex items-center gap-1.5 border-b-2 border-transparent -mb-px",
+		"font-semibold text-steel-dark transition-colors duration-150 disabled:text-steel-dark disabled:pointer-events-none hover:text-ink data-[state=active]:border-rtd data-[state=active]:text-ink",
 	],
 	{
 		variants: {
 			size: {
-				lg: "text-heading4 data-[state=active]:text-steel-darker pb-2",
-				md: "text-body data-[state=active]:text-steel-darker pb-2",
-				sm: "text-captionSmall font-medium pb-0.5 disabled:opacity-40 data-[state=active]:text-steel-darker",
+				lg: "text-heading4 data-[state=active]:text-ink pb-2.5",
+				md: "text-body data-[state=active]:text-ink pb-2",
+				sm: "text-captionSmall font-medium pb-1 disabled:opacity-40 data-[state=active]:text-ink",
 			},
 		},
 		defaultVariants: {
@@ -38,7 +38,7 @@ const tabStyles = cva(
 		},
 	},
 );
-const tabListStyles = cva(["flex items-center border-gray-45"], {
+const tabListStyles = cva(["flex items-center gap-2 border-line/80"], {
 	variants: {
 		fullWidth: {
 			true: "flex-1",
@@ -99,7 +99,7 @@ const TabsContent = forwardRef<
 		ref={ref}
 		className={clsx(
 			"ring-offset-background focus-visible:ring-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
-			!noGap && "my-4",
+			!noGap && "my-5",
 		)}
 		{...props}
 	/>

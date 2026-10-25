@@ -20,7 +20,7 @@ export function KioskClientProvider({ children }: KioskClientProviderProps) {
 	const { client, network } = useRtdClientContext();
 	const kioskNetwork = rtdToKioskNetwork[network.toLowerCase()] || 'custom';
 	const kioskClient = useMemo(
-		() => new KioskClient({ client, network: kioskNetwork }),
+		() => new KioskClient({ client: client as any, network: kioskNetwork }),
 		[client, kioskNetwork],
 	);
 	return <KioskClientContext.Provider value={kioskClient}>{children}</KioskClientContext.Provider>;

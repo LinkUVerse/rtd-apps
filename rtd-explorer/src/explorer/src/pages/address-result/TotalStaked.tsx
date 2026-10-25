@@ -7,7 +7,10 @@ import { RTD_TYPE_ARG } from "rtd-typescript/utils";
 import { Text, Heading } from "@linku/ui";
 import { Rtd } from "rtd-apps-icons";
 
+import { useI18n } from "~/i18n";
+
 export function TotalStaked({ address }: { address: string }) {
+	const { t } = useI18n();
 	const { data: delegatedStake } = useGetDelegatedStake({
 		address,
 	});
@@ -27,7 +30,7 @@ export function TotalStaked({ address }: { address: string }) {
 			<Rtd className="flex h-8 w-8 items-center justify-center rounded-full bg-rtd-primaryBlue2023 py-1.5 text-white" />
 			<div className="flex flex-col">
 				<Text variant="pBody/semibold" color="steel-dark" uppercase>
-					Staking
+					{t("Staking")}
 				</Text>
 				<Heading variant="heading6/semibold" color="hero-darkest" as="div">
 					{formatted} {symbol}

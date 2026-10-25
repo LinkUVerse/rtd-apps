@@ -36,7 +36,7 @@ export function useGetValidatorsApy() {
 
 			const isStakeSubsidyStarted = currentEpoch > stakeSubsidyStartEpoch;
 
-			return validatorApys?.apys.reduce((acc, { apy, address }) => {
+			return (validatorApys?.apys ?? []).reduce((acc: ApyByValidator, { apy, address }: any) => {
 				acc[address] = {
 					apy: roundFloat(apy * 100, DEFAULT_APY_DECIMALS),
 					isApyApproxZero: !isStakeSubsidyStarted || apy < MINIMUM_THRESHOLD,

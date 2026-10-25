@@ -5,6 +5,8 @@ import { PaginationFirst24, PaginationNext24, PaginationPrev24 } from "rtd-apps-
 import { type InfiniteData, type UseInfiniteQueryResult } from "@tanstack/react-query";
 import { useState } from "react";
 
+import { useI18n } from "~/i18n";
+
 export type PaginationProps = {
 	hasPrev: boolean;
 	hasNext: boolean;
@@ -108,21 +110,27 @@ function PaginationButton({
 }
 
 export function Pagination({ hasNext, hasPrev, onFirst, onPrev, onNext }: PaginationProps) {
+	const { t } = useI18n();
 	return (
 		<div className="flex gap-2">
 			<PaginationButton
-				label="Go to First"
+				label={t("Go to First")}
 				icon={PaginationFirst24}
 				disabled={!hasPrev}
 				onClick={onFirst}
 			/>
 			<PaginationButton
-				label="Previous"
+				label={t("Previous")}
 				icon={PaginationPrev24}
 				disabled={!hasPrev}
 				onClick={onPrev}
 			/>
-			<PaginationButton label="Next" icon={PaginationNext24} disabled={!hasNext} onClick={onNext} />
+			<PaginationButton
+				label={t("Next")}
+				icon={PaginationNext24}
+				disabled={!hasNext}
+				onClick={onNext}
+			/>
 		</div>
 	);
 }

@@ -12,6 +12,7 @@ import PkgView from "./views/PkgView";
 import { TokenView } from "./views/TokenView";
 import { PageLayout } from "~/components/Layout/PageLayout";
 import { ErrorBoundary } from "~/components/error-boundary/ErrorBoundary";
+import { useI18n } from "~/i18n";
 import { ObjectView } from "~/pages/object-result/views/ObjectView";
 import { Banner } from "~/ui/Banner";
 import { PageHeader } from "~/ui/PageHeader";
@@ -20,6 +21,7 @@ const PACKAGE_TYPE_NAME = "Move Package";
 
 export function ObjectResult() {
 	const { id: objID } = useParams();
+	const { t } = useI18n();
 	const { data, isPending, isError, isFetched } = useGetObject(objID);
 
 	if (isPending) {
@@ -27,7 +29,7 @@ export function ObjectResult() {
 			<PageLayout
 				content={
 					<div className="flex w-full items-center justify-center">
-						<LoadingIndicator text="Loading data" />
+						<LoadingIndicator text={t("Loading data")} />
 					</div>
 				}
 			/>
@@ -70,7 +72,7 @@ export function ObjectResult() {
 				<>
 					{isPageError || !data || !resp ? (
 						<Banner variant="error" spacing="lg" fullWidth>
-							Data could not be extracted on the following specified object ID: {objID}
+							{t("Data could not be extracted for the following specified object ID: {id}", { id: objID ?? "" })}
 						</Banner>
 					) : (
 						<div className="mb-10">

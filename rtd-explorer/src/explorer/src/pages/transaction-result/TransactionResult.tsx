@@ -1,11 +1,12 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import type { RtdTransactionBlockResponse } from "rtd-typescript/jsonRpc";
+import type { RtdTransactionBlockResponse } from "~/types/explorerViewModels";
 import { useParams } from "react-router-dom";
 
 import { TransactionView } from "./TransactionView";
 import { PageLayout } from "~/components/Layout/PageLayout";
+import { useI18n } from "~/i18n";
 import { useGetTransaction } from "~/hooks/useGetTransaction";
 import { Banner } from "~/ui/Banner";
 import { PageHeader } from "~/ui/PageHeader";
@@ -40,6 +41,7 @@ function TransactionResultPageHeader({
 
 export default function TransactionResult() {
 	const { id } = useParams();
+	const { t } = useI18n();
 	const {
 		isPending,
 		isError: getTxnErrorBool,
@@ -68,8 +70,10 @@ export default function TransactionResult() {
 				getTxnErrorBool || !data ? (
 					<Banner variant="error" spacing="lg" fullWidth>
 						{!id
-							? "Can't search for a transaction without a digest"
-							: `Data could not be extracted for the following specified transaction ID: ${id}`}
+								? t("Can't search for a transaction without a digest")
+								: t("Data could not be extracted for the following specified transaction ID: {id}", {
+										id,
+								  })}
 					</Banner>
 				) : (
 					<TransactionView transaction={data} />

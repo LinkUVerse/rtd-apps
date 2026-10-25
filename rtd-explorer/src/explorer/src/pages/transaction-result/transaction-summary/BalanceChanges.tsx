@@ -13,6 +13,7 @@ import { Heading, Text } from "@linku/ui";
 import clsx from "clsx";
 import { useMemo } from "react";
 
+import { useI18n } from "~/i18n";
 import { Banner } from "~/ui/Banner";
 import { Coin } from "~/ui/CoinsStack";
 import { AddressLink } from "~/ui/InternalLink";
@@ -24,6 +25,7 @@ type BalanceChangesProps = {
 };
 
 function BalanceChangeEntry({ change }: { change: BalanceChange }) {
+	const { t } = useI18n();
 	const { amount, coinType, recipient, unRecognizedToken } = change;
 	const [formatted, symbol] = useFormatCoin(amount, coinType, CoinFormat.FULL);
 	const { data: coinMetaData } = useCoinMetadata(coinType);
@@ -47,7 +49,7 @@ function BalanceChangeEntry({ change }: { change: BalanceChange }) {
 						{unRecognizedToken && (
 							<Banner variant="warning" icon={null} border spacing="sm">
 								<div className="max-w-[70px] overflow-hidden truncate whitespace-nowrap text-captionSmallExtra font-medium uppercase leading-3 tracking-wider lg:max-w-full">
-									Unrecognized
+									{t("Unrecognized")}
 								</div>
 							</Banner>
 						)}
@@ -65,7 +67,7 @@ function BalanceChangeEntry({ change }: { change: BalanceChange }) {
 			{recipient && (
 				<div className="flex flex-wrap items-center justify-between border-t border-gray-45 pt-2">
 					<Text variant="pBody/medium" color="steel-dark">
-						Recipient
+						{t("Recipient")}
 					</Text>
 					<AddressLink address={recipient} />
 				</div>
@@ -75,6 +77,7 @@ function BalanceChangeEntry({ change }: { change: BalanceChange }) {
 }
 
 function BalanceChangeCard({ changes, owner }: { changes: BalanceChange[]; owner: string }) {
+	const { t } = useI18n();
 	const { data: rtdnsDomainName } = useResolveRtdNSName(owner);
 	const { recognizedTokenChanges, unRecognizedTokenChanges } = useMemo(
 		() => getRecognizedUnRecognizedTokenChanges(changes),
@@ -86,7 +89,7 @@ function BalanceChangeCard({ changes, owner }: { changes: BalanceChange[]; owner
 			title={
 				<div className="flex w-full flex-wrap items-center justify-between gap-y-2">
 					<Heading variant="heading6/semibold" color="steel-darker">
-						Balance Changes
+						{t("Balance Changes")}
 					</Heading>
 				</div>
 			}
@@ -96,7 +99,7 @@ function BalanceChangeCard({ changes, owner }: { changes: BalanceChange[]; owner
 				owner ? (
 					<div className="flex flex-wrap justify-between">
 						<Text variant="pBody/medium" color="steel-dark">
-							Owner
+							{t("Owner")}
 						</Text>
 						<Text variant="pBody/medium" color="hero-dark">
 							<AddressLink label={rtdnsDomainName || undefined} address={owner} />

@@ -1,25 +1,23 @@
 {
-	"name": "Polymedia Explorer",
-	"short_name": "Explorer",
-	"description": "Explore Rtd transactions, objects, etc.",
-
+	"name": "RTD Explorer",
+	"short_name": "RTD",
+	"description": "Explore RTD transactions, checkpoints, objects and validators over Fullnode gRPC and the certified archive index.",
 	"start_url": "/",
 	"scope": "/",
-	"display": "fullscreen",
-	"background_color": "#d2ecfb",
-	"theme_color": "#d2ecfb",
-
+	"display": "standalone",
+	"background_color": "#F7F9FD",
+	"theme_color": "#0B1B3A",
 	"icons": [
 		{
-			"src": "https://assets.polymedia.app/img/all/logo-maskable-bg-dark-512x512.webp",
-			"type": "image/webp",
-			"sizes": "512x512",
+			"src": "/favicon.svg",
+			"type": "image/svg+xml",
+			"sizes": "any",
 			"purpose": "any"
 		},
 		{
-			"src": "https://assets.polymedia.app/img/all/logo-maskable-bg-dark-512x512.webp",
-			"type": "image/webp",
-			"sizes": "512x512",
+			"src": "/favicon.svg",
+			"type": "image/svg+xml",
+			"sizes": "any",
 			"purpose": "maskable"
 		}
 	]

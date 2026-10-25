@@ -13,6 +13,7 @@ import { useGetTransaction } from "../../../hooks/useGetTransaction";
 import { getOwnerStr } from "../../../utils/objectUtils";
 import { trimStdLibPrefix } from "../../../utils/stringUtils";
 import { type DataType } from "../ObjectResultType";
+import { useI18n } from "~/i18n";
 
 import styles from "./ObjectView.module.css";
 
@@ -24,6 +25,7 @@ const splitPanelsOrientation: { label: string; value: Direction }[] = [
 ];
 
 function PkgView({ data }: { data: DataType }) {
+	const { t } = useI18n();
 	const [selectedSplitPanelOrientation, setSplitPanelOrientation] = useState(
 		splitPanelsOrientation[1].value,
 	);
@@ -31,7 +33,7 @@ function PkgView({ data }: { data: DataType }) {
 	const { data: txnData, isPending } = useGetTransaction(data.data.tx_digest!);
 
 	if (isPending) {
-		return <LoadingIndicator text="Loading data" />;
+		return <LoadingIndicator text={t("Loading data")} />;
 	}
 	const viewedData = {
 		...data,
@@ -39,7 +41,7 @@ function PkgView({ data }: { data: DataType }) {
 		tx_digest: data.data.tx_digest,
 		owner: getOwnerStr(data.owner),
 		publisherAddress:
-			data.data.tx_digest === GENESIS_TX_DIGEST ? "Genesis" : txnData?.transaction?.data.sender,
+			data.data.tx_digest === GENESIS_TX_DIGEST ? t("Genesis") : txnData?.transaction?.data.sender,
 	};
 
 	const checkIsPropertyType = (value: any) => ["number", "string"].includes(typeof value);
@@ -51,24 +53,24 @@ function PkgView({ data }: { data: DataType }) {
 	return (
 		<div>
 			<div>
-				<TabHeader title="Details">
+				<TabHeader title={t("Details")}>
 					<table className={styles.description} id="descriptionResults">
 						<tbody>
 							<tr>
-								<td>Object ID</td>
+								<td>{t("Object ID")}</td>
 								<td id="objectID" className={styles.objectid}>
 									<ObjectLink objectId={viewedData.id} noTruncate />
 								</td>
 							</tr>
 
 							<tr>
-								<td>Version</td>
+								<td>{t("Version")}</td>
 								<td>{viewedData.version}</td>
 							</tr>
 
 							{viewedData?.publisherAddress && (
 								<tr>
-									<td>Publisher</td>
+									<td>{t("Publisher")}</td>
 									<td id="lasttxID">
 										<AddressLink address={viewedData.publisherAddress} noTruncate />
 									</td>
@@ -81,7 +83,7 @@ function PkgView({ data }: { data: DataType }) {
 				<Tabs defaultValue="modules">
 					<TabsList>
 						<div className="mt-16 flex w-full justify-between">
-							<TabsTrigger value="modules">Modules</TabsTrigger>
+							<TabsTrigger value="modules">{t("Modules")}</TabsTrigger>
 							<div className="hidden md:block">
 								<RadioGroup
 									aria-label="split-panel-bytecode-viewer"
@@ -91,7 +93,7 @@ function PkgView({ data }: { data: DataType }) {
 									}
 								>
 									{splitPanelsOrientation.map(({ value, label }) => (
-										<RadioGroupItem key={value} value={value} label={label} />
+										<RadioGroupItem key={value} value={value} label={t(label)} />
 									))}
 								</RadioGroup>
 							</div>
@@ -114,7 +116,7 @@ function PkgView({ data }: { data: DataType }) {
 							type="object"
 							address={viewedData.id}
 							filter={FILTER_VALUES.INPUT}
-							header="Transaction Blocks"
+							header={t("Transaction Blocks")}
 						/>
 					</ErrorBoundary>
 				</div>

@@ -7,7 +7,7 @@ import { LoadingIndicator } from "@linku/ui";
 import { FieldItem } from "./FieldItem";
 import { Banner } from "~/ui/Banner";
 
-import type { DynamicFieldName } from "rtd-typescript/jsonRpc";
+import type { DynamicFieldName } from "~/types/explorerViewModels";
 
 type UnderlyingObjectCardProps = {
 	parentId: string;
@@ -86,7 +86,7 @@ export function UnderlyingObjectCard({
 			value={dynamicFieldsData as string}
 			objectType={objectType}
 			// add the struct type to the value
-			type={normalizedStruct?.fields.find((field) => field.name === "value")?.type || ""}
+			type={normalizedStruct?.fields.find((field: any) => field.name === "value")?.type || ""}
 		/>
 	);
 }

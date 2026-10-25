@@ -10,7 +10,7 @@ import {
 	useResolveRtdNSName,
 } from "rtd-apps-core";
 import { ChevronRight12 } from "rtd-apps-icons";
-import type { RtdObjectChangePublished, RtdObjectChange, DisplayFieldsResponse } from "rtd-typescript/jsonRpc";
+import type { RtdObjectChangePublished, RtdObjectChange, DisplayFieldsResponse } from "~/types/explorerViewModels";
 import { parseStructTag } from "rtd-typescript/utils";
 import { Text } from "@linku/ui";
 import * as Collapsible from "@radix-ui/react-collapsible";
@@ -18,6 +18,7 @@ import clsx from "clsx";
 import { useState, type ReactNode } from "react";
 
 import { ObjectDisplay } from "./ObjectDisplay";
+import { useI18n } from "~/i18n";
 import { ExpandableList, ExpandableListControl, ExpandableListItems } from "~/ui/ExpandableList";
 import { AddressLink, ObjectLink } from "~/ui/InternalLink";
 import { CollapsibleCard } from "~/ui/collapsible/CollapsibleCard";
@@ -42,6 +43,7 @@ function Item({
 	moduleName?: string;
 	typeName?: string;
 }) {
+	const { t } = useI18n();
 	return (
 		<div
 			className={clsx(
@@ -50,7 +52,7 @@ function Item({
 			)}
 		>
 			<Text variant="pBody/medium" color="steel-dark">
-				{label}
+				{t(label)}
 			</Text>
 
 			{label === ItemLabels.package && packageId && <ObjectLink objectId={packageId} />}
@@ -77,6 +79,7 @@ function ObjectDetailPanel({
 	headerContent?: ReactNode;
 	openInitially?: boolean;
 }) {
+	const { t } = useI18n();
 	const [open, setOpen] = useState(openInitially);
 	return (
 		<Collapsible.Root open={open} onOpenChange={setOpen}>
@@ -84,7 +87,7 @@ function ObjectDetailPanel({
 				<Collapsible.Trigger>
 					<div className="flex items-center gap-0.5">
 						<Text variant="pBody/medium" color="steel-dark">
-							Object
+							{t("Object")}
 						</Text>
 
 						<ChevronRight12 className={clsx("h-3 w-3 text-steel-dark", open && "rotate-90")} />
@@ -152,6 +155,7 @@ type ObjectChangeEntriesProps = {
 };
 
 function ObjectChangeEntries({ changeEntries, type, isDisplay }: ObjectChangeEntriesProps) {
+	const { t } = useI18n();
 	const title = ObjectChangeLabels[type];
 	let expandableItems = [];
 
@@ -201,14 +205,14 @@ function ObjectChangeEntries({ changeEntries, type, isDisplay }: ObjectChangeEnt
 					variant="body/semibold"
 					color={title === ObjectChangeLabels.created ? "success-dark" : "steel-darker"}
 				>
-					{title}
+					{t(title)}
 				</Text>
 			}
 		>
 			<ExpandableList
 				items={expandableItems}
 				defaultItemsToShow={DEFAULT_ITEMS_TO_SHOW}
-				itemsLabel="Objects"
+				itemsLabel={t("Objects")}
 			>
 				<div
 					className={clsx("flex max-h-[300px] gap-2 overflow-y-auto", {
@@ -241,12 +245,13 @@ function ObjectChangeEntriesCardFooter({
 	ownerType: string;
 	ownerAddress: string;
 }) {
+	const { t } = useI18n();
 	const { data: rtdnsDomainName } = useResolveRtdNSName(ownerAddress);
 
 	return (
 		<div className="flex flex-wrap items-center justify-between">
 			<Text variant="pBody/medium" color="steel-dark">
-				Owner
+				{t("Owner")}
 			</Text>
 
 			{ownerType === "AddressOwner" && (
@@ -255,12 +260,13 @@ function ObjectChangeEntriesCardFooter({
 
 			{ownerType === "ObjectOwner" && <ObjectLink objectId={ownerAddress} />}
 
-			{ownerType === "Shared" && <ObjectLink objectId={ownerAddress} label="Shared" />}
+			{ownerType === "Shared" && <ObjectLink objectId={ownerAddress} label={t("Shared")} />}
 		</div>
 	);
 }
 
 export function ObjectChangeEntriesCards({ data, type }: ObjectChangeEntriesCardsProps) {
+	const { t } = useI18n();
 	if (!data) return null;
 
 	return (
@@ -270,7 +276,7 @@ export function ObjectChangeEntriesCards({ data, type }: ObjectChangeEntriesCard
 				return (
 					<CollapsibleCard
 						key={ownerAddress}
-						title="Changes"
+						title={t("Changes")}
 						size="sm"
 						shadow
 						footer={

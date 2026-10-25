@@ -3,11 +3,19 @@
 
 import { createContext, useContext } from "react";
 import { useQuery } from "@tanstack/react-query";
-import type { RtdJsonRpcClient } from "rtd-typescript/jsonRpc";
+
+/**
+ * Structural surface of the Explorer's gRPC/GraphQL read facade. Kept loose so
+ * this shared core package does not depend on the Explorer app's implementation.
+ */
+export type ExplorerRpcClientSurface = {
+  getLatestRtdSystemState: (options?: { signal?: AbortSignal }) => Promise<any>;
+  [method: string]: any;
+};
 
 /** Existing Explorer hooks only. Wallet consumers must use WalletRpcContext. */
 export const ExplorerRpcContext = createContext<{
-  client: RtdJsonRpcClient;
+  client: ExplorerRpcClientSurface;
   network: string;
 } | null>(null);
 

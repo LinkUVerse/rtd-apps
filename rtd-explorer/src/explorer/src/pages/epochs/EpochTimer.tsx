@@ -12,7 +12,7 @@ export function EpochTimer() {
 	return (
 		<div className="flex w-full items-center justify-center gap-1.5 rounded-full border border-gray-45 px-2.5 py-2 shadow-notification">
 			<div className="w-5 text-steel-darker">
-				<ProgressCircle progress={progress} />
+				<ProgressCircle progress={progress ?? 0} />
 			</div>
 			<Text variant="pBodySmall/medium" color="steel-darker">
 				Epoch {epoch} in progress. {label}

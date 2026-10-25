@@ -4,13 +4,14 @@
 import { getCoinSymbol } from "rtd-apps-core";
 import { useExplorerQuery } from "~/rpc/explorer-client";
 import { Info16 } from "rtd-apps-icons";
-import type { CoinBalance } from "rtd-typescript/jsonRpc";
+import type { CoinBalance } from "~/types/explorerViewModels";
 import { normalizeRtdAddress } from "rtd-typescript/utils";
 import { Heading, Text, LoadingIndicator, RadioGroup, RadioGroupItem } from "@linku/ui";
 import { useMemo, useState } from "react";
 
 import OwnedCoinView from "./OwnedCoinView";
 import { useRecognizedPackages } from "~/hooks/useRecognizedPackages";
+import { useI18n } from "~/i18n";
 import { Pagination } from "~/ui/Pagination";
 
 export type CoinBalanceVerified = CoinBalance & {
@@ -24,6 +25,7 @@ enum COIN_FILTERS {
 }
 
 export function OwnedCoins({ id }: { id: string }) {
+	const { t } = useI18n();
 	const [currentSlice, setCurrentSlice] = useState(1);
 	const [limit, setLimit] = useState(20);
 	const [filterValue, setFilterValue] = useState(COIN_FILTERS.RECOGNIZED);
@@ -51,7 +53,7 @@ export function OwnedCoins({ id }: { id: string }) {
 			},
 		) ?? { recognizedBalances: [], unrecognizedBalances: [] };
 
-		const recognizedBalances = balanceData.recognizedBalances.sort((a, b) => {
+		const recognizedBalances = balanceData.recognizedBalances.sort((a: any, b: any) => {
 			// Make sure RTD always comes first
 			if (getCoinSymbol(a.coinType) === "RTD") {
 				return -1;
@@ -66,7 +68,7 @@ export function OwnedCoins({ id }: { id: string }) {
 
 		return {
 			recognizedBalances,
-			unrecognizedBalances: balanceData.unrecognizedBalances.sort((a, b) =>
+			unrecognizedBalances: balanceData.unrecognizedBalances.sort((a: any, b: any) =>
 				getCoinSymbol(a.coinType).localeCompare(getCoinSymbol(b.coinType), undefined, {
 					sensitivity: "base",
 				}),
@@ -77,22 +79,31 @@ export function OwnedCoins({ id }: { id: string }) {
 
 	const filterOptions = useMemo(
 		() => [
-			{ label: `${balances.recognizedBalances.length} RECOGNIZED`, value: COIN_FILTERS.RECOGNIZED },
 			{
-				label: `${balances.unrecognizedBalances.length} UNRECOGNIZED`,
+				label: `${balances.recognizedBalances.length} ${t("RECOGNIZED")}`,
+				value: COIN_FILTERS.RECOGNIZED,
+			},
+			{
+				label: `${balances.unrecognizedBalances.length} ${t("UNRECOGNIZED")}`,
 				value: COIN_FILTERS.UNRECOGNIZED,
 			},
-			{ label: "ALL", value: COIN_FILTERS.ALL },
+			{ label: t("ALL"), value: COIN_FILTERS.ALL },
 		],
-		[balances],
+		[balances, t],
 	);
 
 	const displayedBalances = useMemo(() => balances[filterValue], [balances, filterValue]);
 	const hasCoinsBalance = balances.allBalances.length > 0;
-	const coinBalanceHeader = hasCoinsBalance ? `${balances.allBalances.length} Coins` : "Coins";
+	const coinBalanceHeader = hasCoinsBalance
+		? t("{count} Coins", { count: balances.allBalances.length })
+		: t("Coins");
 
 	if (isError) {
-		return <div className="pt-2 font-sans font-semibold text-issue-dark">Failed to load Coins</div>;
+		return (
+			<div className="pt-2 font-sans font-semibold text-issue-dark">
+				{t("Failed to load Coins")}
+			</div>
+		);
 	}
 
 	return (
@@ -132,7 +143,7 @@ export function OwnedCoins({ id }: { id: string }) {
 								<Info16 width="16px" />
 							</div>
 							<Text color="steel-darker" variant="body/medium">
-								These coins have not been recognized.
+								{t("These coins have not been recognized.")}
 							</Text>
 						</div>
 					)}
@@ -143,17 +154,17 @@ export function OwnedCoins({ id }: { id: string }) {
 								<div className="mb-2.5 flex uppercase tracking-wider text-gray-80">
 									<div className="w-[45%] pl-3">
 										<Text variant="caption/medium" color="steel-dark">
-											Type
+											{t("Type")}
 										</Text>
 									</div>
 									<div className="w-[25%] px-2">
 										<Text variant="caption/medium" color="steel-dark">
-											Objects
+											{t("Objects")}
 										</Text>
 									</div>
 									<div className="w-[30%]">
 										<Text variant="caption/medium" color="steel-dark">
-											Balance
+											{t("Balance")}
 										</Text>
 									</div>
 								</div>
@@ -176,11 +187,13 @@ export function OwnedCoins({ id }: { id: string }) {
 									/>
 									<div className="flex items-center gap-3">
 										<Text variant="body/medium" color="steel-dark">
-											{"Showing "}
-											{(currentSlice - 1) * limit + 1}-
-											{currentSlice * limit > displayedBalances.length
-												? displayedBalances.length
-												: currentSlice * limit}
+											{t("Showing {start}-{end}", {
+												start: (currentSlice - 1) * limit + 1,
+												end:
+													currentSlice * limit > displayedBalances.length
+														? displayedBalances.length
+														: currentSlice * limit,
+											})}
 										</Text>
 										<select
 											className="form-select flex rounded-md border border-gray-45 px-3 py-2 pr-8 text-bodySmall font-medium leading-[1.2] text-steel-dark shadow-button"
@@ -190,9 +203,9 @@ export function OwnedCoins({ id }: { id: string }) {
 												setCurrentSlice(1);
 											}}
 										>
-											<option value={20}>20 Per Page</option>
-											<option value={40}>40 Per Page</option>
-											<option value={60}>60 Per Page</option>
+											<option value={20}>{`${20} ${t("Per Page")}`}</option>
+											<option value={40}>{`${40} ${t("Per Page")}`}</option>
+											<option value={60}>{`${60} ${t("Per Page")}`}</option>
 										</select>
 									</div>
 								</div>
@@ -203,7 +216,7 @@ export function OwnedCoins({ id }: { id: string }) {
 					{!hasCoinsBalance && (
 						<div className="flex h-20 items-center justify-center md:h-coinsAndAssetsContainer">
 							<Text variant="body/medium" color="steel-dark">
-								No Coins owned
+								{t("No Coins owned")}
 							</Text>
 						</div>
 					)}

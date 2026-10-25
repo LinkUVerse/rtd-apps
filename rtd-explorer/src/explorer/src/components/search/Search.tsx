@@ -4,11 +4,13 @@ import { useState, useCallback } from "react";
 
 import { useDebouncedValue } from "~/hooks/useDebouncedValue";
 import { useSearch } from "~/hooks/useSearch";
+import { useI18n } from "~/i18n";
 import { Search as SearchBox, type SearchResult } from "~/ui/Search";
 import { useNavigateWithQuery } from "~/ui/utils/LinkWithQuery";
 
 function Search() {
 	const [query, setQuery] = useState("");
+	const { t } = useI18n();
 	const debouncedQuery = useDebouncedValue(query);
 	const { isPending, data: results } = useSearch(debouncedQuery);
 	const navigate = useNavigateWithQuery();
@@ -28,7 +30,7 @@ function Search() {
 				queryValue={query}
 				onChange={(value) => setQuery(value?.trim() ?? "")}
 				onSelectResult={handleSelectResult}
-				placeholder="Search"
+				placeholder={t("Search")}
 				isLoading={isPending || debouncedQuery !== query}
 				options={results}
 			/>

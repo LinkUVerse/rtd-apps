@@ -28,6 +28,7 @@ import { z } from "zod";
 import { NavItem } from "./NavItem";
 import { ReactComponent as CheckIcon } from "../icons/check_16x16.svg";
 import { ReactComponent as MenuIcon } from "../icons/menu.svg";
+import { useI18n } from "~/i18n";
 
 import type { ComponentProps, ReactNode } from "react";
 
@@ -67,9 +68,9 @@ function SelectableNetwork({
       role="button"
       onClick={onClick}
       className={clsx(
-        "flex items-start gap-3 rounded-md px-1.25 py-2 text-body font-semibold hover:bg-gray-40 ui-active:bg-gray-40",
+        "flex cursor-pointer items-start gap-3 rounded-xl px-2.5 py-2.5 text-body font-semibold transition-colors hover:bg-rtd-lightest ui-active:bg-rtd-lightest",
         state !== NetworkState.UNSELECTED
-          ? "text-steel-darker"
+          ? "text-ink"
           : "text-steel-dark",
       )}
       {...props}
@@ -106,6 +107,7 @@ function CustomRPCInput({
   value: string;
   onChange(networkUrl: string): void;
 }) {
+  const { t } = useI18n();
   const { register, handleSubmit, formState } = useZodForm({
     schema: CustomRPCSchema,
     mode: "all",
@@ -121,16 +123,16 @@ function CustomRPCInput({
       onSubmit={handleSubmit((values) => {
         onChange(values.url);
       })}
-      className="relative flex items-center rounded-md"
+      className="relative flex items-center rounded-xl"
     >
       <input
         {...register("url")}
         type="text"
         className={clsx(
-          "block w-full rounded-md border p-3 pr-16 shadow-sm outline-none",
+          "block w-full rounded-xl border p-3 pr-16 text-[12px] shadow-sm outline-none transition-colors focus:border-rtd focus:ring-2 focus:ring-rtd/20",
           errors.url
             ? "border-issue-dark text-issue-dark"
-            : "border-gray-65 text-gray-90",
+            : "border-line bg-white text-ink",
         )}
       />
 
@@ -140,7 +142,7 @@ function CustomRPCInput({
           type="submit"
           className="flex items-center justify-center rounded-full bg-gray-90 px-2 py-1 text-captionSmall font-semibold uppercase text-white transition disabled:bg-gray-45 disabled:text-gray-65"
         >
-          Save
+          {t("Save")}
         </button>
       </div>
     </form>
@@ -156,13 +158,14 @@ function NetworkVersion({
   version: number | string;
   binaryVersion: string;
 }) {
+  const { t } = useI18n();
   return (
     <div className="flex flex-col justify-between gap-1 px-4 py-3">
       <Text variant="subtitleSmall/medium" color="steel-dark">
-        Rtd {label}
+        {t("RTD {label}", { label })}
       </Text>
       <Text variant="subtitleSmall/medium" color="steel-dark">
-        v{binaryVersion} (Protocol {version})
+        {t("v{binary} (Protocol {version})", { binary: binaryVersion, version })}
       </Text>
     </div>
   );
@@ -173,6 +176,7 @@ function NetworkSelectPanel({
   onChange,
   value,
 }: Omit<NetworkSelectProps, "version">) {
+  const { t } = useI18n();
   const isCustomNetwork = !networks.find(({ id }) => id === value);
   const [customOpen, setCustomOpen] = useState(isCustomNetwork);
 
@@ -208,7 +212,7 @@ function NetworkSelectPanel({
         }
         onClick={() => setCustomOpen(true)}
       >
-        Custom RPC URL
+        {t("Custom RPC URL")}
         {customOpen && (
           <div className="mt-3">
             <CustomRPCInput
@@ -238,6 +242,7 @@ export function NetworkSelect({
   binaryVersion,
   onChange,
 }: NetworkSelectProps) {
+  const { t } = useI18n();
   const { x, y, refs, strategy } = useFloating({
     placement: "bottom-end",
     middleware: [offset(5), flip(), shift()],
@@ -257,7 +262,7 @@ export function NetworkSelect({
           >
             <div className="hidden md:block">
               <Text variant="body/semibold" color="hero-darkest">
-                {selected?.label || "Custom"}
+                {selected?.label || t("Custom")}
               </Text>
             </div>
           </Popover.Button>
@@ -275,7 +280,7 @@ export function NetworkSelect({
                 >
                   <Popover.Panel
                     static
-                    className="z-20 flex w-52 flex-col gap-2 rounded-lg bg-white/80 px-3 py-4 shadow-lg backdrop-blur focus:outline-none"
+                    className="z-20 flex w-60 flex-col gap-1.5 rounded-2xl border border-white/70 bg-white/90 px-3 py-3.5 shadow-glass backdrop-blur-2xl focus:outline-none"
                   >
                     <NetworkSelectPanel
                       networks={networks}
@@ -286,9 +291,9 @@ export function NetworkSelect({
                       }}
                     />
                     {!!value && version && binaryVersion ? (
-                      <div className="-mx-3 -mb-4 mt-2 rounded-b-lg bg-hero-darkest/5">
+                      <div className="-mx-3 -mb-3.5 mt-1.5 rounded-b-2xl bg-rtd-lightest/70">
                         <NetworkVersion
-                          label={selected?.label ?? "Custom RPC"}
+                          label={selected?.label ?? t("Custom RPC URL")}
                           binaryVersion={binaryVersion}
                           version={version}
                         />

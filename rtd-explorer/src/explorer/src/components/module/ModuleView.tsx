@@ -1,7 +1,7 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import type { RtdMoveNormalizedType } from "rtd-typescript/jsonRpc";
+import type { RtdMoveNormalizedType } from "~/types/explorerViewModels";
 import { normalizeRtdAddress } from "rtd-typescript/utils";
 import cl from "clsx";
 import { Highlight, Prism } from "prism-react-renderer";
@@ -60,8 +60,8 @@ function ModuleView({ id, name, code }: Props) {
 		if (!normalizedModule) {
 			return typeReferences;
 		}
-		Object.values(normalizedModule.exposedFunctions).forEach((exposedFunction) => {
-			exposedFunction.parameters.forEach((param) => {
+		Object.values(normalizedModule.exposedFunctions).forEach((exposedFunction: any) => {
+			exposedFunction.parameters.forEach((param: any) => {
 				const unwrappedType = unwrapTypeReference(param);
 				if (!unwrappedType) return;
 				typeReferences[unwrappedType.name] = unwrappedType;

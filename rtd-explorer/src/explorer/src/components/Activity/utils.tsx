@@ -7,11 +7,17 @@ import { Text } from "@linku/ui";
 import { RtdAmount } from "../Table/RtdAmount";
 import { TxTimeType } from "../tx-time/TxTimeType";
 import { HighlightedTableCol } from "~/components/Table/HighlightedTableCol";
+import type { Translate } from "~/i18n";
 import { CheckpointSequenceLink, EpochLink } from "~/ui/InternalLink";
 import { getEpochStorageFundFlow } from "~/utils/getStorageFundFlow";
 
+const identity: Translate = (source) => source;
+
 // Generate table data from the epochs data
-export const genTableDataFromEpochsData = (results: ExplorerEpochPage) => ({
+export const genTableDataFromEpochsData = (
+	results: ExplorerEpochPage,
+	t: Translate = identity,
+) => ({
 	data: results?.data.map((epoch) => ({
 		epoch: (
 			<HighlightedTableCol first>
@@ -38,27 +44,27 @@ export const genTableDataFromEpochsData = (results: ExplorerEpochPage) => ({
 	})),
 	columns: [
 		{
-			header: "Epoch",
+			header: t("Epoch"),
 			accessorKey: "epoch",
 		},
 		{
-			header: "Transaction Blocks",
+			header: t("Transaction Blocks"),
 			accessorKey: "transactions",
 		},
 		{
-			header: "Stake Rewards",
+			header: t("Stake Rewards"),
 			accessorKey: "stakeRewards",
 		},
 		{
-			header: "Checkpoint Set",
+			header: t("Checkpoint Set"),
 			accessorKey: "checkpointSet",
 		},
 		{
-			header: "Storage Net Inflow",
+			header: t("Storage Net Inflow"),
 			accessorKey: "storageNetInflow",
 		},
 		{
-			header: "Epoch End",
+			header: t("Epoch End"),
 			accessorKey: "time",
 		},
 	],

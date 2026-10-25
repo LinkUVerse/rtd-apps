@@ -4,7 +4,7 @@
 import { LinkGroup } from "./LinkGroup";
 import { Banner } from "~/ui/Banner";
 
-import type { RtdTransactionBlockResponse, OwnedObjectRef } from "rtd-typescript/jsonRpc";
+import type { RtdTransactionBlockResponse, OwnedObjectRef } from "~/types/explorerViewModels";
 
 function toObjectLink(object: OwnedObjectRef) {
 	return {

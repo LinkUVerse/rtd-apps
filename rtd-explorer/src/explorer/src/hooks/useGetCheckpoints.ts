@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { useExplorerClientContext } from "~/rpc/explorer-client";
-import type { CheckpointPage } from "rtd-typescript/jsonRpc";
+import type { CheckpointPage } from "~/types/explorerViewModels";
 import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
 
 export const DEFAULT_CHECKPOINTS_LIMIT = 20;

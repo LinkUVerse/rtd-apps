@@ -1,4 +1,4 @@
-import { RtdMoveNormalizedType } from "rtd-typescript/jsonRpc";
+import { RtdMoveNormalizedType } from "~/types/explorerViewModels";
 import { CallArg } from "rtd-typescript/transactions";
 import {
     MOVE_STDLIB_ADDRESS,

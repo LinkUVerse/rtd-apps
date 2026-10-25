@@ -9,6 +9,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { genTableDataFromTxData } from "../transactions/TxCardUtils";
 import { useGetTransactionBlocks } from "~/hooks/useGetTransactionBlocks";
+import { useI18n } from "~/i18n";
 import { Link } from "~/ui/Link";
 import { Pagination, useCursorPagination } from "~/ui/Pagination";
 import { PlaceholderTable } from "~/ui/PlaceholderTable";
@@ -32,6 +33,7 @@ export function TransactionsActivityTable({
 }: Props) {
 	const [limit, setLimit] = useState(initialLimit);
 	const client = useExplorerClient();
+	const { t } = useI18n();
 	const { data: count } = useQuery({
 		queryKey: ["transactions", "count"],
 		queryFn: () => client.getTotalTransactionBlocks(),
@@ -47,7 +49,7 @@ export function TransactionsActivityTable({
 	const { data, isFetching, pagination, isPending, isError } = useCursorPagination(transactions);
 	const goToFirstPageRef = useRef(pagination.onFirst);
 	goToFirstPageRef.current = pagination.onFirst;
-	const cardData = data ? genTableDataFromTxData(data.data) : undefined;
+	const cardData = data ? genTableDataFromTxData(data.data, t) : undefined;
 
 	useEffect(() => {
 		goToFirstPageRef.current();
@@ -56,7 +58,7 @@ export function TransactionsActivityTable({
 		<div data-testid="tx">
 			{isError && (
 				<div className="pt-2 font-sans font-semibold text-issue-dark">
-					Failed to load Transactions
+					{t("Failed to load Transactions")}
 				</div>
 			)}
 			<div className="flex flex-col space-y-3 text-left">
@@ -64,7 +66,7 @@ export function TransactionsActivityTable({
 					<PlaceholderTable
 						rowCount={limit}
 						rowHeight="16px"
-						colHeadings={["Digest", "Sender", "Txns", "Gas", "Time"]}
+						colHeadings={[t("Digest"), t("Sender"), t("Txns"), t("Gas"), t("Time")]}
 						colWidths={["30%", "30%", "10%", "20%", "10%"]}
 					/>
 				) : (
@@ -78,14 +80,14 @@ export function TransactionsActivityTable({
 						<Pagination {...pagination} />
 					) : (
 						<Link to="/recent" after={<ArrowRight12 className="h-3 w-3 -rotate-45" />}>
-							View all
+							{t("View all")}
 						</Link>
 					)}
 
 					<div className="flex items-center space-x-3">
 						<Text variant="body/medium" color="steel-dark">
 							{count ? numberSuffix(Number(count)) : "-"}
-							{" Total"}
+							{` ${t("Total")}`}
 						</Text>
 						{!disablePagination && (
 							<select
@@ -96,9 +98,9 @@ export function TransactionsActivityTable({
 									pagination.onFirst();
 								}}
 							>
-								<option value={20}>20 Per Page</option>
-								<option value={40}>40 Per Page</option>
-								<option value={60}>60 Per Page</option>
+								<option value={20}>{t("20 Per Page")}</option>
+								<option value={40}>{t("40 Per Page")}</option>
+								<option value={60}>{t("60 Per Page")}</option>
 							</select>
 						)}
 					</div>

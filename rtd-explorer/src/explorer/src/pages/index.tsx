@@ -28,6 +28,11 @@ export const router: any = createBrowserRouter([
 		children: [
 			{ path: "/", element: <Home /> },
 			{ path: "recent", element: <Recent /> },
+			{
+				path: "checkpoints",
+				element: <Navigate to="/recent?tab=checkpoints" replace />,
+			},
+			{ path: "epochs", element: <Navigate to="/recent?tab=epochs" replace /> },
 			{ path: "object/:id", element: <ObjectResult /> },
 			{ path: "checkpoint/:id", element: <CheckpointDetail /> },
 			{ path: "epoch/current", element: <EpochDetail /> },

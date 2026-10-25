@@ -14,7 +14,7 @@ export const NavItem = forwardRef<HTMLButtonElement, NavItemProps>(
 		<button
 			ref={ref}
 			type="button"
-			className="flex h-10 cursor-pointer items-center gap-2 rounded-md border-none bg-transparent px-3.5 py-2 text-heading6 font-medium text-hero-darkest outline-none hover:bg-white/60 ui-open:bg-white/60"
+			className="focus-ring flex h-10 cursor-pointer items-center gap-2 rounded-full border border-line/80 bg-white/70 px-3.5 py-2 text-[13px] font-semibold text-ink shadow-sm outline-none backdrop-blur transition-colors hover:border-rtd-light hover:bg-white ui-open:border-rtd-light ui-open:bg-white"
 			{...props}
 		>
 			{beforeIcon}

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ChevronRight12 } from "rtd-apps-icons";
-import type { RtdEvent } from "rtd-typescript/jsonRpc";
+import type { RtdEvent } from "~/types/explorerViewModels";
 import { parseStructTag, formatAddress } from "rtd-typescript/utils";
 import { Text } from "@linku/ui";
 import * as Collapsible from "@radix-ui/react-collapsible";
@@ -11,11 +11,13 @@ import { useState } from "react";
 
 import { SyntaxHighlighter } from "~/components/SyntaxHighlighter";
 import { CopyToClipboard } from "~/ui/CopyToClipboard";
+import { useI18n } from "~/i18n";
 import { DescriptionItem } from "~/ui/DescriptionList";
 import { Divider } from "~/ui/Divider";
 import { ObjectLink } from "~/ui/InternalLink";
 
 function Event({ event, divider }: { event: RtdEvent; divider: boolean }) {
+	const { t } = useI18n();
 	const [open, setOpen] = useState(false);
 	const { address, module, name } = parseStructTag(event.type);
 	const objectLinkLabel = [formatAddress(address), module, name].join("::");
@@ -23,13 +25,13 @@ function Event({ event, divider }: { event: RtdEvent; divider: boolean }) {
 	return (
 		<div>
 			<div className="flex flex-col gap-3">
-				<DescriptionItem title="Type" align="start" labelWidth="sm">
+				<DescriptionItem title={t("Type")} align="start" labelWidth="sm">
 					<Text variant="pBody/medium" color="steel-darker">
 						{objectLinkLabel}
 					</Text>
 				</DescriptionItem>
 
-				<DescriptionItem title="Event Emitter" align="start" labelWidth="sm">
+				<DescriptionItem title={t("Event Emitter")} align="start" labelWidth="sm">
 					<div className="flex items-center gap-1">
 						<ObjectLink
 							objectId={event.packageId}
@@ -44,7 +46,7 @@ function Event({ event, divider }: { event: RtdEvent; divider: boolean }) {
 					<>
 						<Collapsible.Trigger className="flex cursor-pointer items-center gap-1.5">
 							<Text variant="body/semibold" color="steel-dark">
-								{open ? "Hide" : "View"} Event Data
+								{open ? t("Hide Event Data") : t("View Event Data")}
 							</Text>
 
 							<ChevronRight12 className={clsx("h-3 w-3 text-steel-dark", open && "rotate-90")} />

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Search24 } from "rtd-apps-icons";
-import type { RtdMoveNormalizedStruct, RtdObjectResponse } from "rtd-typescript/jsonRpc";
+import type { RtdMoveNormalizedStruct, RtdObjectResponse } from "~/types/explorerViewModels";
 import { Text, LoadingIndicator, Combobox, ComboboxInput, ComboboxList } from "@linku/ui";
 import clsx from "clsx";
 import { useCallback, useEffect, useState } from "react";
@@ -13,6 +13,7 @@ import { getFieldTypeValue } from "./utils";
 import { FieldsCard, FieldCollapsible, FieldsContainer } from "~/components/Object/FieldsUtils";
 import { Banner } from "~/ui/Banner";
 import { Description } from "~/ui/Description";
+import { useI18n } from "~/i18n";
 
 const DEFAULT_OPEN_FIELDS = 999;
 const DEFAULT_FIELDS_COUNT_TO_SHOW_SEARCH = 10;
@@ -34,6 +35,7 @@ export function ObjectFieldsCard({
 	error,
 	objectType,
 }: ObjectFieldsProps) {
+	const { t } = useI18n();
 	const [query, setQuery] = useState("");
 	const [activeFieldName, setActiveFieldName] = useState("");
 	const [openFieldsName, setOpenFieldsName] = useState<Record<string, boolean>>({});
@@ -73,14 +75,14 @@ export function ObjectFieldsCard({
 	if (loading) {
 		return (
 			<div className="flex w-full justify-center">
-				<LoadingIndicator text="Loading data" />
+				<LoadingIndicator text={t("Loading data")} />
 			</div>
 		);
 	}
 	if (error) {
 		return (
 			<Banner variant="error" spacing="lg" fullWidth>
-				Failed to get field data for {id}
+				{t("Failed to get field data for {id}", { id })}
 			</Banner>
 		);
 	}
@@ -111,7 +113,7 @@ export function ObjectFieldsCard({
 				{renderSearchBar && (
 					<Combobox value={query} onValueChange={setQuery}>
 						<div className="flex w-full justify-between rounded-lg border border-white/50 bg-white py-1 pl-3 shadow-dropdownContent">
-							<ComboboxInput placeholder="Search" className="w-full border-none focus:outline-0" />
+							<ComboboxInput placeholder={t("Search")} className="w-full border-none focus:outline-0" />
 							<button className="border-none bg-inherit pr-2" type="submit">
 								<Search24 className="h-4.5 w-4.5 cursor-pointer fill-steel align-middle text-gray-60" />
 							</button>

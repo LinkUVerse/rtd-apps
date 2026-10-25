@@ -9,11 +9,14 @@ import { RouterProvider } from "react-router-dom";
 
 import { router } from "./pages";
 import { queryClient } from "./utils/queryClient";
+import { I18nProvider } from "./i18n";
 
 import "./index.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-	<QueryClientProvider client={queryClient}>
-		<RouterProvider router={router} />
-	</QueryClientProvider>
+	<I18nProvider>
+		<QueryClientProvider client={queryClient}>
+			<RouterProvider router={router} />
+		</QueryClientProvider>
+	</I18nProvider>
 );

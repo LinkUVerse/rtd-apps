@@ -1,10 +1,11 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import type { RtdCallArg } from "rtd-typescript/jsonRpc";
+import type { RtdCallArg } from "~/types/explorerViewModels";
 import { Text } from "@linku/ui";
 
 import { ProgrammableTxnBlockCard } from "~/components/transactions/ProgTxnBlockCard";
+import { useI18n } from "~/i18n";
 import { AddressLink, ObjectLink } from "~/ui/InternalLink";
 import { CollapsibleSection } from "~/ui/collapsible/CollapsibleSection";
 
@@ -15,12 +16,13 @@ type InputsCardProps = {
 };
 
 export function InputsCard({ inputs }: InputsCardProps) {
+	const { t } = useI18n();
 	if (!inputs?.length) {
 		return null;
 	}
 
 	const expandableItems = inputs.map((input, index) => (
-		<CollapsibleSection key={index} title={`Input ${index}`} defaultOpen>
+		<CollapsibleSection key={index} title={t("Input {index}", { index })} defaultOpen>
 			<div data-testid="inputs-card-content" className="flex flex-col gap-2">
 				{Object.entries(input).map(([key, value]) => {
 					let renderValue;
@@ -66,7 +68,7 @@ export function InputsCard({ inputs }: InputsCardProps) {
 		<ProgrammableTxnBlockCard
 			initialClose
 			items={expandableItems}
-			itemsLabel={inputs.length > 1 ? "Inputs" : "Input"}
+			itemsLabel={inputs.length > 1 ? t("Inputs") : t("Input")}
 			count={inputs.length}
 		/>
 	);

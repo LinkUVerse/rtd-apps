@@ -11,6 +11,7 @@ import { OwnedObjects } from "~/components/OwnedObjects";
 import TransactionBlocksForAddress, { FILTER_VALUES } from "~/components/TransactionBlocksForAddress";
 import { ErrorBoundary } from "~/components/error-boundary/ErrorBoundary";
 import { useBreakpoint } from "~/hooks/useBreakpoint";
+import { useI18n } from "~/i18n";
 import { Divider } from "~/ui/Divider";
 import { PageHeader } from "~/ui/PageHeader";
 import { LOCAL_STORAGE_SPLIT_PANE_KEYS, SplitPanes } from "~/ui/SplitPanes";
@@ -43,6 +44,7 @@ function RtdNSAddressResultPageHeader({ name }: { name: string }) {
 
 function AddressResult({ address }: { address: string }) {
 	const isMediumOrAbove = useBreakpoint("md");
+	const { t } = useI18n();
 
 	const leftPane = {
 		panel: <OwnedCoins id={address} />,
@@ -90,7 +92,7 @@ function AddressResult({ address }: { address: string }) {
 							type="address"
 							address={address}
 							filter={FILTER_VALUES.FROM_ADDRESS}
-							header="Transaction Blocks"
+							header={t("Transaction Blocks")}
 						/>
 					</div>
 				</ErrorBoundary>
@@ -99,7 +101,7 @@ function AddressResult({ address }: { address: string }) {
 	};
 
 	return (
-		<TabHeader title="Owned Objects" noGap>
+		<TabHeader title={t("Owned Objects")} noGap>
 			{isMediumOrAbove ? (
 				<div className="h-300">
 					<SplitPanes

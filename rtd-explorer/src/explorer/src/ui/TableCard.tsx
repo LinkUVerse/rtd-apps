@@ -25,7 +25,7 @@ function AscDescIcon({ sorting }: { sorting: "asc" | "desc" }) {
 	return (
 		<ArrowRight12
 			fill="currentColor"
-			className={clsx(sorting === "asc" ? "-rotate-90" : "rotate-90", " text-steel-darker")}
+			className={clsx(sorting === "asc" ? "-rotate-90" : "rotate-90", "text-rtd")}
 		/>
 	);
 }
@@ -39,14 +39,10 @@ export function TableCard<DataType extends object>({
 }: TableCardProps<DataType>) {
 	const [sorting, setSorting] = useState<SortingState>(defaultSorting || []);
 
-	// Use Columns to create a table
 	const processedcol = useMemo<ColumnDef<DataType>[]>(
 		() =>
 			columns.map((column) => ({
 				...column,
-				// cell renderer for each column from react-table
-				// cell should be in the column definition
-				//TODO: move cell to column definition
 				...(!sortTable && { cell: ({ getValue }) => getValue() }),
 			})),
 		[columns, sortTable],
@@ -60,18 +56,14 @@ export function TableCard<DataType extends object>({
 		onSortingChange: setSorting,
 		enableSorting: !!sortTable,
 		enableSortingRemoval: false,
-		initialState: {
-			sorting,
-		},
-		state: {
-			sorting,
-		},
+		initialState: { sorting },
+		state: { sorting },
 	});
 
 	return (
 		<div
 			className={clsx(
-				"w-full overflow-x-auto border-b border-gray-45 pb-4",
+				"w-full overflow-x-auto transition-opacity",
 				refetching && "opacity-50",
 			)}
 		>
@@ -84,19 +76,21 @@ export function TableCard<DataType extends object>({
 									key={id}
 									colSpan={colSpan}
 									scope="col"
-									className="h-7.5 text-left text-subtitle font-semibold uppercase text-steel-dark"
+									className="h-10 whitespace-nowrap border-b border-line/90 pr-6 text-left text-[10px] font-semibold uppercase tracking-[0.14em] text-steel-dark last:pr-0"
 									onClick={
-										column.columnDef.enableSorting ? column.getToggleSortingHandler() : undefined
+										column.columnDef.enableSorting
+											? column.getToggleSortingHandler()
+											: undefined
 									}
 								>
 									<div
 										className={clsx(
-											"flex items-center gap-1",
-											column.columnDef.enableSorting && "cursor-pointer text-steel-darker",
+											"flex items-center gap-1.5",
+											column.columnDef.enableSorting &&
+												"cursor-pointer select-none transition-colors hover:text-ink",
 										)}
 									>
 										{isPlaceholder ? null : flexRender(column.columnDef.header, getContext())}
-
 										{column.getIsSorted() && (
 											<AscDescIcon sorting={column.getIsSorted() as "asc" | "desc"} />
 										)}
@@ -108,11 +102,11 @@ export function TableCard<DataType extends object>({
 				</thead>
 				<tbody>
 					{table.getRowModel().rows.map((row) => (
-						<tr key={row.id} className="group">
+						<tr key={row.id} className="group data-row">
 							{row.getVisibleCells().map(({ column, id, getContext }) => (
 								<td
 									key={id}
-									className="h-7.5 text-body text-gray-75 group-hover:bg-gray-40 group-hover:text-gray-90 group-hover:first:rounded-l group-hover:last:rounded-r"
+									className="h-12 whitespace-nowrap pr-6 text-[13px] text-gray-75 transition-colors first:rounded-l-xl first:pl-3 last:rounded-r-xl last:pr-3 group-hover:text-ink"
 								>
 									{flexRender(column.columnDef.cell, getContext())}
 								</td>

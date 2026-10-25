@@ -28,13 +28,13 @@ export function Search({
 }: SearchProps) {
 	return (
 		<Combobox value={queryValue} onValueChange={onChange}>
-			<div className="relative flex h-10 items-center">
-				<div className="absolute left-0 ml-3 block items-center text-2xl text-hero-darkest/80">
+			<div className="relative flex h-11 items-center">
+				<div className="pointer-events-none absolute left-0 ml-3.5 block items-center text-xl text-rtd">
 					<Search16 />
 				</div>
 
 				<ComboboxInput
-					className="w-full rounded border border-transparent bg-hero-darkest/5 pl-10 font-mono text-body font-medium leading-9 text-hero-darkest/80 outline-none placeholder:text-sm placeholder:text-hero-darkest/40 hover:bg-hero-darkest/10 focus:bg-hero-darkest/10"
+					className="focus-ring h-11 w-full rounded-full border border-line/90 bg-white/75 pl-10 pr-4 font-mono text-[13px] font-medium text-ink shadow-sm outline-none backdrop-blur transition-colors placeholder:font-sans placeholder:text-[13px] placeholder:text-steel hover:border-rtd-light focus:border-rtd-light focus:bg-white"
 					placeholder={placeholder}
 				/>
 			</div>

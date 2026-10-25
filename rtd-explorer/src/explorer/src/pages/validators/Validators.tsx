@@ -9,7 +9,7 @@ import {
 	formatPercentageDisplay,
 } from "rtd-apps-core";
 import { useExplorerQuery } from "~/rpc/explorer-client";
-import type { RtdEvent, RtdValidatorSummary } from "rtd-typescript/jsonRpc";
+import type { RtdEvent, RtdValidatorSummary } from "~/types/explorerViewModels";
 import { Heading, Text } from "@linku/ui";
 import { useMemo } from "react";
 
@@ -17,6 +17,7 @@ import { PageLayout } from "~/components/Layout/PageLayout";
 import { ErrorBoundary } from "~/components/error-boundary/ErrorBoundary";
 import { StakeColumn } from "~/components/top-validators-card/StakeColumn";
 import { DelegationAmount } from "~/components/validator/DelegationAmount";
+import { useI18n, type Translate } from "~/i18n";
 import { Banner } from "~/ui/Banner";
 import { Card } from "~/ui/Card";
 import { ImageIcon } from "~/ui/ImageIcon";
@@ -31,11 +32,14 @@ import { VALIDATOR_LOW_STAKE_GRACE_PERIOD } from "~/utils/validatorConstants";
 
 // const ValidatorMap = lazy(() => import('../../components/validator-map'));
 
+const identity: Translate = (source) => source;
+
 export function validatorsTableData(
 	validators: Pick<RtdValidatorSummary, "name" | "imageUrl" | "rtdAddress" | "stakingPoolRtdBalance" | "nextEpochGasPrice" | "commissionRate" | "votingPower">[],
 	atRiskValidators: [string, string][],
 	validatorEvents: RtdEvent[],
 	rollingAverageApys: ApyByValidator | null,
+	t: Translate = identity,
 ) {
 	return {
 		data: [...validators]
@@ -88,7 +92,7 @@ export function validatorsTableData(
 				),
 			},
 			{
-				header: "Name",
+				header: t("Name"),
 				accessorKey: "name",
 				enableSorting: true,
 				sortingFn: (a: any, b: any, colId: string) =>
@@ -113,19 +117,19 @@ export function validatorsTableData(
 				},
 			},
 			{
-				header: "Stake",
+				header: t("Stake"),
 				accessorKey: "stake",
 				enableSorting: true,
 				cell: (props: any) => <StakeColumn stake={props.getValue()} />,
 			},
 			{
-				header: "Proposed Next Epoch Gas Price",
+				header: t("Proposed Next Epoch Gas Price"),
 				accessorKey: "nextEpochGasPrice",
 				enableSorting: true,
 				cell: (props: any) => <StakeColumn stake={props.getValue()} inMIST />,
 			},
 			{
-				header: "APY",
+				header: t("APY"),
 				accessorKey: "apy",
 				enableSorting: true,
 				sortingFn: (a: any, b: any, colId: string) =>
@@ -140,7 +144,7 @@ export function validatorsTableData(
 				},
 			},
 			{
-				header: "Commission",
+				header: t("Commission"),
 				accessorKey: "commission",
 				enableSorting: true,
 				cell: (props: any) => {
@@ -153,7 +157,7 @@ export function validatorsTableData(
 				},
 			},
 			{
-				header: "Last Epoch Rewards",
+				header: t("Last Epoch Rewards"),
 				accessorKey: "lastReward",
 				enableSorting: true,
 				cell: (props: any) => {
@@ -168,7 +172,7 @@ export function validatorsTableData(
 				},
 			},
 			{
-				header: "Voting Power",
+				header: t("Voting Power"),
 				accessorKey: "votingPower",
 				enableSorting: true,
 				cell: (props: any) => {
@@ -181,14 +185,16 @@ export function validatorsTableData(
 				},
 			},
 			{
-				header: "Status",
+				header: t("Status"),
 				accessorKey: "atRisk",
 				cell: (props: any) => {
 					const atRisk = props.getValue();
-					const label = "At Risk";
+					const label = t("At Risk");
 					return atRisk !== null ? (
 						<Tooltip
-							tip="Staked RTD is below the minimum RTD stake threshold to remain a validator."
+							tip={t(
+								"Staked RTD is below the minimum RTD stake threshold to remain a validator.",
+							)}
 						>
 							<div className="flex cursor-pointer flex-nowrap items-center">
 								<Text color="issue" variant="bodySmall/medium">
@@ -196,13 +202,15 @@ export function validatorsTableData(
 								</Text>
 								&nbsp;
 								<Text uppercase variant="bodySmall/medium" color="steel-dark">
-									{atRisk > 1 ? `in ${atRisk} epochs` : "next epoch"}
+									{atRisk > 1
+										? t("in {count} epochs", { count: atRisk })
+										: t("next epoch")}
 								</Text>
 							</div>
 						</Tooltip>
 					) : (
 						<Text variant="bodySmall/medium" color="steel-darker">
-							Active
+							{t("Active")}
 						</Text>
 					);
 				},
@@ -212,6 +220,7 @@ export function validatorsTableData(
 }
 
 function ValidatorPageResult() {
+	const { t } = useI18n();
 	const { data, isPending, isSuccess, isError } = useExplorerQuery("getLatestRtdSystemState");
 
 	const numberOfValidators = data?.activeValidators.length || 0;
@@ -229,22 +238,22 @@ function ValidatorPageResult() {
 
 	const totalStaked = useMemo(() => {
 		if (!data) return 0;
-		const validators = data.activeValidators;
+		const validators = data.activeValidators as any[];
 
-		return validators.reduce((acc, cur) => acc + Number(cur.stakingPoolRtdBalance), 0);
+		return validators.reduce((acc: number, cur: any) => acc + Number(cur.stakingPoolRtdBalance), 0);
 	}, [data]);
 
 	const averageAPY = useMemo(() => {
 		if (!validatorsApy || Object.keys(validatorsApy)?.length === 0) return null;
 
 		// if all validators have isApyApproxZero, return ~0
-		if (Object.values(validatorsApy)?.every(({ isApyApproxZero }) => isApyApproxZero)) {
+		if (Object.values(validatorsApy as Record<string, { apy: number; isApyApproxZero: boolean }>)?.every(({ isApyApproxZero }) => isApyApproxZero)) {
 			return "~0";
 		}
 
 		// exclude validators with no apy
-		const apys = Object.values(validatorsApy)?.filter((a) => a.apy > 0 && !a.isApyApproxZero);
-		const averageAPY = apys?.reduce((acc, cur) => acc + cur.apy, 0);
+		const apys = Object.values(validatorsApy as Record<string, { apy: number; isApyApproxZero: boolean }>)?.filter((a) => a.apy > 0 && !a.isApyApproxZero);
+		const averageAPY = apys?.reduce((acc: number, cur: any) => acc + cur.apy, 0);
 		// in case of no apy, return 0
 		return apys.length > 0 ? roundFloat(averageAPY / apys.length) : 0;
 	}, [validatorsApy]);
@@ -253,7 +262,7 @@ function ValidatorPageResult() {
 		if (!validatorEvents) return null;
 		let totalRewards = 0;
 
-		validatorEvents.forEach(({ parsedJson }) => {
+		validatorEvents.forEach(({ parsedJson }: any) => {
 			totalRewards += Number((parsedJson as { pool_staking_reward: string }).pool_staking_reward);
 		});
 
@@ -267,15 +276,16 @@ function ValidatorPageResult() {
 			data.atRiskValidators,
 			validatorEvents,
 			validatorsApy || null,
+			t,
 		);
-	}, [data, validatorEvents, validatorsApy]);
+	}, [data, validatorEvents, validatorsApy, t]);
 
 	return (
 		<PageLayout
 			content={
 				isError || validatorEventError ? (
 					<Banner variant="error" fullWidth>
-						Validator data could not be loaded
+						{t("Validator data could not be loaded")}
 					</Banner>
 				) : (
 					<>
@@ -283,16 +293,16 @@ function ValidatorPageResult() {
 							<Card spacing="lg">
 								<div className="flex w-full basis-full flex-col gap-8">
 									<Heading as="div" variant="heading4/semibold" color="steel-darker">
-										Validators
+										{t("Validators")}
 									</Heading>
 
 									<div className="flex flex-col gap-8 md:flex-row">
 										<div className="flex flex-col gap-8">
-											<Stats label="Participation" tooltip="Coming soon" unavailable />
+											<Stats label={t("Participation")} tooltip={t("Coming soon")} unavailable />
 
 											<Stats
-												label="Last Epoch Rewards"
-												tooltip="The stake rewards collected during the last epoch."
+												label={t("Last Epoch Rewards")}
+												tooltip={t("The stake rewards collected during the last epoch.")}
 												unavailable={lastEpochRewardOnAllValidators === null}
 											>
 												<DelegationAmount
@@ -307,15 +317,19 @@ function ValidatorPageResult() {
 										</div>
 										<div className="flex flex-col gap-8">
 											<Stats
-												label="Total RTD Staked"
-												tooltip="The total RTD staked on the network by validators and delegators to validate the network and earn rewards."
+												label={t("Total RTD Staked")}
+												tooltip={t(
+													"The total RTD staked on the network by validators and delegators to validate the network and earn rewards.",
+												)}
 												unavailable={totalStaked <= 0}
 											>
 												<DelegationAmount amount={totalStaked || 0n} isStats />
 											</Stats>
 											<Stats
-												label="AVG APY"
-												tooltip="The global average of annualized percentage yield of all participating validators."
+												label={t("AVG APY")}
+												tooltip={t(
+													"The global average of annualized percentage yield of all participating validators.",
+												)}
 												unavailable={averageAPY === null}
 											>
 												{averageAPY}%
@@ -335,12 +349,12 @@ function ValidatorPageResult() {
 						</div>
 						<div className="mt-8">
 							<ErrorBoundary>
-								<TableHeader>All Validators</TableHeader>
+								<TableHeader>{t("All Validators")}</TableHeader>
 								{(isPending || validatorsEventsLoading) && (
 									<PlaceholderTable
 										rowCount={20}
 										rowHeight="13px"
-										colHeadings={["Name", "Address", "Stake"]}
+										colHeadings={[t("Name"), t("Address"), t("Stake")]}
 										colWidths={["220px", "220px", "220px"]}
 									/>
 								)}

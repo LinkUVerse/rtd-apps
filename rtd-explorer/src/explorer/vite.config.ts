@@ -9,6 +9,31 @@ import { configDefaults } from "vitest/config";
 
 process.env.VITE_VERCEL_ENV = process.env.VERCEL_ENV || "development";
 
+/** Dedicated dev/preview port; Wallet dev links point at this port. */
+const EXPLORER_DEV_PORT = Number(process.env.EXPLORER_DEV_PORT || 5180);
+
+/**
+ * Browser traffic stays same-origin. Vite proxies the fullnode gRPC-Web and
+ * archive GraphQL endpoints so dev does not depend on permissive CORS or on
+ * importing the local CA into the browser.
+ */
+const devProxy = {
+    "/fullnode": {
+        target: "http://127.0.0.1:43350",
+        changeOrigin: true,
+        rewrite: (path: string) => path.replace(/^\/fullnode/, ""),
+    },
+    "/archive": {
+        target: "http://127.0.0.1:43412",
+        changeOrigin: true,
+        rewrite: (path: string) => path.replace(/^\/archive/, ""),
+    },
+    "/account": {
+        target: "http://127.0.0.1:43413",
+        changeOrigin: true,
+    },
+};
+
 // https://vitejs.dev/config/
 export default defineConfig({
     plugins: [react(), svgr()],
@@ -31,9 +56,15 @@ export default defineConfig({
         },
     },
     preview: {
-        port: 3000,
+        port: EXPLORER_DEV_PORT,
+        host: true,
+        strictPort: true,
+        proxy: devProxy,
     },
     server: {
-        port: 3000,
+        port: EXPLORER_DEV_PORT,
+        host: true,
+        strictPort: true,
+        proxy: devProxy,
     },
 });

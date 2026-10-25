@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { explorerVideoUrl } from "rtd-apps-core/src/utils/explorer-kiosk";
-import type { RtdObjectResponse } from "rtd-typescript/jsonRpc";
+import type { RtdObjectResponse } from "~/types/explorerViewModels";
 
 import { useRecognizedPackages } from "./useRecognizedPackages";
 

@@ -5,10 +5,12 @@ import { useExplorerQuery } from "~/rpc/explorer-client";
 import { Heading, Text } from "@linku/ui";
 import { useMemo } from "react";
 
+import { useI18n } from "~/i18n";
 import { Card } from "~/ui/Card";
 import { RingChart, RingChartLegend } from "~/ui/RingChart";
 
 export function ValidatorStatus() {
+	const { t } = useI18n();
 	const { data } = useExplorerQuery("getLatestRtdSystemState");
 
 	const nextRefGasPrice = useMemo(
@@ -23,7 +25,7 @@ export function ValidatorStatus() {
 	const chartData = [
 		{
 			value: data.activeValidators.length,
-			label: "Active",
+			label: t("Active"),
 			gradient: {
 				deg: 315,
 				values: [
@@ -34,12 +36,12 @@ export function ValidatorStatus() {
 		},
 		{
 			value: Number(data.pendingActiveValidatorsSize ?? 0),
-			label: "New",
+			label: t("New"),
 			color: "#F2BD24",
 		},
 		{
 			value: data.atRiskValidators.length,
-			label: "At Risk",
+			label: t("At Risk"),
 			color: "#FF794B",
 		},
 	];
@@ -52,17 +54,17 @@ export function ValidatorStatus() {
 				</div>
 
 				<div className="self-start">
-					<RingChartLegend data={chartData} title={`Validators in Epoch ${nextEpoch}`} />
+					<RingChartLegend data={chartData} title={t("Validators in Epoch {epoch}", { epoch: nextEpoch })} />
 				</div>
 			</div>
 
 			<div className="mt-8 flex items-center justify-between rounded-lg border border-solid border-steel px-3 py-2">
 				<div>
 					<Text variant="pSubtitle/semibold" color="steel-darker">
-						Estimated Next Epoch
+						{t("Estimated Next Epoch")}
 					</Text>
 					<Text variant="pSubtitle/semibold" color="steel-darker">
-						Reference Gas Price
+						{t("Reference Gas Price")}
 					</Text>
 				</div>
 				<div className="text-right">

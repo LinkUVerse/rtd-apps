@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 
 import { Link } from "~/ui/Link";
+import { useI18n } from "~/i18n";
 
 const iconStyles = cva([], {
 	variants: {
@@ -57,10 +58,13 @@ export function CopyToClipboard({
 	copyText,
 	color,
 	size = "md",
-	onSuccessMessage = "Copied!",
+	onSuccessMessage,
 }: CopyToClipboardProps) {
 	const [copied, setCopied] = useState(false);
-	const copyToClipBoard = useCopyToClipboard(() => toast.success(onSuccessMessage));
+	const { t } = useI18n();
+	const copyToClipBoard = useCopyToClipboard(() =>
+		toast.success(onSuccessMessage ?? t("Copied!")),
+	);
 
 	const CopyIcon = COPY_ICON_SIZES[size!];
 	const CheckIcon = CHECK_ICON_SIZES[size!];
@@ -84,7 +88,7 @@ export function CopyToClipboard({
 
 	return (
 		<Link disabled={copied} onClick={handleCopy}>
-			<span className="sr-only">Copy</span>
+			<span className="sr-only">{t("Copy")}</span>
 			{copied ? (
 				<CheckIcon className={iconStyles({ size, color, success: true })} />
 			) : (

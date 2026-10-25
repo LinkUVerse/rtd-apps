@@ -12,6 +12,7 @@ import { CheckpointsTable } from "../checkpoints/CheckpointsTable";
 // import { useNetwork } from '~/context';
 // import { DropdownMenu, DropdownMenuCheckboxItem } from '~/ui/DropdownMenu';
 import { PlayPause } from "~/ui/PlayPause";
+import { useI18n } from "~/i18n";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/ui/Tabs";
 // import { Network } from '~/utils/api/DefaultRpcClient';
 
@@ -28,6 +29,7 @@ const REFETCH_INTERVAL_SECONDS = 10;
 const REFETCH_INTERVAL = REFETCH_INTERVAL_SECONDS * 1000;
 
 export function Activity({ initialTab, initialLimit, disablePagination }: Props) {
+	const { t } = useI18n();
 	const pollingTxnTableEnabled = false;;
 
 	const [paused, setPaused] = useState(false);
@@ -37,11 +39,14 @@ export function Activity({ initialTab, initialLimit, disablePagination }: Props)
 
 	const handlePauseChange = () => {
 		if (paused) {
-			toast.success(`Auto-refreshing on - every ${REFETCH_INTERVAL_SECONDS} seconds`, {
-				id: AUTO_REFRESH_ID,
-			});
+			toast.success(
+				t("Auto-refreshing on - every {seconds} seconds", {
+					seconds: REFETCH_INTERVAL_SECONDS,
+				}),
+				{ id: AUTO_REFRESH_ID },
+			);
 		} else {
-			toast.success("Auto-refresh paused", { id: AUTO_REFRESH_ID });
+			toast.success(t("Auto-refresh paused"), { id: AUTO_REFRESH_ID });
 		}
 
 		setPaused((paused) => !paused);
@@ -66,13 +71,13 @@ export function Activity({ initialTab, initialLimit, disablePagination }: Props)
 				<div className="relative">
 					<TabsList>
 						<TabsTrigger value="transactions">
-							<Heading variant="heading4/semibold">Transaction Blocks</Heading>
+							<Heading variant="heading4/semibold">{t("Transaction Blocks")}</Heading>
 						</TabsTrigger>
-						{/* <TabsTrigger value="epochs">
-							<Heading variant="heading4/semibold">Epochs</Heading>
-						</TabsTrigger> */}
+						<TabsTrigger value="epochs">
+							<Heading variant="heading4/semibold">{t("Epochs")}</Heading>
+						</TabsTrigger>
 						<TabsTrigger value="checkpoints">
-							<Heading variant="heading4/semibold">Checkpoints</Heading>
+							<Heading variant="heading4/semibold">{t("Checkpoints")}</Heading>
 						</TabsTrigger>
 					</TabsList>
 					<div className="absolute inset-y-0 -top-1 right-0 flex items-center gap-3 text-2xl">

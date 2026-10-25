@@ -1,10 +1,11 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import type { RtdValidatorSummary } from "rtd-typescript/jsonRpc";
+import type { RtdValidatorSummary } from "~/types/explorerViewModels";
 import { Heading } from "@linku/ui";
 
 import { DelegationAmount } from "./DelegationAmount";
+import { useI18n } from "~/i18n";
 import { Card } from "~/ui/Card";
 import { Stats } from "~/ui/Stats";
 
@@ -22,12 +23,7 @@ export function ValidatorStats({
 	apy,
 	tallyingScore,
 }: StatsCardProps) {
-	// TODO: add missing fields
-	// const numberOfDelegators = 0;
-	//  const networkStakingParticipation = 0;
-	//  const votedLastRound =  0;
-	//  const lastNarwhalRound = 0;
-
+	const { t } = useI18n();
 	const totalStake = Number(validatorData.stakingPoolRtdBalance);
 	const commission = Number(validatorData.commissionRate) / 100;
 	const rewardsPoolBalance = Number(validatorData.rewardsPool);
@@ -38,31 +34,42 @@ export function ValidatorStats({
 				<Card spacing="lg" height="full">
 					<div className="flex basis-full flex-col gap-8 md:basis-1/3">
 						<Heading as="div" variant="heading4/semibold" color="steel-darker">
-							RTD Staked on Validator
+							{t("RTD Staked on Validator")}
 						</Heading>
 						<div className="flex flex-col gap-8 lg:flex-row">
 							<Stats
-								label="Staking APY"
-								tooltip="This is the Annualized Percentage Yield of the a specific validator’s past operations. Note there is no guarantee this APY will be true in the future."
+								label={t("Staking APY")}
+								tooltip={t(
+									"This is the Annualized Percentage Yield of the a specific validator’s past operations. Note there is no guarantee this APY will be true in the future.",
+								)}
 								unavailable={apy === null}
 							>
 								{apy}%
 							</Stats>
 							<Stats
-								label="Total RTD Staked"
-								tooltip="The total RTD staked on the network by validators and delegators to validate the network and earn rewards."
+								label={t("Total RTD Staked")}
+								tooltip={t(
+									"The total RTD staked on the network by validators and delegators to validate the network and earn rewards.",
+								)}
 								unavailable={totalStake <= 0}
 							>
 								<DelegationAmount amount={totalStake} isStats />
 							</Stats>
 						</div>
 						<div className="flex flex-col gap-8 lg:flex-row">
-							<Stats label="Commission" tooltip="Fee charged by the validator for staking services">
+							<Stats
+								label={t("Commission")}
+								tooltip={t("Fee charged by the validator for staking services")}
+							>
 								<Heading as="h3" variant="heading2/semibold" color="steel-darker">
 									{commission}%
 								</Heading>
 							</Stats>
-							<Stats label="Delegators" tooltip="The number of active delegators" unavailable />
+							<Stats
+								label={t("Delegators")}
+								tooltip={t("The number of active delegators")}
+								unavailable
+							/>
 						</div>
 					</div>
 				</Card>
@@ -72,12 +79,12 @@ export function ValidatorStats({
 				<Card spacing="lg" height="full">
 					<div className="flex basis-full flex-col items-stretch gap-8 md:basis-80">
 						<Heading as="div" variant="heading4/semibold" color="steel-darker">
-							Validator Staking Rewards
+							{t("Validator Staking Rewards")}
 						</Heading>
 						<div className="flex flex-col gap-8">
 							<Stats
-								label="Last Epoch Rewards"
-								tooltip="The stake rewards collected during the last epoch."
+								label={t("Last Epoch Rewards")}
+								tooltip={t("The stake rewards collected during the last epoch.")}
 								unavailable={epochRewards === null}
 							>
 								<DelegationAmount
@@ -87,8 +94,8 @@ export function ValidatorStats({
 							</Stats>
 
 							<Stats
-								label="Reward Pool"
-								tooltip="Amount currently in this validator’s reward pool"
+								label={t("Reward Pool")}
+								tooltip={t("Amount currently in this validator’s reward pool")}
 								unavailable={Number(rewardsPoolBalance) <= 0}
 							>
 								<DelegationAmount amount={rewardsPoolBalance} isStats />
@@ -102,38 +109,42 @@ export function ValidatorStats({
 				<Card spacing="lg" height="full">
 					<div className="flex max-w-full flex-col gap-8">
 						<Heading as="div" variant="heading4/semibold" color="steel-darker">
-							Network Participation
+							{t("Network Participation")}
 						</Heading>
 						<div className="flex flex-col gap-8">
 							<div className="flex flex-col gap-8 lg:flex-row">
 								<Stats
-									label="Checkpoint Participation"
-									tooltip="The percentage of checkpoints certified thus far by this validator."
+									label={t("Checkpoint Participation")}
+									tooltip={t(
+										"The percentage of checkpoints certified thus far by this validator.",
+									)}
 									unavailable
 								/>
 
 								<Stats
-									label="Voted Last Round"
-									tooltip="Did this validator vote in the latest round."
+									label={t("Voted Last Round")}
+									tooltip={t("Did this validator vote in the latest round.")}
 									unavailable
 								/>
 							</div>
 							<div className="flex flex-col gap-8 lg:flex-row">
 								<Stats
-									label="Tallying Score"
-									tooltip="A score generated by validators to evaluate each other’s performance throughout Rtd’s regular operations."
+									label={t("Tallying Score")}
+									tooltip={t(
+										"A score generated by validators to evaluate each other’s performance throughout Rtd’s regular operations.",
+									)}
 									unavailable={!tallyingScore}
 								>
 									{tallyingScore}
 								</Stats>
 								<Stats
-									label="Last Narwhal Round"
-									tooltip="Latest Narwhal round for this epoch."
+									label={t("Last Narwhal Round")}
+									tooltip={t("Latest Narwhal round for this epoch.")}
 									unavailable
 								/>
 								<Stats
-									label="Proposed Next Epoch Gas Price"
-									tooltip="This validator's gas price quote for the next epoch."
+									label={t("Proposed Next Epoch Gas Price")}
+									tooltip={t("This validator's gas price quote for the next epoch.")}
 								>
 									<DelegationAmount amount={validatorData.nextEpochGasPrice} isStats inMIST />
 								</Stats>

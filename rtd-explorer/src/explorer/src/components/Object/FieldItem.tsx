@@ -1,7 +1,7 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import type { RtdMoveNormalizedType } from "rtd-typescript/jsonRpc";
+import type { RtdMoveNormalizedType } from "~/types/explorerViewModels";
 import { Text } from "@linku/ui";
 
 import { getFieldTypeValue } from "./utils";

@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
 import { genTableDataFromEpochsData } from "./utils";
+import { useI18n } from "~/i18n";
 import { Link } from "~/ui/Link";
 import { Pagination, useCursorPagination } from "~/ui/Pagination";
 import { PlaceholderTable } from "~/ui/PlaceholderTable";
@@ -28,6 +29,7 @@ export function EpochsActivityTable({
 }: Props) {
 	const [limit, setLimit] = useState(initialLimit);
 	const client = useExplorerClient();
+	const { t } = useI18n();
 
 	const { data: count } = useQuery({
 		queryKey: ["epochs", "current"],
@@ -42,24 +44,26 @@ export function EpochsActivityTable({
 	const { data, isFetching, pagination, isPending, isError } =
 		useCursorPagination(epochMetricsQuery);
 
-	const cardData = data ? genTableDataFromEpochsData(data) : undefined;
+	const cardData = data ? genTableDataFromEpochsData(data, t) : undefined;
 
 	return (
 		<div className="flex flex-col space-y-3 text-left xl:pr-10">
 			{isError && (
-				<div className="pt-2 font-sans font-semibold text-issue-dark">Failed to load Epochs</div>
+				<div className="pt-2 font-sans font-semibold text-issue-dark">
+					{t("Failed to load Epochs")}
+				</div>
 			)}
 			{isPending || isFetching || !cardData ? (
 				<PlaceholderTable
 					rowCount={limit}
 					rowHeight="16px"
 					colHeadings={[
-						"Epoch",
-						"Transaction Blocks",
-						"Stake Rewards",
-						"Checkpoint Set",
-						"Storage Net Inflow",
-						"Epoch End",
+						t("Epoch"),
+						t("Transaction Blocks"),
+						t("Stake Rewards"),
+						t("Checkpoint Set"),
+						t("Storage Net Inflow"),
+						t("Epoch End"),
 					]}
 					colWidths={["100px", "120px", "40px", "204px", "90px", "38px"]}
 				/>
@@ -74,14 +78,14 @@ export function EpochsActivityTable({
 					<Pagination {...pagination} />
 				) : (
 					<Link to="/recent?tab=epochs" after={<ArrowRight12 className="h-3 w-3 -rotate-45" />}>
-						View all
+						{t("View all")}
 					</Link>
 				)}
 
 				<div className="flex items-center space-x-3">
 					<Text variant="body/medium" color="steel-dark">
 						{count ? numberSuffix(Number(count)) : "-"}
-						{" Total"}
+						{` ${t("Total")}`}
 					</Text>
 					{!disablePagination && (
 						<select
@@ -92,9 +96,9 @@ export function EpochsActivityTable({
 								pagination.onFirst();
 							}}
 						>
-							<option value={20}>20 Per Page</option>
-							<option value={40}>40 Per Page</option>
-							<option value={60}>60 Per Page</option>
+							<option value={20}>{t("20 Per Page")}</option>
+							<option value={40}>{t("40 Per Page")}</option>
+							<option value={60}>{t("60 Per Page")}</option>
 						</select>
 					)}
 				</div>

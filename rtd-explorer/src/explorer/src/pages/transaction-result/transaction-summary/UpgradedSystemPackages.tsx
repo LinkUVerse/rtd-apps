@@ -3,17 +3,20 @@
 
 import { Text } from "@linku/ui";
 
+import { useI18n } from "~/i18n";
+
 import { ObjectLink } from "~/ui/InternalLink";
 import { CollapsibleCard } from "~/ui/collapsible/CollapsibleCard";
 import { CollapsibleSection } from "~/ui/collapsible/CollapsibleSection";
 
-import type { OwnedObjectRef } from "rtd-typescript/jsonRpc";
+import type { OwnedObjectRef } from "~/types/explorerViewModels";
 
 export function UpgradedSystemPackages({ data }: { data: OwnedObjectRef[] }) {
+	const { t } = useI18n();
 	if (!data?.length) return null;
 
 	return (
-		<CollapsibleCard title="Changes" size="sm" shadow>
+		<CollapsibleCard title={t("Changes")} size="sm" shadow>
 			<CollapsibleSection
 				title={
 					<Text variant="body/semibold" color="success-dark">
@@ -28,7 +31,7 @@ export function UpgradedSystemPackages({ data }: { data: OwnedObjectRef[] }) {
 							<div className="flex flex-wrap items-center justify-between" key={objectId}>
 								<div className="flex items-center gap-0.5">
 									<Text variant="pBody/medium" color="steel-dark">
-										Package
+										{t("Package")}
 									</Text>
 								</div>
 

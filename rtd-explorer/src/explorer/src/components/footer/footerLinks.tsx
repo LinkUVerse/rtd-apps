@@ -9,46 +9,10 @@ type FooterItem = {
 };
 export type FooterItems = FooterItem[];
 
-// function FooterIcon({ children }: { children: ReactNode }) {
-// 	return <div className="flex items-center text-steel-darker">{children}</div>;
-// }
-
 export const footerLinks = [
-	{
-		title: "About",
-		href: "https://polymedia.app",
-	},
-	{
-		title: "GitHub",
-		href: "https://github.com/juzybits/polymedia-explorer",
-	},
-	{
-		title: "Twitter",
-		href: "https://twitter.com/polymedia_app",
-	},
-	{
-		title: "Discord",
-		href: "https://discord.gg/DsxqP88EQp",
-	},
+	{ title: "Overview", href: "/" },
+	{ title: "Activity", href: "/recent" },
+	{ title: "Checkpoints", href: "/recent?tab=checkpoints" },
+	{ title: "Epochs", href: "/recent?tab=epochs" },
+	{ title: "Validators", href: "/validators" },
 ];
-
-/*
-export const socialLinks = [
-	{
-		children: (
-			<FooterIcon>
-				<SocialDiscord24 />
-			</FooterIcon>
-		),
-		href: 'https://discord.gg/DsxqP88EQp',
-	},
-	{
-		children: (
-			<FooterIcon>
-				<SocialTwitter24 />
-			</FooterIcon>
-		),
-		href: 'https://twitter.com/polymedia_app',
-	},
-];
-*/

@@ -55,7 +55,7 @@ export function ModuleFunctionsInteraction({
 
 	return (
 		<div className="flex flex-col gap-3">
-			{executableFunctions.map(({ name, details }) => (
+			{executableFunctions.map(({ name, details }: any) => (
 				<ModuleFunction
 					key={name}
 					functionName={name}

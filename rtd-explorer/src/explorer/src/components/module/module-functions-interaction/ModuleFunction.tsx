@@ -7,7 +7,7 @@ import { useExplorerSignTransaction } from "~/rpc/explorer-wallet";
 import { useCurrentAccount } from "rtd-dapp-kit-react";
 import { ConnectButton } from "rtd-dapp-kit-react/ui";
 import { ArrowRight12 } from "rtd-apps-icons";
-import type { RtdMoveNormalizedFunction } from "rtd-typescript/jsonRpc";
+import type { RtdMoveNormalizedFunction } from "~/types/explorerViewModels";
 import { Transaction } from "rtd-typescript/transactions";
 import { Button } from "@linku/ui";
 import { useMutation } from "@tanstack/react-query";

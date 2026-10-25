@@ -10,6 +10,7 @@ import {
 import { RTD_TYPE_ARG } from "rtd-typescript/utils";
 import { Heading, Text } from "@linku/ui";
 
+import { useI18n } from "~/i18n";
 import { CopyToClipboard } from "~/ui/CopyToClipboard";
 import { DescriptionItem } from "~/ui/DescriptionList";
 import { Divider } from "~/ui/Divider";
@@ -95,6 +96,7 @@ type GasBreakdownProps = {
 };
 
 export function GasBreakdown({ summary }: GasBreakdownProps) {
+	const { t } = useI18n();
 	const gasData = summary?.gas;
 	const { data: rtdnsDomainName } = useResolveRtdNSName(gasData?.owner);
 
@@ -116,7 +118,7 @@ export function GasBreakdown({ summary }: GasBreakdownProps) {
 			title={
 				<div className="flex flex-col gap-2">
 					<Heading variant="heading4/semibold" color="steel-darker">
-						Gas & Storage Fee
+						{t("Gas & Storage Fee")}
 					</Heading>
 					<TotalGasAmount amount={totalGas} />
 				</div>
@@ -126,7 +128,7 @@ export function GasBreakdown({ summary }: GasBreakdownProps) {
 				{isSponsored && owner && (
 					<div className="mb-4 flex items-center gap-2 rounded-xl bg-rtd/10 px-3 py-2">
 						<Text variant="pBody/medium" color="steel-darker">
-							Paid by
+							{t("Paid by")}
 						</Text>
 						<AddressLink label={rtdnsDomainName || undefined} address={owner} />
 					</div>
@@ -138,7 +140,7 @@ export function GasBreakdown({ summary }: GasBreakdownProps) {
 					<div className="flex flex-col gap-2 md:flex-row md:gap-10">
 						<div className="w-full flex-shrink-0 md:w-40">
 							<Text variant="pBody/semibold" color="steel-darker">
-								Gas Payment
+								{t("Gas Payment")}
 							</Text>
 						</div>
 						{gasPayment?.length ? (
@@ -146,7 +148,7 @@ export function GasBreakdown({ summary }: GasBreakdownProps) {
 						) : null}
 					</div>
 
-					<DescriptionItem align="start" title={<Text variant="pBody/semibold">Gas Budget</Text>}>
+					<DescriptionItem align="start" title={<Text variant="pBody/semibold">{t("Gas Budget")}</Text>}>
 						{gasBudget ? <GasAmount amount={BigInt(gasBudget)} /> : null}
 					</DescriptionItem>
 				</div>
@@ -156,18 +158,18 @@ export function GasBreakdown({ summary }: GasBreakdownProps) {
 
 					<DescriptionItem
 						align="start"
-						title={<Text variant="pBody/semibold">Computation Fee</Text>}
+						title={<Text variant="pBody/semibold">{t("Computation Fee")}</Text>}
 					>
 						<GasAmount amount={Number(gasUsed?.computationCost)} />
 					</DescriptionItem>
 
-					<DescriptionItem align="start" title={<Text variant="pBody/semibold">Storage Fee</Text>}>
+					<DescriptionItem align="start" title={<Text variant="pBody/semibold">{t("Storage Fee")}</Text>}>
 						<GasAmount amount={Number(gasUsed?.storageCost)} />
 					</DescriptionItem>
 
 					<DescriptionItem
 						align="start"
-						title={<Text variant="pBody/semibold">Storage Rebate</Text>}
+						title={<Text variant="pBody/semibold">{t("Storage Rebate")}</Text>}
 					>
 						<div className="-ml-1.5 min-w-0 flex-1 leading-none">
 							<GasAmount amount={-Number(gasUsed?.storageRebate)} />
@@ -178,7 +180,7 @@ export function GasBreakdown({ summary }: GasBreakdownProps) {
 				<div className="mt-6 flex flex-col gap-6">
 					<Divider />
 
-					<DescriptionItem align="start" title={<Text variant="pBody/semibold">Gas Price</Text>}>
+					<DescriptionItem align="start" title={<Text variant="pBody/semibold">{t("Gas Price")}</Text>}>
 						<GasAmount amount={BigInt(gasPrice)} />
 					</DescriptionItem>
 				</div>

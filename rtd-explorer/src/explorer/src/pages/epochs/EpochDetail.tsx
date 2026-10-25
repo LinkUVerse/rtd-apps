@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { useFormatCoin } from "rtd-apps-core";
-import { useExplorerQuery, useExplorerClientContext } from "~/rpc/explorer-client";
+import { useExplorerQuery, useExplorerClientContext, useExplorerClient } from "~/rpc/explorer-client";
 import { RTD_TYPE_ARG } from "rtd-typescript/utils";
 import { LoadingIndicator } from "@linku/ui";
 import { useQuery } from "@tanstack/react-query";
@@ -15,7 +15,7 @@ import { ValidatorStatus } from "./stats/ValidatorStatus";
 import { validatorsTableData } from "../validators/Validators";
 import { PageLayout } from "~/components/Layout/PageLayout";
 import { CheckpointsTable } from "~/components/checkpoints/CheckpointsTable";
-import { useEnhancedRpcClient } from "~/hooks/useEnhancedRpc";
+import { useI18n } from "~/i18n";
 import { Banner } from "~/ui/Banner";
 import { Stats, type StatsProps } from "~/ui/Stats";
 import { TableCard } from "~/ui/TableCard";
@@ -39,21 +39,16 @@ function RtdStats({
 
 export default function EpochDetail() {
 	const { id } = useParams();
-	const enhancedRpc = useEnhancedRpcClient();
+	const { t } = useI18n();
+	const client = useExplorerClient();
 	const {network} = useExplorerClientContext();
 	const { data: systemState } = useExplorerQuery("getLatestRtdSystemState");
 	const { data, isPending, isError } = useQuery({
 		queryKey: ["epoch", network, id],
-		queryFn: async ({signal}) =>
-			enhancedRpc.getEpochs({
-				// todo: endpoint returns no data for epoch 0
-				cursor: id === "0" ? undefined : (BigInt(id!) - 1n).toString(),
-				limit: 1,
-				signal,
-			}),
+		queryFn: async ({signal}) => client.getEpoch({ id: id!, signal }),
 	});
 
-	const [epochData] = data?.data ?? [];
+	const epochData = data;
 	const isCurrentEpoch = useMemo(
 		() => systemState?.epoch === epochData?.epoch,
 		[systemState, epochData],
@@ -68,8 +63,9 @@ export default function EpochDetail() {
 			[],
 			[],
 			null,
+			t,
 		);
-	}, [epochData]);
+	}, [epochData, t]);
 
 	if (isPending) return <PageLayout content={<LoadingIndicator />} />;
 
@@ -78,7 +74,7 @@ export default function EpochDetail() {
 			<PageLayout
 				content={
 					<Banner variant="error" fullWidth>
-						{`There was an issue retrieving data for epoch ${id}.`}
+						{t("There was an issue retrieving data for epoch {id}.", { id: id ?? "" })}
 					</Banner>
 				}
 			/>
@@ -105,28 +101,28 @@ export default function EpochDetail() {
 							/>
 						</div>
 
-						<EpochStats label="Rewards">
+						<EpochStats label={t("Rewards")}>
 							<RtdStats
-								label="Total Stake"
+								label={t("Total Stake")}
 								tooltip=""
 								amount={epochData.endOfEpochInfo?.totalStake}
 							/>
 							<RtdStats
-								label="Stake Subsidies"
+								label={t("Stake Subsidies")}
 								amount={epochData.endOfEpochInfo?.stakeSubsidyAmount}
 							/>
 							<RtdStats
-								label="Stake Rewards"
+								label={t("Stake Rewards")}
 								amount={epochData.endOfEpochInfo?.totalStakeRewardsDistributed}
 							/>
-							<RtdStats label="Gas Fees" amount={epochData.endOfEpochInfo?.totalGasFees} />
+							<RtdStats label={t("Gas Fees")} amount={epochData.endOfEpochInfo?.totalGasFees} />
 						</EpochStats>
 
-						<EpochStats label="Storage Fund Balance">
-							<RtdStats label="Fund Size" amount={epochData.endOfEpochInfo?.storageFundBalance} />
-							<RtdStats label="Net Inflow" amount={netInflow} />
-							<RtdStats label="Fund Inflow" amount={fundInflow} />
-							<RtdStats label="Fund Outflow" amount={fundOutflow} />
+						<EpochStats label={t("Storage Fund Balance")}>
+							<RtdStats label={t("Fund Size")} amount={epochData.endOfEpochInfo?.storageFundBalance} />
+							<RtdStats label={t("Net Inflow")} amount={netInflow} />
+							<RtdStats label={t("Fund Inflow")} amount={fundInflow} />
+							<RtdStats label={t("Fund Outflow")} amount={fundOutflow} />
 						</EpochStats>
 
 						{isCurrentEpoch ? <ValidatorStatus /> : null}
@@ -134,8 +130,8 @@ export default function EpochDetail() {
 
 					<Tabs size="lg" defaultValue="checkpoints">
 						<TabsList>
-							<TabsTrigger value="checkpoints">Checkpoints</TabsTrigger>
-							<TabsTrigger value="validators">Participating Validators</TabsTrigger>
+							<TabsTrigger value="checkpoints">{t("Checkpoints")}</TabsTrigger>
+							<TabsTrigger value="validators">{t("Participating Validators")}</TabsTrigger>
 						</TabsList>
 						<TabsContent value="checkpoints">
 							<CheckpointsTable

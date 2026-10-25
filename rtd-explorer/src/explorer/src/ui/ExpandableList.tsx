@@ -6,6 +6,7 @@ import { Text } from "@linku/ui";
 import clsx from "clsx";
 import { type ReactNode, useMemo, useState, createContext, useContext } from "react";
 
+import { useI18n } from "~/i18n";
 import { Link } from "./Link";
 
 type ExpandableListContextType = {
@@ -42,13 +43,16 @@ export function ExpandableListControl() {
 		throw new Error("ExpandableListControl must be used within an ExpandableList");
 	}
 
+	const { t } = useI18n();
 	const { handleShowAllClick, showAll, items, itemsLabel, defaultItemsToShow } = listContext;
 
 	let showAllText = "";
 	if (showAll) {
-		showAllText = "Show Less";
+		showAllText = t("Show Less");
 	} else {
-		showAllText = itemsLabel ? `Show All ${items.length} ${itemsLabel}` : "Show All";
+		showAllText = itemsLabel
+			? t("Show All {count} {label}", { count: items.length, label: itemsLabel })
+			: t("Show All");
 	}
 
 	if (items.length <= defaultItemsToShow) {

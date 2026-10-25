@@ -4,7 +4,7 @@
 import { explorerDisplayStrings } from "rtd-apps-core/src/utils/explorer-kiosk";
 import { parseObjectType } from "../../utils/objectUtils";
 
-import type { RtdObjectResponse, ObjectOwner, DisplayFieldsResponse } from "rtd-typescript/jsonRpc";
+import type { RtdObjectResponse, ObjectOwner, DisplayFieldsResponse } from "~/types/explorerViewModels";
 
 export type DataType = {
 	id: string;

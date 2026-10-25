@@ -12,6 +12,7 @@ import { ListView } from "~/components/OwnedObjects/ListView";
 import { SmallThumbnailsView } from "~/components/OwnedObjects/SmallThumbnailsView";
 import { ThumbnailsView } from "~/components/OwnedObjects/ThumbnailsView";
 import { OBJECT_VIEW_MODES } from "~/components/OwnedObjects/utils";
+import { useI18n } from "~/i18n";
 import { Pagination, useCursorPagination } from "~/ui/Pagination";
 
 const PAGE_SIZES = [10, 20, 30, 40, 50];
@@ -59,6 +60,7 @@ function getShowPagination(
 }
 
 export function OwnedObjects({ id }: { id: string }) {
+	const { t } = useI18n();
 	const [limit, setLimit] = useState(50);
 	const [filter, setFilter] = useLocalStorage<string | undefined>(
 		OWNED_OBJECTS_LOCAL_STORAGE_FILTER,
@@ -133,7 +135,11 @@ export function OwnedObjects({ id }: { id: string }) {
 	const noAssets = !hasAssets && !isPending;
 
 	if (filter === FILTER_VALUES.KIOSKS ? kioskDataError : isError) {
-		return <div className="pt-2 font-sans font-semibold text-issue-dark">Failed to load NFTs</div>;
+		return (
+			<div className="pt-2 font-sans font-semibold text-issue-dark">
+				{t("Failed to load NFTs")}
+			</div>
+		);
 	}
 
 	return (
@@ -142,7 +148,7 @@ export function OwnedObjects({ id }: { id: string }) {
 				<div className="relative flex h-full w-full flex-col gap-4">
 					<div className="flex w-full flex-col items-start gap-3 border-b border-gray-45 max-sm:pb-3 sm:h-14 sm:min-h-14 sm:flex-row sm:items-center">
 						<Heading color="steel-darker" variant="heading4/semibold">
-							Assets
+							{t("Assets")}
 						</Heading>
 
 						{hasAssets && (
@@ -184,7 +190,7 @@ export function OwnedObjects({ id }: { id: string }) {
 										<RadioGroupItem
 											key={filter.value}
 											value={filter.value}
-											label={filter.label}
+											label={t(filter.label)}
 											disabled={
 												(filter.value === FILTER_VALUES.KIOSKS && !kioskData?.list?.length) ||
 												isPending
@@ -199,7 +205,7 @@ export function OwnedObjects({ id }: { id: string }) {
 					{noAssets && (
 						<div className="flex h-20 items-center justify-center md:h-coinsAndAssetsContainer">
 							<Text variant="body/medium" color="steel-dark">
-								No Assets owned
+								{t("No Assets owned")}
 							</Text>
 						</div>
 					)}
@@ -223,7 +229,7 @@ export function OwnedObjects({ id }: { id: string }) {
 							<div className="ml-auto flex items-center">
 								{!isPending && (
 									<Text variant="body/medium" color="steel">
-										Showing {start} - {end}
+										{t("Showing {start} - {end}", { start, end })}
 									</Text>
 								)}
 							</div>
@@ -238,7 +244,7 @@ export function OwnedObjects({ id }: { id: string }) {
 								>
 									{PAGE_SIZES.map((size) => (
 										<option key={size} value={size}>
-											{size} Per Page
+											{`${size} ${t("Per Page")}`}
 										</option>
 									))}
 								</select>
