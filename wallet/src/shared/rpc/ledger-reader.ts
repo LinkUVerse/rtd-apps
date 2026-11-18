@@ -1,6 +1,7 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
+import { fromBase64, toBase64 } from "rtd-typescript/utils";
 import { boundedGrpcFetch } from "./grpc-response-budget";
 import { queuedServiceInfo } from "./service-info-queue";
 
@@ -37,10 +38,32 @@ interface LedgerRead {
   readonly raw: GrpcTypes.ExecutedTransaction;
   readonly source: Role;
 }
+export interface WalletLedgerHistoryPage {
+  readonly bindingKey: string;
+  readonly readSessionKey: string;
+  readonly address: string;
+  readonly source: "archive";
+  readonly checkpointHeight: number;
+  readonly lowestAvailableCheckpoint: number | null;
+  readonly transactions: readonly GrpcTypes.ExecutedTransaction[];
+  readonly hasNextPage: boolean;
+  readonly nextCursor: string | null;
+}
+type ReadClient = Pick<RtdGrpcClient, "ledgerService">;
+const HISTORY_READ_MASK = [
+  ...RECEIPT_READ_MASK,
+  "events",
+  "timestamp",
+  "transaction_index",
+];
 export class WalletLedgerReadError extends Error {
   constructor(
     readonly role: Role,
-    readonly reason: "unconfigured" | "coverage" | "incompatible" | "unsupported",
+    readonly reason:
+      | "unconfigured"
+      | "coverage"
+      | "incompatible"
+      | "unsupported",
   ) {
     super(
       reason === "coverage"
@@ -74,20 +97,31 @@ export class WalletLedgerReader {
     )
       throw new RangeError("交易查询预算无效");
   }
-  async #role(
+  #client(
     role: Role,
-    digest: string,
-    paths: string[],
+    methods: readonly string[],
     signal: AbortSignal,
-  ): Promise<{ value: LedgerRead | null; pruned: boolean }> {
+  ): { endpoint: string; client: ReadClient } {
     const endpoint =
       role === "fullnode"
         ? this.session.profile.endpoints.fullnodeGrpcWeb
         : this.session.profile.endpoints.archiveGrpcWeb;
     if (!endpoint) throw new WalletLedgerReadError(role, "unconfigured");
     const fetch = boundedGrpcFetch(this.options.fetch ?? globalThis.fetch);
-    const approved = new Set(["GetServiceInfo", "GetTransaction"]);
-    const client = new RtdGrpcClient({
+    return {
+      endpoint,
+      client: this.createClient(role, endpoint, methods, fetch, signal),
+    };
+  }
+  protected createClient(
+    role: Role,
+    endpoint: string,
+    methods: readonly string[],
+    fetch: typeof globalThis.fetch,
+    signal: AbortSignal,
+  ): ReadClient {
+    const approved = new Set(methods);
+    return new RtdGrpcClient({
       network: this.session.profile.sdkNetwork,
       baseUrl: endpoint,
       format: "binary",
@@ -116,41 +150,57 @@ export class WalletLedgerReader {
         return response;
       },
     });
-    const info = async (): Promise<Range> => {
-      const response = await queuedServiceInfo(
-        this.session,
-        endpoint,
-        this.options.fetch ?? globalThis.fetch,
-        this.#timeout,
-        signal,
-      );
-      let chain: string, height: bigint, lower: bigint | null;
-      try {
-        chain = assertGenesisDigest(response.chainId);
-        height = u64(response.checkpointHeight);
-        lower =
-          response.lowestAvailableCheckpoint === undefined
-            ? null
-            : u64(response.lowestAvailableCheckpoint);
-        if (lower !== null && lower > height) throw new Error("watermark");
-        if (
-          response.lowestAvailableCheckpointObjects !== undefined &&
-          u64(response.lowestAvailableCheckpointObjects) > height
-        )
-          throw new Error("watermark");
-      } catch {
-        throw new NetworkIdentityError(role, "incompatible");
-      }
-      if (chain !== this.session.profile.expectedGenesisDigest)
-        throw new NetworkIdentityError(role, "chain-mismatch");
-      // An archive identity without a retention bound is not a coverage claim.
-      if (role === "archive" && lower === null)
-        throw new WalletLedgerReadError(role, "coverage");
-      signal.throwIfAborted();
-      this.session.assertActive();
-      return { height, lower };
-    };
-    const before = await info();
+  }
+  async #range(
+    role: Role,
+    endpoint: string,
+    signal: AbortSignal,
+  ): Promise<Range> {
+    const response = await queuedServiceInfo(
+      this.session,
+      endpoint,
+      this.options.fetch ?? globalThis.fetch,
+      this.#timeout,
+      signal,
+    );
+    let chain: string, height: bigint, lower: bigint | null;
+    try {
+      chain = assertGenesisDigest(response.chainId);
+      height = u64(response.checkpointHeight);
+      lower =
+        response.lowestAvailableCheckpoint === undefined
+          ? null
+          : u64(response.lowestAvailableCheckpoint);
+      if (lower !== null && lower > height) throw new Error("watermark");
+      if (
+        response.lowestAvailableCheckpointObjects !== undefined &&
+        u64(response.lowestAvailableCheckpointObjects) > height
+      )
+        throw new Error("watermark");
+    } catch {
+      throw new NetworkIdentityError(role, "incompatible");
+    }
+    if (chain !== this.session.profile.expectedGenesisDigest)
+      throw new NetworkIdentityError(role, "chain-mismatch");
+    // An archive identity without a retention bound is not a coverage claim.
+    if (role === "archive" && lower === null)
+      throw new WalletLedgerReadError(role, "coverage");
+    signal.throwIfAborted();
+    this.session.assertActive();
+    return { height, lower };
+  }
+  async #role(
+    role: Role,
+    digest: string,
+    paths: string[],
+    signal: AbortSignal,
+  ): Promise<{ value: LedgerRead | null; pruned: boolean }> {
+    const { endpoint, client } = this.#client(
+      role,
+      ["GetServiceInfo", "GetTransaction"],
+      signal,
+    );
+    const before = await this.#range(role, endpoint, signal);
     let raw: GrpcTypes.ExecutedTransaction | undefined;
     let notFound = false;
     try {
@@ -171,7 +221,7 @@ export class WalletLedgerReader {
     }
     if (!notFound && !raw)
       throw new WalletLedgerReadError(role, "incompatible");
-    const after = await info();
+    const after = await this.#range(role, endpoint, signal);
     if (after.height < before.height)
       throw new WalletLedgerReadError(role, "coverage");
     if (raw) {
@@ -246,6 +296,163 @@ export class WalletLedgerReader {
       ),
     );
   }
+  /** Historical Ledger page. Only the archive reader can serve account history. */
+  async historyPage(
+    address: string,
+    cursor: string | null = null,
+    options: { limit?: number; signal?: AbortSignal } = {},
+  ): Promise<WalletLedgerHistoryPage> {
+    const owner = walletAddress(address);
+    const limit = options.limit ?? 20;
+    if (!Number.isInteger(limit) || limit < 1 || limit > 50)
+      throw new RangeError("历史查询分页预算无效");
+    let before: Uint8Array | undefined;
+    if (cursor !== null) {
+      try {
+        if (cursor.length === 0 || cursor.length > 2048) throw new Error();
+        before = fromBase64(cursor);
+        if (before.length === 0 || toBase64(before) !== cursor)
+          throw new Error();
+      } catch {
+        throw new WalletLedgerReadError("archive", "incompatible");
+      }
+    }
+    return this.session.read(async (sessionSignal) => {
+      const signal = AbortSignal.any([
+        sessionSignal,
+        AbortSignal.timeout(this.#timeout),
+        ...(options.signal ? [options.signal] : []),
+      ]);
+      signal.throwIfAborted();
+      const { endpoint, client } = this.#client(
+        "archive",
+        ["GetServiceInfo", "ListTransactions"],
+        signal,
+      );
+      const beforeRange = await this.#range("archive", endpoint, signal);
+      const call = client.ledgerService.listTransactions(
+        {
+          readMask: { paths: HISTORY_READ_MASK },
+          filter: {
+            terms: [
+              {
+                literals: [
+                  {
+                    negated: false,
+                    predicate: {
+                      oneofKind: "affectedAddress",
+                      affectedAddress: { address: owner },
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+          options: {
+            // Lookahead distinguishes a full page from a terminal page.
+            limit: limit + 1,
+            ordering: GrpcTypes.Ordering.DESCENDING,
+            ...(before ? { before } : {}),
+          },
+        },
+        { abort: signal, timeout: this.#timeout },
+      );
+      const rows: GrpcTypes.ExecutedTransaction[] = [];
+      let frontier: Uint8Array | undefined;
+      let itemCursor: Uint8Array | undefined;
+      let sawLookahead = false;
+      let end: GrpcTypes.QueryEnd | undefined;
+      for await (const frame of call.responses) {
+        signal.throwIfAborted();
+        this.session.assertActive();
+        if (frame.watermark?.cursor) {
+          if (frame.watermark.cursor.length === 0)
+            throw new WalletLedgerReadError("archive", "incompatible");
+          frontier = frame.watermark.cursor;
+        }
+        if (frame.transaction) {
+          if (rows.length >= limit) {
+            sawLookahead = true;
+          } else {
+            if (!frontier)
+              throw new WalletLedgerReadError("archive", "incompatible");
+            rows.push(frame.transaction);
+            itemCursor = frontier;
+          }
+        }
+        if (frame.end) end = frame.end;
+      }
+      const hasNextPage =
+        sawLookahead ||
+        end?.reason === GrpcTypes.QueryEndReason.ITEM_LIMIT ||
+        end?.reason === GrpcTypes.QueryEndReason.SCAN_LIMIT;
+      const afterRange = await this.#range("archive", endpoint, signal);
+      if (afterRange.height < beforeRange.height)
+        throw new WalletLedgerReadError("archive", "coverage");
+      const seen = new Set<string>();
+      for (const raw of rows) {
+        let digest: string;
+        try {
+          digest = assertGenesisDigest(raw.digest);
+        } catch {
+          throw new WalletLedgerReadError("archive", "incompatible");
+        }
+        if (seen.has(digest))
+          throw new WalletLedgerReadError("archive", "incompatible");
+        seen.add(digest);
+        if (raw.checkpoint === undefined)
+          throw new WalletLedgerReadError("archive", "incompatible");
+        let checkpoint: bigint;
+        try {
+          checkpoint = u64(raw.checkpoint);
+        } catch {
+          throw new WalletLedgerReadError("archive", "incompatible");
+        }
+        if (
+          checkpoint > afterRange.height ||
+          (afterRange.lower !== null && checkpoint < afterRange.lower)
+        )
+          throw new WalletLedgerReadError("archive", "coverage");
+        try {
+          await validateTransactionReceipt(
+            raw,
+            digest,
+            undefined,
+            undefined,
+            "archive",
+          );
+        } catch {
+          throw new WalletLedgerReadError("archive", "incompatible");
+        }
+      }
+      const next = hasNextPage
+        ? sawLookahead
+          ? itemCursor
+          : (frontier ?? itemCursor)
+        : undefined;
+      if (hasNextPage && !next)
+        throw new WalletLedgerReadError("archive", "coverage");
+      const safe = (value: bigint): number => {
+        if (value > BigInt(Number.MAX_SAFE_INTEGER))
+          throw new WalletLedgerReadError("archive", "incompatible");
+        return Number(value);
+      };
+      signal.throwIfAborted();
+      this.session.assertActive();
+      return Object.freeze({
+        bindingKey: this.session.bindingKey,
+        readSessionKey: this.session.cacheKey,
+        address: owner,
+        source: "archive" as const,
+        checkpointHeight: safe(afterRange.height),
+        lowestAvailableCheckpoint:
+          afterRange.lower === null ? null : safe(afterRange.lower),
+        transactions: Object.freeze(rows),
+        hasNextPage,
+        nextCursor: next ? toBase64(next) : null,
+      });
+    });
+  }
   async details(
     digest: string,
     signal?: AbortSignal,
@@ -282,7 +489,9 @@ export class WalletLedgerReader {
         // represent them. That is a property of the transaction, not a failed
         // read: report it distinctly so the page can say so instead of
         // offering a refresh that can never succeed.
-        if (raw.transaction?.kind?.data?.oneofKind !== "programmableTransaction")
+        if (
+          raw.transaction?.kind?.data?.oneofKind !== "programmableTransaction"
+        )
           throw new WalletLedgerReadError(found.source, "unsupported");
         const result = parseGrpcTransactionResponse(raw, {
           include: {
