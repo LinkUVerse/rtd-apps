@@ -11,11 +11,16 @@ import { useUnlockedGuard } from "_src/ui/app/hooks/useUnlockedGuard";
 import { useI18n } from "_src/ui/app/i18n";
 import { useStoredTransactionReceipt } from "_src/ui/app/hooks/useStoredTransactionReceipt";
 import { useReceiptIndexing } from "_src/ui/app/hooks/useReceiptIndexing";
+import { useLocalActivityEntry } from "_src/ui/app/hooks/usePendingActivity";
+import { ActivityStatusTag } from "_components/transactions-card/ActivityStatusTag";
+import { GAS_SYMBOL } from "_src/ui/app/redux/slices/rtd-objects/Coin";
+import type { LocalActivitySummary } from "_src/shared/rpc/activity-pending";
 import { selectReceiptFacts } from "_src/shared/rpc/stored-receipt";
 import { WalletLedgerReadError } from "_src/shared/rpc/ledger-reader";
 import { useWalletTransactionDetails } from "rtd-apps-core/src/rpc/receipt-hooks";
 import { useWalletRpc } from "rtd-apps-core/src/rpc/WalletRpcContext";
 import { Check32 } from "rtd-apps-icons";
+import { formatAddress } from "rtd-typescript/utils";
 import { useCallback, useMemo, useState } from "react";
 import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 
@@ -43,6 +48,7 @@ function ReceiptPage() {
   const stored = useStoredTransactionReceipt(transactionId);
   const facts = selectReceiptFacts(details, stored.data);
   const data = facts.transaction;
+  const local = useLocalActivityEntry(activeAddress, transactionId);
   const indexing = useReceiptIndexing(
     transactionId,
     facts.conflict ? null : (facts.receipt?.checkpoint ?? data?.checkpoint),
@@ -123,11 +129,16 @@ function ReceiptPage() {
             )}
           {facts.receipt && !data && (
             <ReceiptNotice tone={facts.receipt.success ? "success" : "issue"}>
-              <p>
-                {facts.receipt.success
-                  ? t("receipt.confirmedSuccess")
-                  : t("receipt.confirmedFailure")}
-              </p>
+              <div className="flex items-start justify-between gap-3">
+                <p>
+                  {facts.receipt.success
+                    ? t("receipt.confirmedSuccess")
+                    : t("receipt.confirmedFailure")}
+                </p>
+                <ActivityStatusTag
+                  status={facts.receipt.success ? "complete" : "confirming"}
+                />
+              </div>
               <p className={styles.identifier}>{facts.receipt.digest}</p>
               {facts.receipt.checkpoint !== null && (
                 <p>
@@ -136,6 +147,7 @@ function ReceiptPage() {
                   })}
                 </p>
               )}
+              {local?.summary ? <LocalSummary summary={local.summary} /> : null}
               <p>{t("receipt.detailsPending")}</p>
             </ReceiptNotice>
           )}
@@ -163,6 +175,63 @@ function ReceiptPage() {
         </div>
       </Overlay>
     </Loading>
+  );
+}
+
+function LocalSummaryRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-start justify-between gap-3 text-xs leading-5">
+      <span className="shrink-0 text-steel-dark">{label}</span>
+      <span className="min-w-0 break-all text-right font-medium tabular-nums text-gray-90">
+        {value}
+      </span>
+    </div>
+  );
+}
+
+function LocalSummary({ summary }: { summary: LocalActivitySummary }) {
+  const { t } = useI18n();
+  const recipient = summary.recipientName
+    ? `${summary.recipientName} · ${formatAddress(summary.recipient)}`
+    : formatAddress(summary.recipient);
+  return (
+    <div
+      data-testid="receipt-local-summary"
+      className="mt-3 rounded-xl border border-solid border-gray-45 bg-white/70 px-3 py-2.5"
+    >
+      <p className="m-0 text-xs font-semibold text-gray-90">
+        {t("receipt.localSummaryTitle")}
+      </p>
+      <p className="m-0 mt-0.5 text-[11px] leading-4 text-steel-dark">
+        {t("receipt.localSummaryHint")}
+      </p>
+      <div className="mt-2 flex flex-col gap-1.5">
+        <LocalSummaryRow
+          label={t("receipt.localRecipient")}
+          value={recipient}
+        />
+        {summary.amount ? (
+          <LocalSummaryRow
+            label={t("receipt.localAmount")}
+            value={`${summary.amount}${
+              summary.coinSymbol ? ` ${summary.coinSymbol}` : ""
+            }`}
+          />
+        ) : null}
+        {summary.gasBudget ? (
+          <LocalSummaryRow
+            label={t("receipt.localGas")}
+            value={`${summary.gasBudget} ${GAS_SYMBOL}`}
+          />
+        ) : null}
+        {summary.objectId ? (
+          <LocalSummaryRow
+            label={t("receipt.localObject")}
+            value={formatAddress(summary.objectId)}
+          />
+        ) : null}
+      </div>
+    </div>
   );
 }
 

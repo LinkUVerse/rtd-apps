@@ -4,14 +4,16 @@ import {act,createElement as h,type ReactNode} from 'react';
 import {createRoot} from 'react-dom/client';
 import {MemoryRouter} from 'react-router-dom';
 import {beforeEach,expect,it,vi} from 'vitest';
-import type {WalletAccountHistory} from 'rtd-apps-core/src/rpc/WalletRpcContext';
+import type {WalletAccountHistory,WalletHistoryTransaction} from 'rtd-apps-core/src/rpc/WalletRpcContext';
 import type {WalletReadAdmissionView} from 'rtd-apps-core/src/rpc/read-admission';
 import {historyFixture} from '../../../../../../tests/unit/rpc/history-fixtures';
 import {sender} from '../../../../../../tests/unit/rpc/execution-fixtures';
 import {CompletedTransactions} from './CompletedTransactions';
 
-const m=vi.hoisted(()=>({history:undefined as WalletAccountHistory|undefined,cached:undefined as any,error:null as Error|null,address:'',state:'configured',isPending:false,readAdmission:undefined as WalletReadAdmissionView|undefined}));
-vi.mock('_hooks',()=>({useQueryTransactionsByAddress:()=>({data:m.history,cached:m.cached,error:m.error,isPending:m.isPending,isFetching:m.isPending})}));
+const m=vi.hoisted(()=>({history:undefined as WalletAccountHistory|undefined,cached:undefined as any,error:null as Error|null,address:'',state:'configured',isPending:false,isFetching:false,readAdmission:undefined as WalletReadAdmissionView|undefined}));
+const p=vi.hoisted(()=>({rows:[] as WalletHistoryTransaction[],pending:new Set<string>(),confirmed:new Set<string>()}));
+vi.mock('_hooks',()=>({useQueryTransactionsByAddress:()=>({data:m.history,cached:m.cached,error:m.error,isPending:m.isPending,isFetching:m.isFetching})}));
+vi.mock('_src/ui/app/hooks/usePendingActivity',()=>({usePendingActivity:()=>({pendingRows:p.rows,pendingDigests:p.pending,confirmedDigests:p.confirmed})}));
 vi.mock('_src/ui/app/hooks/useActiveAddress',()=>({useActiveAddress:()=>m.address}));
 vi.mock('rtd-apps-core/src/rpc/WalletRpcContext',()=>({useWalletRpc:()=>({state:m.state,message:'unconfigured',readAdmission:m.readAdmission})}));
 vi.mock('_app/i18n',()=>({useI18n:()=>({t:(key:string,vars?:Record<string,string>)=>key+(vars?JSON.stringify(vars):'')})}));
@@ -21,7 +23,8 @@ vi.mock('_components/error-boundary',()=>({ErrorBoundary:({children}:{children:R
 vi.mock('_components/transactions-card/NoActivityCard',()=>({NoActivityCard:({message}:{message:string})=>h('div',null,message)}));
 vi.mock('_app/shared/date-card',()=>({DateCard:()=>h('time',null,'timestamp')}));
 Object.assign(globalThis,{IS_REACT_ACT_ENVIRONMENT:true});
-beforeEach(()=>{m.history=undefined;m.cached=undefined;m.error=null;m.address=sender;m.state='configured';m.isPending=false;m.readAdmission=undefined;});
+beforeEach(()=>{m.history=undefined;m.cached=undefined;m.error=null;m.address=sender;m.state='configured';m.isPending=false;m.isFetching=false;m.readAdmission=undefined;p.rows=[];p.pending=new Set();p.confirmed=new Set();});
+function pendingRow(digest='pending-1'):WalletHistoryTransaction{return{digest,checkpoint:0,sender,origins:['sender'],transaction:null,status:'SUCCESS',timestampMs:1_700_000_000_000,kind:'ProgrammableTransaction',nativeTransaction:null,eventFacts:null,kioskTransfers:null};}
 async function render(check:(node:HTMLElement)=>void){
   const node=document.createElement('div'),root=createRoot(node);
   try{
@@ -107,5 +110,37 @@ it('读取失败时不展示缓存的旧活动',async()=>{
   await render(node=>{
     expect(node.querySelector('a')).toBeNull();
     expect(node.querySelector('[data-testid="activity-cached-banner"]')).toBeNull();
+  });
+});
+it('本地已验证成功的交易在检查点返回前立即展示为已完成',async()=>{
+  m.isPending=true;p.rows=[pendingRow()];p.confirmed=new Set(['pending-1']);
+  await render(node=>{
+    expect(node.textContent).not.toContain('loading');
+    expect(node.textContent).toContain('activity.complete');
+    expect(node.querySelector('[data-testid="activity-complete-tag"]')).not.toBeNull();
+    expect(node.querySelector('a')?.getAttribute('href')).toBe('/receipt?txdigest=pending-1');
+    expect(node.textContent).not.toContain('activity.windowEmpty');
+  });
+});
+it('检查点返回同一交易后本地确认中标签改为已完成',async()=>{
+  const fixture=await historyFixture();const h=await fixture.reader.read(sender);
+  m.history=h;p.confirmed=new Set([h.transactions[0].digest]);
+  await render(node=>{
+    expect(node.querySelector('[data-testid="activity-confirming-tag"]')).toBeNull();
+    expect(node.querySelector('[data-testid="activity-complete-tag"]')?.textContent).toContain('activity.complete');
+    expect(node.querySelector('a')).not.toBeNull();
+  });
+});
+it('刷新时按钮文案和检查点布局不变，仅图标旋转并保留读屏状态',async()=>{
+  const fixture=await historyFixture();m.history=await fixture.reader.read(sender);m.isFetching=true;
+  await render(node=>{
+    const button=node.querySelector('[data-testid="refresh-activity"]')!;
+    expect(button.getAttribute('aria-busy')).toBe('true');
+    expect(button.textContent).toBe('activity.refresh');
+    expect(button.textContent).not.toContain('activity.refreshing');
+    expect(button.className).toContain('bg-rtd/5');
+    expect(button.className).toContain('border-rtd/40');
+    expect(node.querySelector('.sr-only')?.textContent).toBe('activity.refreshing');
+    expect(node.querySelector('.whitespace-nowrap')?.textContent).toContain('activity.window');
   });
 });

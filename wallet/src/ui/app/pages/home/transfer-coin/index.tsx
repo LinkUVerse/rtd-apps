@@ -24,7 +24,7 @@ import { useWalletRpc } from "rtd-apps-core/src/rpc/WalletRpcContext";
 import { ArrowLeft16, ArrowRight16 } from "rtd-apps-icons";
 import * as Sentry from "@sentry/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 
@@ -33,9 +33,25 @@ import { SendTokenForm } from "./SendTokenForm";
 import type { SubmitProps } from "./SendTokenForm";
 import { Transaction } from "rtd-typescript/transactions";
 import { revalidateCoinTransfer } from "_src/shared/rpc/coin-transfer-preparation";
+import {
+  rememberPendingActivity,
+  type LocalActivitySummary,
+} from "_src/shared/rpc/activity-pending";
 import { expectHistoryTransaction } from "rtd-apps-core/src/rpc/history-hooks";
 
 const TRANSFER_DEBUG_PREFIX = "[RTD Wallet Transfer Debug]";
+
+function coinSummary(data: SubmitProps | undefined): LocalActivitySummary | undefined {
+  if (!data) return undefined;
+  return {
+    kind: "coin",
+    recipient: data.prepared.input.to,
+    recipientName: data.prepared.input.recipientName,
+    amount: data.amount,
+    coinSymbol: data.coinSymbol,
+    gasBudget: data.gasBudgetEst,
+  };
+}
 
 function logTransferDebug(label: string, details: unknown) {
   console.info(`${TRANSFER_DEBUG_PREFIX} ${label}`, details);
@@ -68,6 +84,24 @@ function TransferCoinPage() {
     setShowTransactionPreview(false);
   }, [rpc.readSessionKey, address, coinType]);
 
+  const rememberConfirmedTransfer = useCallback(
+    (
+      receipt: { digest: string; success: boolean },
+      summary?: LocalActivitySummary,
+    ) => {
+      if (!address || !receipt.success) return;
+      rememberPendingActivity({
+        bindingKey: rpc.bindingKey,
+        address,
+        digest: receipt.digest,
+        sender: address,
+        status: "SUCCESS",
+        summary,
+      });
+    },
+    [address, rpc.bindingKey],
+  );
+
   const recoveryInFlight = useRef<{key: string; promise: Promise<WalletExecutionOutcome | null>} | null>(null);
   useEffect(() => {
     if (!activeAccount || activeAccount.type === "qredo" || rpc.state !== "configured") return;
@@ -85,10 +119,12 @@ function TransferCoinPage() {
       .then((result) => {
         if (!active) return;
         if (result?.state === "pending") setPending(result);
-        else if (result?.state === "confirmed")
+        else if (result?.state === "confirmed") {
+          rememberConfirmedTransfer(result.receipt);
           navigate(
             `/receipt?txdigest=${encodeURIComponent(result.receipt.digest)}&from=transactions`,
           );
+        }
       })
       .catch((error) => {
         if (active) setRecoveryError(getSignerOperationErrorMessage(error));
@@ -96,7 +132,15 @@ function TransferCoinPage() {
     return () => {
       active = false;
     };
-  }, [activeAccount?.id, rpc.bindingKey, rpc.readSessionKey, rpc.state, background, navigate]);
+  }, [
+    activeAccount?.id,
+    rpc.bindingKey,
+    rpc.readSessionKey,
+    rpc.state,
+    background,
+    navigate,
+    rememberConfirmedTransfer,
+  ]);
 
   const resetCoinQueries = () => {
     queryClient.removeQueries({ queryKey: ["wallet-fresh-coins"] });
@@ -186,6 +230,7 @@ function TransferCoinPage() {
       if (!response.receipt.success) {
         toast.error("交易已入链但执行失败，请查看回执");
       }
+      rememberConfirmedTransfer(response.receipt, coinSummary(formData));
       // Poll Activity quickly until this confirmed transaction appears.
       expectHistoryTransaction(address, response.receipt.digest);
       resetCoinQueries();
@@ -248,6 +293,7 @@ function TransferCoinPage() {
                   });
                 if (result?.state === "confirmed") {
                   setPending(null);
+                  rememberConfirmedTransfer(result.receipt, coinSummary(formData));
                   expectHistoryTransaction(address, result.receipt.digest);
                   resetCoinQueries();
                   navigate(

@@ -32,6 +32,7 @@ import {
 } from "_src/shared/rpc/nft-transfer-preparation";
 import type { WalletExecutionOutcome } from "_src/shared/rpc/execution-coordinator";
 import { createValidationSchema } from "./validation";
+import { rememberPendingActivity } from "_src/shared/rpc/activity-pending";
 import { expectHistoryTransaction } from "rtd-apps-core/src/rpc/history-hooks";
 
 type Props = {
@@ -112,6 +113,23 @@ function NftTransferSession({
       setApproval(null);
       void queryClient.invalidateQueries({ queryKey: ["wallet-assets"] });
       void queryClient.invalidateQueries({ queryKey: ["wallet-current-balances"] });
+      if (account?.address && result.receipt.success)
+        rememberPendingActivity({
+          bindingKey: rpc.bindingKey,
+          address: account.address,
+          digest: result.receipt.digest,
+          sender: account.address,
+          status: "SUCCESS",
+          summary: approval
+            ? {
+                kind: "nft",
+                recipient: approval.prepared.input.to,
+                recipientName: approval.prepared.input.recipientName,
+                objectId: approval.prepared.input.objectId,
+                objectType: approval.prepared.input.objectType,
+              }
+            : undefined,
+        });
       // Poll Activity quickly until this confirmed transfer appears.
       expectHistoryTransaction(account?.address, result.receipt.digest);
       void queryClient.invalidateQueries({ queryKey: ["wallet-account-history"] });

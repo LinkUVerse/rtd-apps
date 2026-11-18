@@ -11,9 +11,11 @@ import { NoActivityCard } from "_components/transactions-card/NoActivityCard";
 import { useQueryTransactionsByAddress } from "_hooks";
 import { useI18n } from "_app/i18n";
 import { useActiveAddress } from "_src/ui/app/hooks/useActiveAddress";
+import { usePendingActivity } from "_src/ui/app/hooks/usePendingActivity";
 import { useWalletRpc } from "rtd-apps-core/src/rpc/WalletRpcContext";
 import { walletReadAllowed } from "rtd-apps-core/src/rpc/read-admission";
-import { Refresh16 } from "rtd-apps-icons";
+import { Refresh16, Spinner16 } from "rtd-apps-icons";
+import cl from "clsx";
 import { useEffect } from "react";
 
 export function CompletedTransactions() {
@@ -50,6 +52,12 @@ export function CompletedTransactions() {
       document.removeEventListener("visibilitychange", refresh);
     };
   }, [allowed, activeAddress, refetch]);
+  // A confirmed execution is shown from the local store until the checkpoint
+  // read returns the same digest; the verified row then replaces it.
+  const { pendingRows, pendingDigests, confirmedDigests } = usePendingActivity(
+    activeAddress,
+    error ? undefined : (history ?? cached)?.transactions,
+  );
   if (rpc.state === "unconfigured" || rpc.state === "invalid")
     return <Alert>{rpc.message}</Alert>;
   if (!activeAddress) return null;
@@ -63,45 +71,73 @@ export function CompletedTransactions() {
   // replaced by the verified page, or by the error if the read fails.
   const shown = history ?? cached;
   const showingCached = !history && !!cached;
+  const rows = shown ? [...pendingRows, ...shown.transactions] : pendingRows;
+  const refreshLabel = t("activity.refresh");
   return (
-    <Loading loading={isPending && !shown}>
-      <div className="flex items-center justify-between gap-3 px-4">
+    <Loading loading={isPending && !shown && pendingRows.length === 0}>
+      <div className="flex min-h-8 items-center justify-between gap-3 px-4">
         {shown ? (
-          <span role="status" className="text-sm text-steel-darker">
-            {t("activity.window", {
-              lo: String(shown.checkpointLo),
-              hi: String(shown.checkpointHi),
-            })}
+          <span
+            role="status"
+            className="inline-flex min-w-0 items-center gap-1.5 text-subtitle font-medium text-steel-darker"
+          >
+            <span
+              aria-hidden
+              className="h-1.5 w-1.5 shrink-0 rounded-full bg-steel/70"
+            />
+            <span className="truncate whitespace-nowrap tabular-nums">
+              {t("activity.window", {
+                lo: String(shown.checkpointLo),
+                hi: String(shown.checkpointHi),
+              })}
+            </span>
           </span>
         ) : (
-          <span />
+          <span
+            role="status"
+            className="inline-flex items-center gap-1.5 text-subtitle font-medium text-steel"
+          >
+            <span
+              aria-hidden
+              className="h-1.5 w-1.5 animate-pulse rounded-full bg-steel/70 motion-reduce:animate-none"
+            />
+            {t("activity.windowLoading")}
+          </span>
         )}
         <button
           type="button"
           data-testid="refresh-activity"
-          aria-label={t("activity.refresh")}
+          aria-label={refreshLabel}
           aria-busy={isFetching}
           disabled={isFetching}
           onClick={() => void refetch({ cancelRefetch: false })}
-          className="flex shrink-0 items-center gap-1 rounded-full border border-gray-45 bg-white px-3 py-1 text-xs font-semibold text-steel-darker disabled:opacity-60"
+          className={cl(
+            "inline-flex h-8 shrink-0 items-center justify-center gap-1.5 rounded-full border px-3 text-xs font-semibold shadow-xs transition-colors disabled:cursor-default",
+            isFetching
+              ? "border-rtd/40 bg-rtd/5 text-rtd"
+              : "border-gray-45 bg-white text-steel-darker hover:bg-gray-40 active:bg-gray-45",
+          )}
         >
           {isFetching ? (
-            <LoadingIndicator />
+            <Spinner16 className="h-3.5 w-3.5 shrink-0 animate-spin motion-reduce:animate-none" />
           ) : (
-            <Refresh16 className="h-3 w-3" />
+            <Refresh16 className="h-3.5 w-3.5 shrink-0" />
           )}
-          {isFetching ? t("activity.refreshing") : t("activity.refresh")}
+          <span>{refreshLabel}</span>
         </button>
+        <span className="sr-only" aria-live="polite">
+          {isFetching ? t("activity.refreshing") : ""}
+        </span>
       </div>
       {showingCached ? (
         <div
           role="status"
           aria-live="polite"
           data-testid="activity-cached-banner"
-          className="mx-4 flex items-center gap-2 rounded-lg bg-gray-40 px-3 py-2 text-xs text-steel-darker"
+          className="mx-4 flex items-center gap-2 rounded-xl bg-gray-40 px-3 py-1.5 text-subtitle text-steel-darker"
         >
-          <LoadingIndicator />
-          <span>
+          <Refresh16 className="h-3 w-3 shrink-0 animate-spin text-steel motion-reduce:animate-none" />
+          <span className="truncate">
             {t("activity.showingCached", {
               time: new Date(cached!.savedAt).toLocaleString(),
             })}
@@ -117,10 +153,20 @@ export function CompletedTransactions() {
             {t("activity.limited")}
           </p>
         )}
-      {shown?.transactions.length && activeAddress ? (
-        shown.transactions.map((txn) => (
+      {rows.length > 0 && activeAddress ? (
+        rows.map((txn) => (
           <ErrorBoundary key={txn.digest}>
-            <TransactionCard txn={txn} address={activeAddress} />
+            <TransactionCard
+              txn={txn}
+              address={activeAddress}
+              activityStatus={
+                pendingDigests.has(txn.digest)
+                  ? "confirming"
+                  : confirmedDigests.has(txn.digest)
+                    ? "complete"
+                    : undefined
+              }
+            />
           </ErrorBoundary>
         ))
       ) : (

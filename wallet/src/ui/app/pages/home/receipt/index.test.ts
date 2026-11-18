@@ -15,11 +15,13 @@ const m=vi.hoisted(()=>({
   stored:{data:null as WalletStoredReceipt|null,refetch:vi.fn()},
   indexing:{data:false},
   activeAddress: '0xb' as string|null, guardLoading:false,
+  local:undefined as any,
 }));
 vi.mock('rtd-apps-core/src/rpc/receipt-hooks',()=>({useWalletTransactionDetails:()=>m.details}));
 vi.mock('rtd-apps-core/src/rpc/WalletRpcContext',()=>({useWalletRpc:()=>({state:'configured'})}));
 vi.mock('_src/ui/app/hooks/useStoredTransactionReceipt',()=>({useStoredTransactionReceipt:()=>m.stored}));
 vi.mock('_src/ui/app/hooks/useReceiptIndexing',()=>({useReceiptIndexing:()=>m.indexing}));
+vi.mock('_src/ui/app/hooks/usePendingActivity',()=>({useLocalActivityEntry:()=>m.local}));
 vi.mock('_src/ui/app/hooks/useActiveAddress',()=>({useActiveAddress:()=>m.activeAddress}));
 vi.mock('_src/ui/app/hooks/useUnlockedGuard',()=>({useUnlockedGuard:()=>m.guardLoading}));
 vi.mock('_src/ui/app/i18n',()=>({useI18n:()=>({t:(key:string)=>key})}));
@@ -31,7 +33,7 @@ vi.mock('_src/ui/app/components/receipt-card',()=>({ReceiptCard:()=>h('div',{'da
 Object.assign(globalThis,{IS_REACT_ACT_ENVIRONMENT:true});
 beforeEach(()=>{
   m.details.data=undefined;m.details.isPending=false;m.details.isError=false;
-  m.stored.data=null;m.indexing.data=false;m.activeAddress='0xb';m.guardLoading=false;
+  m.stored.data=null;m.indexing.data=false;m.activeAddress='0xb';m.guardLoading=false;m.local=undefined;
   m.details.refetch.mockReset();m.stored.refetch.mockReset();
 });
 async function render(check:(node:HTMLElement)=>Promise<void>|void){
@@ -54,6 +56,26 @@ it.each([true,false])('详情服务失败时保留已确认终态%s，不改成�
     await act(async()=>node.querySelector('button')!.click());
     expect(m.details.refetch).toHaveBeenCalledTimes(1);expect(m.stored.refetch).toHaveBeenCalledTimes(1);
   });
+});
+it('链上详情未同步时展示本地已签名摘要与已完成标签',async()=>{
+ const tx=await executionFixture();
+ m.stored.data={bindingKey:'binding',accountAddress:sender,receipt:{...tx.receipt(),checkpoint:null}};
+ m.details.data=null;
+ m.local={
+  digest:tx.digest,sender,status:'SUCCESS',sentAt:1_700_000_000_000,confirmedAt:null,
+  summary:{
+   kind:'coin',recipient:'0x'+'a'.repeat(64),recipientName:'alice.rtd',
+   amount:'1.5',coinSymbol:'RTD',gasBudget:'1000',
+  },
+ };
+ await render(node=>{
+  expect(node.querySelector('[data-testid="receipt-local-summary"]')).not.toBeNull();
+  expect(node.textContent).toContain('receipt.localSummaryTitle');
+  expect(node.textContent).toContain('receipt.localRecipient');
+  expect(node.textContent).toContain('receipt.localAmount');
+  expect(node.textContent).toContain('activity.complete');
+  expect(node.textContent).toContain('1.5 RTD');
+ });
 });
 it('两处都尚未找到时显示待确认，不显示成功或链上失败',async()=>{
   m.details.data=null;

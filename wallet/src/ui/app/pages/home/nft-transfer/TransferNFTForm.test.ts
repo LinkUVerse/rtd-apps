@@ -8,6 +8,10 @@ import { act, createElement as h, StrictMode } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { normalizeRtdAddress as address } from "rtd-typescript/utils";
+import {
+  clearPendingActivity,
+  readPendingActivitySync,
+} from "_src/shared/rpc/activity-pending";
 import { TransferNFTForm } from "./TransferNFTForm";
 
 const f = vi.hoisted(() => ({
@@ -152,6 +156,7 @@ async function preview() {
 beforeEach(async () => {
   reviewedBytes = toBase64((await executionFixture()).bytes);
   vi.clearAllMocks();
+  await clearPendingActivity();
   f.account = { id: "account", address: "0xb" };
   f.rpc = {
     state: "configured",
@@ -251,6 +256,11 @@ describe("NFT transfer page approval and recovery", () => {
     expect(f.navigate).toHaveBeenCalledWith("/receipt?txdigest=reviewedDigest&from=nfts");
     expect(f.prepare).toHaveBeenCalledTimes(1);
     expect(f.execute).toHaveBeenCalledTimes(1);
+    expect(
+      readPendingActivitySync("binding", f.account.address).map(
+        (entry) => entry.digest,
+      ),
+    ).toContain("reviewedDigest");
   });
   it("revoking the original fullnode session retires a late dispatched UI result", async () => {
     await mount();

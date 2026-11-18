@@ -8,14 +8,17 @@ import type { WalletHistoryTransaction } from "rtd-apps-core/src/rpc/WalletRpcCo
 import { receiptStakeEvents } from "rtd-apps-core/src/rpc/transaction-view";
 import { formatAddress } from "rtd-typescript/utils";
 import { Link } from "react-router-dom";
+import { ActivityStatusTag, type ActivityStatus } from "./ActivityStatusTag";
 import { TxnIcon } from "./TxnIcon";
 
 export function TransactionCard({
   txn,
   address,
+  activityStatus,
 }: {
   txn: WalletHistoryTransaction;
   address: string;
+  activityStatus?: ActivityStatus;
 }) {
   const { t } = useI18n();
   const stakes = txn.transaction
@@ -45,9 +48,14 @@ export function TransactionCard({
           <TxnIcon txnFailed={txn.status === "FAILURE"} variant={kind} />
         </div>
         <div className="flex flex-col w-full gap-1.5">
-          <Text color="gray-90" weight="semibold">
-            {txn.status === "FAILURE" ? t("receipt.failed") : label}
-          </Text>
+          <div className="flex min-w-0 items-center justify-between gap-2">
+            <Text color="gray-90" weight="semibold">
+              {txn.status === "FAILURE" ? t("receipt.failed") : label}
+            </Text>
+            {activityStatus ? (
+              <ActivityStatusTag status={activityStatus} />
+            ) : null}
+          </div>
           {error && (
             <Text variant="pSubtitle" color="issue-dark">
               {error}

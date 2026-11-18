@@ -443,14 +443,16 @@ const en = {
     "Apps below are actively curated but do not indicate any endorsement or relationship with RTD Wallet. Please do your own research.",
   "activity.sender": "Sender",
   "activity.window": "Checkpoints {lo}–{hi}",
+  "activity.windowLoading": "Syncing checkpoints",
+  "activity.confirming": "Confirming",
   "activity.limited":
     "This history covers supported account activity in the displayed window. Complete account history has not been certified.",
   "activity.windowEmpty": "No supported activity was found in this window.",
   "activity.refresh": "Refresh activity",
-  "activity.showingCached": "Refreshing activity; showing results from {time}",
+  "activity.showingCached": "Updating · Last {time}",
   "activity.loadMore": "Load earlier activity",
   "activity.loadingMore": "Loading earlier activity",
-  "activity.refreshing": "Refreshing activity; showing the previous result.",
+  "activity.refreshing": "Refreshing activity",
   "activity.admissionBlocked":
     "Activity reads have not passed network verification. Check the network status; transaction history cannot be confirmed yet.",
   "activity.title": "Your Activity",
@@ -671,6 +673,13 @@ const en = {
     "Historical version matches the transaction record.",
   "receipt.detailsPending":
     "The confirmed record is retained while transaction details are unavailable.",
+  "receipt.localSummaryTitle": "Locally signed details",
+  "receipt.localSummaryHint":
+    "The checkpoint has not returned this transaction yet. These facts come from the local send record.",
+  "receipt.localRecipient": "Recipient",
+  "receipt.localAmount": "Amount",
+  "receipt.localGas": "Estimated network fee",
+  "receipt.localObject": "Object",
   "receipt.refreshDetails": "Refresh transaction details",
   "receipt.checkpointPending":
     "Execution confirmed; checkpoint inclusion is pending.",
