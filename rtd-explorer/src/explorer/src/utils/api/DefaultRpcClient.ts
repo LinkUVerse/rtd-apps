@@ -13,7 +13,6 @@ export enum Network {
 export type NetworkConfig = {
 	grpcUrl: string;
 	graphqlUrl: string;
-	accountHistoryUrl: string;
 };
 
 const env = import.meta.env;
@@ -22,13 +21,11 @@ const env = import.meta.env;
 const devConfig: NetworkConfig = {
 	grpcUrl: env.VITE_LOCAL_GRPC_URL || "/fullnode",
 	graphqlUrl: env.VITE_LOCAL_GRAPHQL_URL || "/archive/graphql",
-	accountHistoryUrl: env.VITE_LOCAL_ACCOUNT_HISTORY_URL || "/account/graphql",
 };
 
 const configFor = (suffix: string, fallback: NetworkConfig): NetworkConfig => ({
 	grpcUrl: env[`VITE_${suffix}_GRPC_URL`] || fallback.grpcUrl,
 	graphqlUrl: env[`VITE_${suffix}_GRAPHQL_URL`] || fallback.graphqlUrl,
-	accountHistoryUrl: env[`VITE_${suffix}_ACCOUNT_HISTORY_URL`] || fallback.accountHistoryUrl,
 });
 
 export const NetworkConfigs: Record<Network, NetworkConfig> = {
@@ -74,7 +71,6 @@ export const createRtdClient = (network: Network | string) => {
 		config = {
 			grpcUrl: url.href.replace(/\/+$/, ""),
 			graphqlUrl: `${host}:43412/graphql`,
-			accountHistoryUrl: `${host}:43413/account/graphql`,
 		};
 	}
 

@@ -28,10 +28,6 @@ const devProxy = {
         changeOrigin: true,
         rewrite: (path: string) => path.replace(/^\/archive/, ""),
     },
-    "/account": {
-        target: "http://127.0.0.1:43413",
-        changeOrigin: true,
-    },
 };
 
 // https://vitejs.dev/config/

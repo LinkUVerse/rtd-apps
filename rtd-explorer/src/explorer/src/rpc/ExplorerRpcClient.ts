@@ -15,7 +15,6 @@ export type ExplorerRpcClientOptions = {
 	network: ExplorerNetwork | string;
 	grpcUrl: string;
 	graphqlUrl: string;
-	accountHistoryUrl?: string;
 	fetch?: typeof fetch;
 };
 
