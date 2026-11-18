@@ -3,10 +3,10 @@
 
 import { FEATURES } from "_src/shared/experimentation/features";
 import {
-  readActivity,
-  writeActivity,
-  type CachedActivity,
-} from "_src/shared/rpc/activity-cache";
+  readLedgerActivity,
+  writeLedgerActivityHistory,
+  type CachedLedgerActivity,
+} from "_src/shared/rpc/ledger-activity-cache";
 import { useFeatureValue } from "@growthbook/growthbook-react";
 import { useWalletAccountHistory } from "rtd-apps-core/src/rpc/history-hooks";
 import { useWalletRpc } from "rtd-apps-core/src/rpc/WalletRpcContext";
@@ -29,12 +29,12 @@ export function useQueryTransactionsByAddress(address: string | null) {
   const key = address && bindingKey ? `${bindingKey}|${address}` : null;
   const [cached, setCached] = useState<{
     key: string | null;
-    value: CachedActivity | undefined;
+    value: CachedLedgerActivity | undefined;
   }>({ key: null, value: undefined });
   useEffect(() => {
     if (!key || !address) return;
     let live = true;
-    void readActivity(bindingKey, address).then((value) => {
+    void readLedgerActivity(bindingKey, address).then((value) => {
       if (live) setCached({ key, value });
     });
     return () => {
@@ -44,10 +44,14 @@ export function useQueryTransactionsByAddress(address: string | null) {
   const fresh = history.data;
   useEffect(() => {
     // Save only the first (newest) page of a verified result for this account.
-    if (!fresh || !address || fresh.address.toLowerCase() !== address.toLowerCase())
+    if (
+      !fresh ||
+      !address ||
+      fresh.address.toLowerCase() !== address.toLowerCase()
+    )
       return;
     if (fresh.bindingKey !== bindingKey) return;
-    void writeActivity(bindingKey, address, fresh);
+    void writeLedgerActivityHistory(bindingKey, address, fresh);
   }, [fresh, address, bindingKey]);
   const fromCache =
     !fresh && !history.error && cached.key === key ? cached.value : undefined;

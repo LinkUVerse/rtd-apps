@@ -10,8 +10,12 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { useWalletAccountHistory } from "rtd-apps-core/src/rpc/history-hooks";
 import { useWalletRpc } from "rtd-apps-core/src/rpc/WalletRpcContext";
 import { historyFixture } from "../../../tests/unit/rpc/history-fixtures";
-import { sender } from "../../../tests/unit/rpc/execution-fixtures";
+import {
+  executionFixture,
+  sender,
+} from "../../../tests/unit/rpc/execution-fixtures";
 import { WalletRpcProvider } from "./WalletRpcProvider";
+import { WalletLedgerReader } from "./ledger-reader";
 import type { ProfileSelection } from "./profile-registry";
 
 Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
@@ -20,24 +24,33 @@ describe("Provider到账户历史Hook的实际接入", () => {
   afterEach(async () => {
     for (const cleanup of cleanups.splice(0)) await cleanup();
     vi.unstubAllGlobals();
+    vi.restoreAllMocks();
   });
   async function mount(options: { noHistory?: boolean; late?: boolean } = {}) {
     const fixture = await historyFixture({ noHistory: options.noHistory });
+    const raw = (await executionFixture(1n)).result();
+    raw.timestamp = { seconds: 1_700_000_000n, nanos: 0 };
     let release = () => {};
     const barrier = new Promise<void>((resolve) => {
       release = resolve;
     });
-    vi.stubGlobal(
-      "fetch",
-      async (input: RequestInfo | URL, init?: RequestInit) => {
-        if (
-          options.late &&
-          String(init?.body).includes("query WalletAccountHistory")
-        )
-          await barrier;
-        return fixture.fetch(input, init);
+    vi.spyOn(WalletLedgerReader.prototype, "historyPage").mockImplementation(
+      async function (this: WalletLedgerReader, address) {
+        if (options.late) await barrier;
+        return {
+          bindingKey: this.session.bindingKey,
+          readSessionKey: this.session.cacheKey,
+          address,
+          source: "archive" as const,
+          checkpointHeight: 30,
+          lowestAvailableCheckpoint: 1,
+          transactions: [raw],
+          hasNextPage: false,
+          nextCursor: null,
+        };
       },
     );
+    vi.stubGlobal("fetch", fixture.fetch);
     const client = new QueryClient({
         defaultOptions: { queries: { retry: false } },
       }),
@@ -114,10 +127,10 @@ describe("Provider到账户历史Hook的实际接入", () => {
       ),
     ).toBe(true);
   });
-  it("Fullnode配置但无历史扩展显示能力错误，不冒充空历史", async () => {
+  it("无 accountHistory 配置时仍使用归档 Ledger，不请求旧扩展端点", async () => {
     const f = await mount({ noHistory: true });
     await f.render({ state: "configured", profile: f.native.profile });
-    await settle(() => expect(f.element.textContent).toBe("error"));
+    await settle(() => expect(f.element.textContent).toBe("history:1:false"));
     expect(f.requests).toHaveLength(0);
   });
   it("未配置不请求；切网迟到不进入新会话或旧成功缓存", async () => {

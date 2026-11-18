@@ -35,7 +35,7 @@ import { networkBindingKey } from "./profile";
 import { type ProfileSelection } from "./profile-registry";
 import { WalletReadSession } from "./session";
 import { WalletLedgerReader } from "./ledger-reader";
-import { WalletAccountHistoryReader } from "./account-history-reader";
+import { readLedgerAccountHistory } from "./ledger-account-history";
 import { WalletTransactionReader } from "./transaction-reader";
 import { WalletArchiveObjectReader } from "./archive-object-reader";
 import {
@@ -232,10 +232,6 @@ export function WalletRpcProvider({
     () => (validSession ? new WalletNameReader(session!) : null),
     [validSession, session],
   );
-  const history = useMemo(
-    () => (validSession ? new WalletAccountHistoryReader(session!) : null),
-    [validSession, session],
-  );
   const snapshotQuery = useQuery({
     queryKey: [
       "wallet-snapshot-admission",
@@ -374,10 +370,8 @@ export function WalletRpcProvider({
           return receipts.details(digest, signal);
         },
         readAccountHistory: async (address, signal, page) => {
-          if (!history) throw new Error("钱包查询会话正在初始化");
-          return page
-            ? history.readPage(address, page.continuation, signal)
-            : history.read(address, signal);
+          if (!receipts) throw new Error("钱包查询会话正在初始化");
+          return readLedgerAccountHistory(receipts, address, signal, page);
         },
         readHistoricalObjects: archiveObjects
           ? (selectors, signal) => archiveObjects.objects(selectors, signal)
@@ -454,9 +448,7 @@ export function WalletRpcProvider({
       readTransactionDetails: (digest, signal) =>
         receipts!.details(digest, signal),
       readAccountHistory: (address, signal, page) =>
-        page
-          ? history!.readPage(address, page.continuation, signal)
-          : history!.read(address, signal),
+        readLedgerAccountHistory(receipts!, address, signal, page),
       readHistoricalObjects: archiveObjects
         ? (selectors, signal) => archiveObjects.objects(selectors, signal)
         : undefined,
@@ -508,7 +500,6 @@ export function WalletRpcProvider({
     transactions,
     receipts,
     names,
-    history,
     snapshotQuery.isPending,
     snapshotQuery.error,
     snapshotQuery.errorUpdatedAt,

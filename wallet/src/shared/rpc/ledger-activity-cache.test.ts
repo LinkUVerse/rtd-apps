@@ -8,6 +8,7 @@ import {
   decodeLedgerActivity,
   readLedgerActivity,
   writeLedgerActivity,
+  writeLedgerActivityHistory,
 } from "./ledger-activity-cache";
 
 const store = vi.hoisted(() => new Map<string, unknown>());
@@ -57,6 +58,7 @@ describe("Historical Ledger 展示缓存", () => {
       savedAt: 42,
       checkpointLo: 0,
       checkpointHi: 30,
+      coverage: { allAccountActivityCertified: true },
     });
     expect(cached?.transactions).toHaveLength(2);
     expect(cached?.transactions[0]).toMatchObject({
@@ -83,6 +85,14 @@ describe("Historical Ledger 展示缓存", () => {
       savedAt: 1,
       checkpointLo: 0,
       checkpointHi: 10,
+      coverage: {
+        registrationComplete: true,
+        completeForRegisteredKiosks: true,
+        completeForDiscoveredOwnerTokens: true,
+        completeForDiscoveredCapabilities: true,
+        allAccountActivityCertified: true,
+        allAccountTransfersCertified: null,
+      },
       transactions: [],
     };
     expect(decodeLedgerActivity(base, binding, address)).toMatchObject({
@@ -94,6 +104,36 @@ describe("Historical Ledger 展示缓存", () => {
     expect(
       decodeLedgerActivity({ ...base, version: 2 }, binding, address),
     ).toBeUndefined();
+  });
+
+  it("可直接写入已验证的 account-history 模型以保留 coverage", async () => {
+    const cached = await (async () => {
+      await writeLedgerActivity(binding, address, await page(1));
+      return (await readLedgerActivity(binding, address))!;
+    })();
+    await writeLedgerActivityHistory(
+      "binding-history",
+      address,
+      {
+        ...cached,
+        bindingKey: "binding-history",
+        readSessionKey: "session-history",
+        address,
+        checkpointDigest: "digest-history",
+        snapshot: "snapshot-history",
+        continuation: null,
+        coverage: {
+          ...cached.coverage,
+          allAccountActivityCertified: false,
+        },
+      },
+      43,
+    );
+    expect(await readLedgerActivity("binding-history", address)).toMatchObject({
+      savedAt: 43,
+      coverage: { allAccountActivityCertified: false },
+      transactions: [{ digest: cached.transactions[0].digest }],
+    });
   });
 
   it("退出登录清空 Ledger 缓存", async () => {

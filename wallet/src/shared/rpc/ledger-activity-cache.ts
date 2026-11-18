@@ -2,8 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { del, get, update } from "idb-keyval";
-import type { WalletHistoryTransaction } from "rtd-apps-core/src/rpc/WalletRpcContext";
+import type {
+  WalletAccountHistory,
+  WalletHistoryTransaction,
+} from "rtd-apps-core/src/rpc/WalletRpcContext";
 import { walletAddress } from "./asset-address";
+import { nativeHistoryCoverage } from "./ledger-account-history";
 import { ledgerHistoryRow } from "./ledger-history-view";
 import type { WalletLedgerHistoryPage } from "./ledger-reader";
 
@@ -15,6 +19,7 @@ export interface CachedLedgerActivity {
   readonly savedAt: number;
   readonly checkpointLo: number;
   readonly checkpointHi: number;
+  readonly coverage: WalletAccountHistory["coverage"];
   readonly transactions: readonly WalletHistoryTransaction[];
 }
 interface Entry extends CachedLedgerActivity {
@@ -62,6 +67,8 @@ export function decodeLedgerActivity(
     !integer(entry.checkpointLo) ||
     !integer(entry.checkpointHi) ||
     entry.checkpointLo > entry.checkpointHi ||
+    !entry.coverage ||
+    typeof entry.coverage !== "object" ||
     !Array.isArray(entry.transactions) ||
     entry.transactions.length > MAX_ROWS ||
     !entry.transactions.every(validRow)
@@ -71,6 +78,7 @@ export function decodeLedgerActivity(
     savedAt: entry.savedAt,
     checkpointLo: entry.checkpointLo,
     checkpointHi: entry.checkpointHi,
+    coverage: entry.coverage,
     transactions: entry.transactions,
   };
 }
@@ -125,6 +133,31 @@ export async function readLedgerActivity(
   }
 }
 
+async function persistEntry(entry: Entry): Promise<void> {
+  try {
+    await bounded(
+      update<Store>(STORE_KEY, (current) => {
+        const next: Store = {
+          ...(current && typeof current === "object" ? current : {}),
+        };
+        next[ledgerActivityCacheKey(entry.bindingKey, entry.address)] = entry;
+        return Object.fromEntries(
+          Object.entries(next)
+            .filter(
+              ([, value]) =>
+                value && typeof value === "object" && integer(value.savedAt),
+            )
+            .sort(([, a], [, b]) => b.savedAt - a.savedAt)
+            .slice(0, MAX_ENTRIES),
+        );
+      }),
+      3_000,
+    );
+  } catch {
+    // A cache that cannot be written only costs the next visit its head start.
+  }
+}
+
 export async function writeLedgerActivity(
   bindingKey: string,
   address: string,
@@ -144,37 +177,37 @@ export async function writeLedgerActivity(
     )
     .map((result) => slim(result.value));
   if (!rows.length) return;
-  const entry: Entry = {
+  const lower = page.lowestAvailableCheckpoint ?? 0;
+  await persistEntry({
     version: 1,
     bindingKey,
     address: owner,
     savedAt: now,
-    checkpointLo: page.lowestAvailableCheckpoint ?? 0,
+    checkpointLo: lower,
     checkpointHi: page.checkpointHeight,
+    coverage: nativeHistoryCoverage(lower === 0),
     transactions: rows,
-  };
-  try {
-    await bounded(
-      update<Store>(STORE_KEY, (current) => {
-        const next: Store = {
-          ...(current && typeof current === "object" ? current : {}),
-        };
-        next[ledgerActivityCacheKey(bindingKey, owner)] = entry;
-        return Object.fromEntries(
-          Object.entries(next)
-            .filter(
-              ([, value]) =>
-                value && typeof value === "object" && integer(value.savedAt),
-            )
-            .sort(([, a], [, b]) => b.savedAt - a.savedAt)
-            .slice(0, MAX_ENTRIES),
-        );
-      }),
-      3_000,
-    );
-  } catch {
-    // A cache that cannot be written only costs the next visit its head start.
-  }
+  });
+}
+
+export async function writeLedgerActivityHistory(
+  bindingKey: string,
+  address: string,
+  history: WalletAccountHistory,
+  now: number = Date.now(),
+): Promise<void> {
+  const owner = walletAddress(address);
+  if (history.transactions.length === 0) return;
+  await persistEntry({
+    version: 1,
+    bindingKey,
+    address: owner,
+    savedAt: now,
+    checkpointLo: history.checkpointLo,
+    checkpointHi: history.checkpointHi,
+    coverage: { ...history.coverage },
+    transactions: history.transactions.slice(0, MAX_ROWS).map(slim),
+  });
 }
 
 export async function clearLedgerActivityCache(): Promise<void> {
