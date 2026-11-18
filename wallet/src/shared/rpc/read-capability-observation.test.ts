@@ -52,7 +52,6 @@ describe("当前session NC5原ticket协调", () => {
         profile: (p) => {
           delete p.endpoints.graphqlUrl;
           delete p.endpoints.archiveGrpcWeb;
-          delete p.endpoints.accountHistoryUrl;
         },
       });
       const store = new Store();
@@ -102,7 +101,6 @@ describe("当前session NC5原ticket协调", () => {
         profile: (p) => {
           delete p.endpoints.graphqlUrl;
           delete p.endpoints.archiveGrpcWeb;
-          delete p.endpoints.accountHistoryUrl;
         },
       }),
       store = new Store();
@@ -117,9 +115,6 @@ describe("当前session NC5原ticket协调", () => {
         before: { graphql: "unconfigured", archive: "unconfigured" },
       },
       graphql: { value: { state: "unconfigured" } },
-      accountHistory: {
-        value: { state: "unconfigured", accountScope: "not-probed" },
-      },
     });
     const ticket: NetworkAdmissionTicket =
       await store.begin.mock.results[0].value;
@@ -252,13 +247,10 @@ describe("当前session NC5原ticket协调", () => {
       execution: "not-probed",
       crossDomainSnapshot: "not-verified",
       deployment: { value: { state: "unreviewed" } },
-      accountHistory: {
-        value: { accountScope: "not-probed", allAccountHistoryVerified: false },
-      },
     });
     expect(store.begin).toHaveBeenCalledTimes(1);
     const ticket = await store.begin.mock.results[0].value;
-    expect(ticket.areas).toHaveLength(24);
+    expect(ticket.areas).toHaveLength(23);
     expect(store.complete.mock.calls[0][1]).toBe(ticket);
     expect(store.complete.mock.calls[0][2]).toEqual([]);
     expect(store.records.get(f.session.bindingKey)?.pending).toEqual([]);
@@ -290,7 +282,7 @@ describe("当前session NC5原ticket协调", () => {
     expect(store.complete).not.toHaveBeenCalled();
     expect(f.requests).toHaveLength(0);
   });
-  it.each(["fullnode", "graphql", "archive", "accountHistory"] as const)(
+  it.each(["fullnode", "graphql", "archive"] as const)(
     "已有%s身份负面0 SDK，绑定模板在session关闭后仍可撤值",
     async (role) => {
       const { f, store } = await seeded({
@@ -551,7 +543,7 @@ describe("当前session NC5原ticket协调", () => {
           faults: [
             {
               kind: "identity",
-              role: "accountHistory",
+              role: "archive",
               reason: "chain-mismatch",
             },
           ],
@@ -561,7 +553,7 @@ describe("当前session NC5原ticket协调", () => {
     });
     expect(
       await observeReadCapabilities(f.session, { fetch: f.fetch }, store),
-    ).toMatchObject({ phase: "quarantined", role: "accountHistory" });
+    ).toMatchObject({ phase: "quarantined", role: "archive" });
     expect(store.capture).toHaveBeenCalledTimes(2);
   });
   it("受控合成审核pin进入真实SDK；registry拒绝不生成可信声明或身份负面", async () => {

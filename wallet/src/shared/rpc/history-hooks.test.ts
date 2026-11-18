@@ -127,7 +127,7 @@ describe("Provider到账户历史Hook的实际接入", () => {
       ),
     ).toBe(true);
   });
-  it("无 accountHistory 配置时仍使用归档 Ledger，不请求旧扩展端点", async () => {
+  it("配置归档 Ledger 时直接读取，不请求已退役扩展端点", async () => {
     const f = await mount({ noHistory: true });
     await f.render({ state: "configured", profile: f.native.profile });
     await settle(() => expect(f.element.textContent).toBe("history:1:false"));

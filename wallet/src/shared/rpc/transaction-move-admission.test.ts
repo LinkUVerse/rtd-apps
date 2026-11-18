@@ -64,7 +64,6 @@ function fixture() {
   const p = profileFixture();
   delete p.endpoints.graphqlUrl;
   delete p.endpoints.archiveGrpcWeb;
-  delete p.endpoints.accountHistoryUrl;
   delete p.packages.name;
   delete p.packages.personalKiosk;
   const session = new WalletReadSession(validateNetworkProfile(p));
@@ -476,10 +475,10 @@ it("完成末检并发identity负面阻止有限正面发布", async () => {
   vi.spyOn(f.store, "complete").mockImplementationOnce(async (...args) => {
     const row = await original(...args),
       ticket = await f.store.begin(f.session.profile, [
-        { kind: "identity", role: "accountHistory" },
+        { kind: "identity", role: "archive" },
       ]);
     await original(f.session.profile, ticket, [
-      { kind: "identity", role: "accountHistory", reason: "incompatible" },
+      { kind: "identity", role: "archive", reason: "incompatible" },
     ]);
     return row;
   });

@@ -11,19 +11,18 @@ const LOCAL_DEV_ORIGINS = Array.from(
 ).sort();
 
 describe('built-in manifest host permissions', () => {
-  it('includes all four configured services, preserving explicit ports', () => {
+  it('includes all three configured services, preserving explicit ports', () => {
     const profile = profileFixture();
     profile.endpoints = {
       fullnodeGrpcWeb: 'http://127.0.0.1:41750',
       graphqlUrl: 'http://127.0.0.1:41954/graphql',
       archiveGrpcWeb: 'http://127.0.0.1:41955/archive',
-      accountHistoryUrl: 'http://127.0.0.1:41956/account/graphql',
     };
     expect(builtinHostPermissions(JSON.stringify({ local: profile }))).toEqual(
       Array.from(new Set([
         ...LOCAL_DEV_ORIGINS,
         'http://127.0.0.1:41750/*', 'http://127.0.0.1:41954/*',
-        'http://127.0.0.1:41955/*', 'http://127.0.0.1:41956/*',
+        'http://127.0.0.1:41955/*',
       ])).sort(),
     );
   });

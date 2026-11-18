@@ -56,13 +56,10 @@ describe("钱包网络配置与身份作用域", () => {
     expect(() => validateNetworkProfile(input)).toThrow();
   });
 
-  it("原生归档和独立账户历史不能意外复用另外角色的入口", () => {
+  it("原生归档不能意外复用 Fullnode 入口", () => {
     const input = profileFixture();
     input.endpoints.archiveGrpcWeb = input.endpoints.fullnodeGrpcWeb;
     expect(() => validateNetworkProfile(input)).toThrow();
-    const other = profileFixture();
-    other.endpoints.accountHistoryUrl = other.endpoints.graphqlUrl;
-    expect(() => validateNetworkProfile(other)).toThrow();
   });
 
   it("仅 Fullnode 的自定义网络必须显式以非完整 profile 校验", () => {
@@ -116,13 +113,28 @@ describe("钱包网络配置与身份作用域", () => {
   });
 });
 
-it('faucet endpoint is explicit, validated and part of the profile binding', () => {
+it("faucet endpoint is explicit, validated and part of the profile binding", () => {
   const base = validateNetworkProfile(profileFixture());
   expect(base.faucetUrl).toBeUndefined();
-  const configured = validateNetworkProfile({ ...profileFixture(), faucetUrl: 'http://127.0.0.1:9123' });
-  expect(configured.faucetUrl).toBe('http://127.0.0.1:9123/');
-  expect(() => validateNetworkProfile({ ...profileFixture(), faucetUrl: 'https://faucet.example/prefix' })).toThrow();
+  const configured = validateNetworkProfile({
+    ...profileFixture(),
+    faucetUrl: "http://127.0.0.1:9123",
+  });
+  expect(configured.faucetUrl).toBe("http://127.0.0.1:9123/");
+  expect(() =>
+    validateNetworkProfile({
+      ...profileFixture(),
+      faucetUrl: "https://faucet.example/prefix",
+    }),
+  ).toThrow();
   expect(networkBindingKey(configured)).not.toBe(networkBindingKey(base));
-  expect(executionScopeKey(configured, '0x7')).toBe(executionScopeKey(base, '0x7'));
-  expect(() => validateNetworkProfile({ ...profileFixture(), faucetUrl: 'https://user:secret@faucet.example' })).toThrow();
+  expect(executionScopeKey(configured, "0x7")).toBe(
+    executionScopeKey(base, "0x7"),
+  );
+  expect(() =>
+    validateNetworkProfile({
+      ...profileFixture(),
+      faucetUrl: "https://user:secret@faucet.example",
+    }),
+  ).toThrow();
 });

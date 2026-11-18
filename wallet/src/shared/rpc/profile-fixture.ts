@@ -18,7 +18,6 @@ export function profileFixture(): WalletNetworkProfile {
       fullnodeGrpcWeb: "http://127.0.0.1:9000/fullnode/",
       graphqlUrl: "https://localhost:9001/graphql",
       archiveGrpcWeb: "https://localhost:9001/archive/",
-      accountHistoryUrl: "https://localhost:9001/account/graphql",
     },
     packages: {
       kiosk: "0x2",

@@ -19,7 +19,6 @@ export function publicProfile() {
   const p = profileFixture();
   delete p.endpoints.graphqlUrl;
   delete p.endpoints.archiveGrpcWeb;
-  delete p.endpoints.accountHistoryUrl;
   delete p.packages.kiosk;
   delete p.packages.personalKiosk;
   delete p.packages.name;
@@ -204,7 +203,7 @@ export function observation(
         noPositiveFields:
           !view ||
           view.phase === "read-contracts-assessed" ||
-          !["graphql", "native", "deployment", "accountHistory"].some((k) =>
+          !["graphql", "native", "deployment"].some((k) =>
             Object.hasOwn(view!, k),
           ),
         beforeRoles:

@@ -238,7 +238,7 @@ describe("真实Provider独立NC5观察生命周期", () => {
     ).not.toHaveBeenCalled();
     expect(f.requests).toHaveLength(0);
   });
-  it.each(["archive", "accountHistory"] as const)(
+  it.each(["archive"] as const)(
     "瞬时窗口仍按native %s已知错链隔离",
     async (role) => {
       const f = await networkCapabilitiesFixture();
@@ -295,7 +295,7 @@ describe("真实Provider独立NC5观察生命周期", () => {
       );
       const result = await view.rpc.readBalances!("0xb");
       expect(result.value[0].balance).toBe(balanceNode().totalBalance);
-      expect(result.snapshot.checkpoint).toBe("30");
+      expect(result.snapshot.checkpoint).toBe("11");
       expect(
         WalletNetworkAdmissionStore.prototype.begin,
       ).not.toHaveBeenCalled();
@@ -384,7 +384,7 @@ describe("真实Provider独立NC5观察生命周期", () => {
       held.resolve();
     }
   });
-  it.each(["graphql", "accountHistory"] as const)(
+  it.each(["graphql"] as const)(
     "本轮正面之后%s持久负面，关闭会话且视图无残留四族正面字段",
     async (role) => {
       const f = await networkCapabilitiesFixture();
@@ -401,13 +401,7 @@ describe("真实Provider独立NC5观察生命周期", () => {
         role,
         reason: "chain-mismatch",
       });
-      for (const field of [
-        "graphql",
-        "native",
-        "deployment",
-        "accountHistory",
-        "observedAt",
-      ])
+      for (const field of ["graphql", "native", "deployment", "observedAt"])
         expect(view.rpc.readCapabilities).not.toHaveProperty(field);
       expect(old?.phase).toBe("read-contracts-assessed");
       await expect(view.rpc.readBalances!("0xb")).rejects.toBeDefined();
@@ -448,7 +442,7 @@ describe("真实Provider独立NC5观察生命周期", () => {
     expect(view.rpc.readAdmission?.blocked).not.toContain("balances");
     const result = await view.rpc.readBalances!("0xb");
     expect(result.value[0].balance).toBe(balanceNode().totalBalance);
-    expect(result.snapshot.checkpoint).toBe("30");
+    expect(result.snapshot.checkpoint).toBe("11");
     expect(view.rpc.readCapabilities).not.toHaveProperty("graphql");
   });
   it("storage失败撤旧报告，恢复普通读取不能复活旧NC5正面", async () => {

@@ -13,7 +13,6 @@ import {
 } from "./read-capability-view";
 import { WalletReadSession, StaleWalletSessionError } from "./session";
 import { NetworkIdentityError } from "./identity";
-import { historyRow } from "../../../tests/unit/rpc/history-fixtures";
 
 describe("core只读状态投影", () => {
   let f: Awaited<ReturnType<typeof networkCapabilitiesFixture>>;
@@ -56,14 +55,6 @@ describe("core只读状态投影", () => {
       deployment: {
         state: "observed",
         value: { state: "unreviewed", declaration: { state: "missing" } },
-      },
-      accountHistory: {
-        state: "observed",
-        value: {
-          state: "coverage-window-verified",
-          accountScope: "not-probed",
-          allAccountHistoryVerified: false,
-        },
       },
     });
     const json = JSON.stringify(view);
@@ -156,7 +147,7 @@ describe("core只读状态投影", () => {
     expect(Object.keys(view.graphql.value.domains)).toHaveLength(8);
     expect(Object.keys(view.deployment.value.move!.groups)).toHaveLength(12);
   });
-  it.each(["graphql", "native", "deployment", "accountHistory"] as const)(
+  it.each(["graphql", "native", "deployment"] as const)(
     "外层未观测保留降级而不凭上一轮补正：%s",
     (name) => {
       const source = structuredClone(report);
@@ -179,7 +170,7 @@ describe("core只读状态投影", () => {
       );
     },
   );
-  it.each(["graphql", "native", "deployment", "accountHistory"] as const)(
+  it.each(["graphql", "native", "deployment"] as const)(
     "拒绝已观测组旧session：%s",
     (name) => {
       const source = structuredClone(report),
@@ -229,9 +220,7 @@ describe("core只读状态投影", () => {
       (s: WalletNetworkCapabilities) =>
         Object.assign(s.identity.after.endpoints[1], { role: "fullnode" }),
       (s: WalletNetworkCapabilities) =>
-        Object.assign(s.identity.after.endpoints[1], {
-          role: "accountHistory",
-        }),
+        Object.assign(s.identity.after.endpoints[1], { role: "foreign" }),
       (s: WalletNetworkCapabilities) =>
         Object.assign(s.identity.after.endpoints[0], { state: "unconfigured" }),
     ]) {
@@ -279,52 +268,11 @@ describe("core只读状态投影", () => {
       );
     }
   });
-  it("有限账户范围不能改为全集已验证", () => {
-    const source = structuredClone(report);
-    if (source.accountHistory.state !== "observed") throw new Error("fixture");
-    Object.assign(source.accountHistory.value, {
-      allAccountHistoryVerified: true,
-    });
-    expect(() => projectReadCapabilities(f.session, source)).toThrow(
-      expect.objectContaining({
-        role: "accountHistory",
-        reason: "incompatible",
-      }),
-    );
-  });
-  it("真实owner全reader的结果仅保留window、计数和coverage标志", async () => {
-    const row = await historyRow(),
-      g = await networkCapabilitiesFixture({ rows: [row.row] });
-    const actual = await probeNetworkCapabilities(g.session, {
-      fetch: g.fetch,
-      address: row.row.sender,
-    });
-    const view = projectReadCapabilities(g.session, actual);
-    expect(view).toMatchObject({
-      accountHistory: {
-        state: "observed",
-        value: {
-          state: "scoped-window-verified",
-          accountScope: "scoped-window-verified",
-          allAccountHistoryVerified: false,
-          coverage: {
-            registrationComplete: true,
-            allAccountActivityCertified: false,
-          },
-        },
-      },
-    });
-    expect(JSON.stringify(view)).not.toMatch(
-      /accountSha256|"snapshot"\s*:\s*"|"address"|"sender"|"transactions"/,
-    );
-    g.session.close();
-  });
   it("缺配置状态保持，验证中／预算失败／负面视图均不生成事实或授权", async () => {
     const g = await networkCapabilitiesFixture({
       profile: (p) => {
         delete p.endpoints.graphqlUrl;
         delete p.endpoints.archiveGrpcWeb;
-        delete p.endpoints.accountHistoryUrl;
       },
     });
     const actual = await probeNetworkCapabilities(g.session, {
@@ -333,7 +281,6 @@ describe("core只读状态投影", () => {
     expect(projectReadCapabilities(g.session, actual)).toMatchObject({
       graphql: { value: { state: "unconfigured" } },
       native: { value: { endpoints: { archive: { state: "unconfigured" } } } },
-      accountHistory: { value: { state: "unconfigured" } },
     });
     for (const view of [
       validatingReadCapabilities(g.session),
@@ -392,7 +339,6 @@ describe("core只读状态投影", () => {
     "assessment-reason",
     "move-reason",
     "package-id",
-    "account-window",
     "state",
     "timestamp",
   ] as const)("拒绝不可投影的状态或公开字段，不携带任意payload：%s", (mode) => {
@@ -400,8 +346,7 @@ describe("core只读状态投影", () => {
     if (
       source.graphql.state !== "observed" ||
       source.deployment.state !== "observed" ||
-      !source.deployment.value.move ||
-      source.accountHistory.state !== "observed"
+      !source.deployment.value.move
     )
       throw new Error("fixture");
     if (mode === "domain-reason")
@@ -422,13 +367,7 @@ describe("core只读状态投影", () => {
           { packageId: { payload: "discarded" }, state: "pin-matched" },
         ],
       });
-    else if (mode === "account-window") {
-      if (source.accountHistory.value.state !== "coverage-window-verified")
-        throw new Error("fixture");
-      Object.assign(source.accountHistory.value.window, {
-        allAccountActivityCertified: { payload: "discarded" },
-      });
-    } else if (mode === "state")
+    else if (mode === "state")
       Object.assign(source.graphql.value, { state: "network-ready" });
     else Object.assign(source, { observedAt: -1 });
     expect(() => projectReadCapabilities(f.session, source)).toThrow(

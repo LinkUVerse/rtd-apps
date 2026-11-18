@@ -65,7 +65,7 @@ describe("只把明确当前合同负面持久分类", () => {
       ]);
     },
   );
-  it.each(["fullnode", "graphql", "archive", "accountHistory"] as const)(
+  it.each(["fullnode", "graphql", "archive"] as const)(
     "真实身份错误实例保留公开角色／原因：%s",
     (role) => {
       for (const reason of ["chain-mismatch", "incompatible"] as const)
@@ -210,7 +210,6 @@ describe("只把明确当前合同负面持久分类", () => {
       profile: (p) => {
         delete p.endpoints.graphqlUrl;
         delete p.endpoints.archiveGrpcWeb;
-        delete p.endpoints.accountHistoryUrl;
         p.packages.kiosk = "0x9";
         delete p.packages.personalKiosk;
         delete p.packages.originByte;

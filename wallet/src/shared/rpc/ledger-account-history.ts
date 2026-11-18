@@ -9,7 +9,7 @@ import type {
   WalletHistoryCoverage,
   WalletHistoryPageRequest,
 } from "rtd-apps-core/src/rpc/WalletRpcContext";
-import { WalletHistoryError } from "./history-facts";
+import { WalletHistoryError } from "./history-error";
 import { ledgerHistoryRow } from "./ledger-history-view";
 import type {
   WalletLedgerHistoryPage,

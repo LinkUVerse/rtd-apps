@@ -3,10 +3,6 @@
 import type { CapabilityObservationLifetime } from "./capability-observation-lifetime";
 import { Kind, parse, visit } from "graphql";
 import { RpcError } from "rtd-typescript/grpc";
-import {
-  HISTORY_COVERAGE_QUERY,
-  HISTORY_PAGE_QUERY,
-} from "./account-history-protocol";
 import { NATIVE_READ_PROBE_METHODS } from "./native-service-capabilities";
 import { WalletReadSession } from "./session";
 
@@ -64,26 +60,18 @@ export function createCapabilityFetch(
   const bounded: typeof fetch = async (input, init) => {
     fence();
     const url = String(input);
-    const query =
-      url === endpoints.graphqlUrl || url === endpoints.accountHistoryUrl;
+    const query = url === endpoints.graphqlUrl;
     if (init?.method !== "POST" || (!native.has(url) && !query))
       throw new WalletCapabilityTransportError("policy");
     if (query) {
       if (
         typeof init.body !== "string" ||
-        new TextEncoder().encode(init.body).length >
-          (url === endpoints.accountHistoryUrl ? 16384 : 65536)
+        new TextEncoder().encode(init.body).length > 65536
       )
         throw new WalletCapabilityTransportError("budget");
       try {
         const payload = JSON.parse(init.body);
         if (!payload || typeof payload.query !== "string") throw new Error();
-        if (
-          url === endpoints.accountHistoryUrl &&
-          payload.query !== HISTORY_COVERAGE_QUERY &&
-          payload.query !== HISTORY_PAGE_QUERY
-        )
-          throw new Error();
         const document = parse(payload.query, { maxTokens: 4096 });
         const operations = document.definitions.filter(
           (node) => node.kind === Kind.OPERATION_DEFINITION,

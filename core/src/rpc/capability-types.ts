@@ -8,11 +8,7 @@ export type WalletCapabilityAssessment<T> = Readonly<
       reason: "response" | "partial" | "budget" | "transport" | "policy";
     }
 >;
-export type WalletCapabilityRole =
-  | "fullnode"
-  | "graphql"
-  | "archive"
-  | "accountHistory";
+export type WalletCapabilityRole = "fullnode" | "graphql" | "archive";
 export type WalletGraphQLCapabilityDomain =
   | "balances"
   | "coinMetadata"
@@ -149,44 +145,6 @@ export interface WalletDeploymentCapabilitiesView {
     | "incomplete"
     | "anchor-matched";
 }
-export interface WalletAccountCapabilitiesView {
-  readonly state:
-    | "unconfigured"
-    | "coverage-window-verified"
-    | "scoped-window-verified"
-    | "syncing"
-    | "incomplete"
-    | "unavailable";
-  readonly reason?:
-    | "account-endpoint"
-    | "native-endpoint"
-    | "coverage"
-    | "response"
-    | "changed"
-    | "partial"
-    | "budget"
-    | "transport"
-    | "busy"
-    | "dependency"
-    | "upstream";
-  readonly scope: "declared-fixed-window-union";
-  readonly allAccountHistoryVerified: false;
-  readonly accountScope: "not-probed" | "scoped-window-verified";
-  readonly window?: Readonly<{
-    checkpointLo: number;
-    checkpointHi: number;
-    checkpointDigest: string;
-    allAccountActivityCertified: boolean;
-  }>;
-  readonly coverage?: Readonly<{
-    registrationComplete: boolean;
-    completeForRegisteredKiosks: boolean;
-    completeForDiscoveredOwnerTokens: boolean | null;
-    completeForDiscoveredCapabilities: boolean | null;
-    allAccountActivityCertified: boolean;
-    allAccountTransfersCertified: boolean | null;
-  }>;
-}
 interface WalletReadCapabilitiesBinding {
   readonly bindingKey: string;
   readonly readSessionKey: string;
@@ -211,13 +169,13 @@ export type WalletReadCapabilities = WalletReadCapabilitiesBinding &
         identity: Readonly<{
           before: Readonly<
             Record<
-              Exclude<WalletCapabilityRole, "accountHistory">,
+              WalletCapabilityRole,
               "verified" | "unconfigured" | "unavailable"
             >
           >;
           after: Readonly<
             Record<
-              Exclude<WalletCapabilityRole, "accountHistory">,
+              WalletCapabilityRole,
               "verified" | "unconfigured" | "unavailable"
             >
           >;
@@ -225,6 +183,5 @@ export type WalletReadCapabilities = WalletReadCapabilitiesBinding &
         graphql: WalletCapabilityAssessment<WalletGraphQLCapabilitiesView>;
         native: WalletCapabilityAssessment<WalletNativeCapabilitiesView>;
         deployment: WalletCapabilityAssessment<WalletDeploymentCapabilitiesView>;
-        accountHistory: WalletCapabilityAssessment<WalletAccountCapabilitiesView>;
       }
   >;

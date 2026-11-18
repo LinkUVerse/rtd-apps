@@ -4,7 +4,6 @@ import * as deadlines from "./read-deadline";
 import { describe, it, expect, vi } from "vitest";
 import { toBase58 } from "rtd-typescript/utils";
 import { GrpcTypes } from "rtd-typescript/grpc";
-import { historyRow } from "../../../tests/unit/rpc/history-fixtures";
 import { probeNetworkCapabilities } from "./network-capabilities";
 import { networkCapabilitiesFixture } from "./network-capabilities-fixture";
 import { grpcPacket } from "./move-package-fixture";
@@ -193,14 +192,6 @@ describe("四入口完整有限能力聚合", () => {
           move: { state: "selected-contracts-compatible" },
         },
       },
-      accountHistory: {
-        state: "observed",
-        value: {
-          state: "coverage-window-verified",
-          accountScope: "not-probed",
-          allAccountHistoryVerified: false,
-        },
-      },
       readiness: "not-assessed",
       serviceDeployment: "not-verified",
       crossDomainSnapshot: "not-verified",
@@ -227,26 +218,6 @@ describe("四入口完整有限能力聚合", () => {
       ),
     ).not.toMatch(/simulate|signAnd|executeTransaction/);
   });
-  it("显式owner调用整条生产reader，报告只保留hash、计数与有限union标志", async () => {
-    const row = await historyRow(),
-      f = await networkCapabilitiesFixture({ rows: [row.row] });
-    const result = await probeNetworkCapabilities(f.session, {
-      fetch: f.fetch,
-      address: row.row.sender,
-    });
-    expect(result.accountHistory).toMatchObject({
-      state: "observed",
-      value: {
-        state: "scoped-window-verified",
-        accountSha256: expect.stringMatching(/^[a-f0-9]{64}$/),
-        allAccountHistoryVerified: false,
-      },
-    });
-    expect(result.accountHistory).not.toHaveProperty("value.address");
-    expect(
-      f.history.requests.some((r) => r.query.includes("WalletAccountHistory")),
-    ).toBe(true);
-  });
   it("每次执行全新聚合，回到同profile也不复用旧session报告", async () => {
     const f = await networkCapabilitiesFixture(),
       g = await networkCapabilitiesFixture();
@@ -263,7 +234,6 @@ describe("四入口完整有限能力聚合", () => {
       profile: (p) => {
         delete p.endpoints.archiveGrpcWeb;
         delete p.endpoints.graphqlUrl;
-        delete p.endpoints.accountHistoryUrl;
         delete p.packages.kiosk;
         delete p.packages.personalKiosk;
         delete p.packages.originByte;
@@ -279,10 +249,6 @@ describe("四入口完整有限能力聚合", () => {
     expect(result.native).toMatchObject({
       state: "observed",
       value: { endpoints: { archive: { state: "unconfigured" } } },
-    });
-    expect(result.accountHistory).toMatchObject({
-      state: "observed",
-      value: { state: "unconfigured" },
     });
     expect(result.deployment).toMatchObject({
       state: "observed",
@@ -331,24 +297,6 @@ describe("四入口完整有限能力聚合", () => {
       probeNetworkCapabilities(f.session, { fetch }),
     ).rejects.toMatchObject({ role: "graphql", reason: "chain-mismatch" });
   });
-  it("account已确认H0错链停止聚合", async () => {
-    const f = await networkCapabilitiesFixture();
-    await expect(
-      probeNetworkCapabilities(f.session, {
-        fetch: async (url, init) => {
-          const response = await f.fetch(url, init);
-          if (String(url) !== f.profile.endpoints.accountHistoryUrl)
-            return response;
-          const json = await response.json();
-          json.data.accountHistoryCoverage.chainId = wrong;
-          return Response.json(json);
-        },
-      }),
-    ).rejects.toMatchObject({
-      role: "accountHistory",
-      reason: "chain-mismatch",
-    });
-  });
   it("Fullnode非业务成功trailer只降级该入口，HTTP200不冒作成功", async () => {
     const f = await networkCapabilitiesFixture();
     const result = await probeNetworkCapabilities(f.session, {
@@ -385,18 +333,6 @@ describe("四入口完整有限能力聚合", () => {
       expect(fetch).not.toHaveBeenCalled();
     },
   );
-  it.each([
-    { address: "not-an-address" },
-    { minimumCheckpoint: "9007199254740992" },
-    { minimumCheckpoint: "-1" },
-  ])("非法selector在首次IO前拒绝", async (options) => {
-    const f = await networkCapabilitiesFixture(),
-      fetch = vi.fn(f.fetch);
-    await expect(
-      probeNetworkCapabilities(f.session, { fetch, ...options }),
-    ).rejects.toMatchObject({ reason: "incompatible" });
-    expect(fetch).not.toHaveBeenCalled();
-  });
   it("关闭session立即拒绝并禁止迟到成功发布", async () => {
     const f = await networkCapabilitiesFixture();
     let release!: () => void, enter!: () => void;

@@ -218,10 +218,10 @@ it("在begin等待期间关闭且未开始probe，只完成自己的无IO占位"
   expect(row.faults).toHaveLength(0);
 });
 it.each(["pending", "fault"] as const)(
-  "accountHistory既存%s阻止三入口新授权，不伪造第四入口正例",
+  "archive既存%s阻止三入口新授权，不伪造其它入口正例",
   async (state) => {
     const s = session(),
-      area = { kind: "identity", role: "accountHistory" } as const,
+      area = { kind: "identity", role: "archive" } as const,
       ticket = await admission.begin(s.profile, [area]);
     if (state === "fault")
       await admission.complete(s.profile, ticket, [
@@ -258,7 +258,7 @@ it("完成后重读发现其它身份负面，不返回旧正例", async () => {
     .spyOn(admission, "assertClear")
     .mockImplementation(async (...args) => {
       if (++calls === 2) {
-        const area = { kind: "identity", role: "accountHistory" } as const,
+        const area = { kind: "identity", role: "archive" } as const,
           ticket = createNetworkAdmissionTicket([area]);
         const row = reserveNetworkAdmissionObservation(
           s.profile,

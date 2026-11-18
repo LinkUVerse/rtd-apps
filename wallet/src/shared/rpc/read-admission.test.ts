@@ -67,7 +67,7 @@ function fixture() {
 }
 afterEach(() => vi.useRealTimers());
 describe("current read fence, stored negatives and publication", () => {
-  it.each(["fullnode", "graphql", "archive", "accountHistory"] as const)(
+  it.each(["fullnode", "graphql", "archive"] as const)(
     "%s identity fault closes all new facts and cannot be cleared by an empty later row",
     async (role) => {
       const f = fixture();
@@ -139,7 +139,7 @@ describe("current read fence, stored negatives and publication", () => {
     await f.gate.refresh();
     const first = f.gate.getSnapshot().view.keys.balances;
     const ticket = createNetworkAdmissionTicket([
-      { kind: "identity", role: "accountHistory" },
+      { kind: "identity", role: "archive" },
     ]);
     f.row = reserveNetworkAdmissionObservation(f.profile, undefined, ticket);
     await f.gate.refresh();
@@ -384,7 +384,7 @@ describe("current read fence, stored negatives and publication", () => {
     expect(
       admissionQueryAffected(q("wallet-transaction-preview", null), f.gate),
     ).toBe(false);
-    f.add({ kind: "identity", role: "accountHistory", reason: "incompatible" });
+    f.add({ kind: "identity", role: "archive", reason: "incompatible" });
     await f.gate.refresh();
     expect(
       admissionQueryAffected(q("wallet-transaction-preview", null), f.gate),

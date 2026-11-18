@@ -6,8 +6,10 @@ import { resolve } from "node:path";
 import { buildSchema, introspectionFromSchema } from "graphql";
 import { GrpcTypes } from "rtd-typescript/grpc";
 import { normalizeRtdAddress } from "rtd-typescript/utils";
-import { historyFixture } from "../../../tests/unit/rpc/history-fixtures";
-import { snapshotDigest } from "../../../tests/unit/rpc/fixtures";
+import {
+  snapshotDigest,
+  snapshotFixture,
+} from "../../../tests/unit/rpc/fixtures";
 import { grpcPacket, movePackageFixtures } from "./move-package-fixture";
 import { WalletReadSession } from "./session";
 import { validateNetworkProfile } from "./profile";
@@ -32,12 +34,12 @@ export async function networkCapabilitiesFixture(
     rows?: unknown[];
   } = {},
 ) {
-  const history = await historyFixture({ rows: options.rows });
+  const native = snapshotFixture({ range: () => ({ first: 0, last: 30 }) });
   const raw: WalletNetworkProfile = {
-    ...history.native.profile,
-    endpoints: { ...history.native.profile.endpoints },
+    ...native.profile,
+    endpoints: { ...native.profile.endpoints },
     packages: {
-      ...history.native.profile.packages,
+      ...native.profile.packages,
       originByte: { discoveryPackage: "0x7", executionPackage: "0x7" },
       name: undefined,
     },
@@ -49,10 +51,7 @@ export async function networkCapabilitiesFixture(
   const requests: { url: string; query?: string; method?: string }[] = [];
   const fetch: typeof globalThis.fetch = async (input, init) => {
     const url = String(input);
-    if (
-      url === profile.endpoints.graphqlUrl ||
-      url === profile.endpoints.accountHistoryUrl
-    ) {
+    if (url === profile.endpoints.graphqlUrl) {
       const payload = JSON.parse(String(init?.body));
       requests.push({ url, query: payload.query });
       if (payload.query.includes("WalletGenesisIdentity"))
@@ -66,7 +65,7 @@ export async function networkCapabilitiesFixture(
             walletGenesis: { digest: profile.expectedGenesisDigest },
           },
         });
-      return history.fetch(input, init);
+      return native.fetch(input, init);
     }
     const method = url.split("/rtd.rpc.v2.")[1];
     requests.push({ url, method });

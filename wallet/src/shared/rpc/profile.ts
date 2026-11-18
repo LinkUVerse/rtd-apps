@@ -8,11 +8,7 @@ import {
   toBase58,
 } from "rtd-typescript/utils";
 
-export type EndpointRole =
-  | "fullnode"
-  | "graphql"
-  | "archive"
-  | "accountHistory";
+export type EndpointRole = "fullnode" | "graphql" | "archive";
 
 export interface WalletNetworkProfile {
   schemaVersion: 2;
@@ -27,7 +23,6 @@ export interface WalletNetworkProfile {
     fullnodeGrpcWeb: string;
     graphqlUrl?: string;
     archiveGrpcWeb?: string;
-    accountHistoryUrl?: string;
   };
   packages: {
     kiosk?: string;
@@ -51,7 +46,9 @@ export type ValidatedNetworkProfile = Readonly<
     endpoints: Readonly<WalletNetworkProfile["endpoints"]>;
     packages: Readonly<
       Omit<WalletNetworkProfile["packages"], "name" | "originByte"> & {
-        originByte?: Readonly<NonNullable<WalletNetworkProfile["packages"]["originByte"]>>;
+        originByte?: Readonly<
+          NonNullable<WalletNetworkProfile["packages"]["originByte"]>
+        >;
         name?: Readonly<NonNullable<WalletNetworkProfile["packages"]["name"]>>;
       }
     >;
@@ -166,11 +163,7 @@ export function validateNetworkProfile(
       true,
     ),
   };
-  for (const field of [
-    "graphqlUrl",
-    "archiveGrpcWeb",
-    "accountHistoryUrl",
-  ] as const) {
+  for (const field of ["graphqlUrl", "archiveGrpcWeb"] as const) {
     if (endpoints[field] !== undefined) {
       normalized[field] = normalizeEndpoint(
         endpoints[field],
@@ -181,9 +174,7 @@ export function validateNetworkProfile(
   }
   if (
     options.requireComplete &&
-    (!normalized.graphqlUrl ||
-      !normalized.archiveGrpcWeb ||
-      !normalized.accountHistoryUrl)
+    (!normalized.graphqlUrl || !normalized.archiveGrpcWeb)
   ) {
     throw new NetworkProfileError("completeNetworkEndpoints");
   }
@@ -191,15 +182,13 @@ export function validateNetworkProfile(
   if (normalized.archiveGrpcWeb === normalized.fullnodeGrpcWeb) {
     throw new NetworkProfileError("archiveGrpcWeb");
   }
-  if (
-    normalized.accountHistoryUrl &&
-    normalized.accountHistoryUrl === normalized.graphqlUrl
-  ) {
-    throw new NetworkProfileError("accountHistoryUrl");
-  }
-  const faucetUrl = raw.faucetUrl === undefined ? undefined : normalizeEndpoint(raw.faucetUrl, "faucetUrl");
+  const faucetUrl =
+    raw.faucetUrl === undefined
+      ? undefined
+      : normalizeEndpoint(raw.faucetUrl, "faucetUrl");
   // SDK V2 resolves /v2/gas from the origin; accepting a prefix would silently discard it.
-  if (faucetUrl && new URL(faucetUrl).pathname !== "/") throw new NetworkProfileError("faucetUrl");
+  if (faucetUrl && new URL(faucetUrl).pathname !== "/")
+    throw new NetworkProfileError("faucetUrl");
   const packages = record(raw.packages, "packages");
   const normalizedPackages: WalletNetworkProfile["packages"] = {};
   for (const field of ["kiosk", "personalKiosk"] as const) {
@@ -217,8 +206,14 @@ export function validateNetworkProfile(
   if (packages.originByte !== undefined) {
     const originByte = record(packages.originByte, "originByte");
     normalizedPackages.originByte = Object.freeze({
-      discoveryPackage: packageId(originByte.discoveryPackage, "originByte.discoveryPackage"),
-      executionPackage: packageId(originByte.executionPackage, "originByte.executionPackage"),
+      discoveryPackage: packageId(
+        originByte.discoveryPackage,
+        "originByte.discoveryPackage",
+      ),
+      executionPackage: packageId(
+        originByte.executionPackage,
+        "originByte.executionPackage",
+      ),
     });
   }
   return Object.freeze({
@@ -252,7 +247,6 @@ export function networkBindingKey(profile: ValidatedNetworkProfile): string {
     profile.endpoints.fullnodeGrpcWeb,
     profile.endpoints.graphqlUrl ?? null,
     profile.endpoints.archiveGrpcWeb ?? null,
-    profile.endpoints.accountHistoryUrl ?? null,
     profile.packages.kiosk ?? null,
     profile.packages.personalKiosk ?? null,
     profile.packages.name?.packageId ?? null,
@@ -260,9 +254,15 @@ export function networkBindingKey(profile: ValidatedNetworkProfile): string {
     profile.packages.name?.reverseRegistry ?? null,
     profile.faucetUrl ?? null,
     // Preserve pre-OriginByte bindings when this optional deployment is absent.
-    ...(profile.packages.originByte ? [
-      ["originByte", profile.packages.originByte.discoveryPackage, profile.packages.originByte.executionPackage],
-    ] : []),
+    ...(profile.packages.originByte
+      ? [
+          [
+            "originByte",
+            profile.packages.originByte.discoveryPackage,
+            profile.packages.originByte.executionPackage,
+          ],
+        ]
+      : []),
   ]);
 }
 

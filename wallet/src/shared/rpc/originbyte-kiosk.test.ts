@@ -117,7 +117,7 @@ describe("OriginByte package binding and discovery token", () => {
     expect(executionScopeKey(base, address)).toBe(
       executionScopeKey(changed, address),
     );
-    expect(JSON.parse(networkBindingKey(base)).length).toBe(17);
+    expect(JSON.parse(networkBindingKey(base)).length).toBe(16);
   });
 });
 

@@ -2,10 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import type { CapabilityObservationLifetime } from "./capability-observation-lifetime";
 import {
-  probeAccountHistoryCapabilities,
-  type WalletAccountHistoryCapabilities,
-} from "./account-history-capabilities";
-import {
   createCapabilityFetch,
   WalletCapabilityTransportError,
 } from "./capability-fetch";
@@ -29,7 +25,6 @@ import {
   type WalletNativeServiceCapabilities,
 } from "./native-service-capabilities";
 import { WalletReadSession } from "./session";
-import { walletAddress } from "./asset-address";
 import { checkpointNumber } from "./graphql-snapshot";
 
 export type CapabilityAssessment<T> = Readonly<
@@ -51,7 +46,6 @@ export interface WalletNetworkCapabilities {
   readonly graphql: CapabilityAssessment<WalletGraphQLDomainCapabilities>;
   readonly native: CapabilityAssessment<WalletNativeServiceCapabilities>;
   readonly deployment: CapabilityAssessment<WalletDeploymentCapabilities>;
-  readonly accountHistory: CapabilityAssessment<WalletAccountHistoryCapabilities>;
   readonly scope: "configured-read-contracts";
   readonly crossDomainSnapshot: "not-verified";
   readonly serviceDeployment: "not-verified";
@@ -87,7 +81,6 @@ export function probeNetworkCapabilities(
     signal?: AbortSignal;
     timeoutMs?: number;
     minimumCheckpoint?: string;
-    address?: string;
     declaration?: { json: string; trustedSha256: string };
   } = {},
 ): Promise<WalletNetworkCapabilities> {
@@ -114,11 +107,7 @@ export function probeNetworkCapabilities(
       json: options.declaration.json,
       trustedSha256: options.declaration.trustedSha256,
     };
-    const address =
-        options.address === undefined
-          ? undefined
-          : walletAddress(options.address),
-      minimumCheckpoint = options.minimumCheckpoint;
+    const minimumCheckpoint = options.minimumCheckpoint;
     if (minimumCheckpoint !== undefined) checkpointNumber(minimumCheckpoint);
     const fetch = createCapabilityFetch(
       session,
@@ -128,7 +117,7 @@ export function probeNetworkCapabilities(
     );
     const bound = <T extends { bindingKey: string; readSessionKey: string }>(
       value: T,
-      role: "graphql" | "fullnode" | "accountHistory",
+      role: "graphql" | "fullnode",
     ): T => {
       fence();
       if (
@@ -218,16 +207,6 @@ export function probeNetworkCapabilities(
             "fullnode",
           ),
         ),
-        assess(async () =>
-          bound(
-            await probeAccountHistoryCapabilities(session, {
-              ...shared,
-              address,
-              minimumCheckpoint,
-            }),
-            "accountHistory",
-          ),
-        ),
       ] as const;
       const results = await Promise.allSettled(jobs);
       fence();
@@ -236,7 +215,7 @@ export function probeNetworkCapabilities(
       fence();
       for (const result of results)
         if (result.status === "rejected") throw result.reason;
-      const [graphql, native, deployment, accountHistory] = results.map(
+      const [graphql, native, deployment] = results.map(
         (result) =>
           (result as PromiseFulfilledResult<CapabilityAssessment<unknown>>)
             .value,
@@ -244,7 +223,6 @@ export function probeNetworkCapabilities(
         CapabilityAssessment<WalletGraphQLDomainCapabilities>,
         CapabilityAssessment<WalletNativeServiceCapabilities>,
         CapabilityAssessment<WalletDeploymentCapabilities>,
-        CapabilityAssessment<WalletAccountHistoryCapabilities>,
       ];
       // Child deadlines can finish their wrappers while an abort-ignoring fetch
       // or body cleanup still owns a physical lease. Such a run cannot clear admission.
@@ -258,7 +236,6 @@ export function probeNetworkCapabilities(
         graphql,
         native,
         deployment,
-        accountHistory,
         scope: "configured-read-contracts",
         crossDomainSnapshot: "not-verified",
         serviceDeployment: "not-verified",

@@ -4,7 +4,6 @@ import type {
   WalletReadCapabilities,
   WalletCapabilityAssessment,
   WalletNativeEndpointView,
-  WalletAccountCapabilitiesView,
   WalletGraphQLDomainView,
   WalletDeploymentCapabilitiesView,
 } from "rtd-apps-core/src/rpc/capability-types";
@@ -17,7 +16,6 @@ import {
   NATIVE_READ_PROBE_METHODS,
   type WalletNativeServiceCapabilities,
 } from "./native-service-capabilities";
-import type { WalletAccountHistoryCapabilities } from "./account-history-capabilities";
 import type { WalletGraphQLDomainCapability } from "./graphql-domain-capabilities";
 import type { WalletMoveGroupCapability } from "./move-package-capabilities";
 import { assertGenesisDigest } from "./profile";
@@ -67,7 +65,7 @@ export function unavailableReadCapabilities(
 /** A view of a confirmed failure; persistent commitment is a separate admission-store contract. */
 export function quarantinedReadCapabilities(
   session: WalletReadSession,
-  role: "fullnode" | "graphql" | "archive" | "accountHistory",
+  role: "fullnode" | "graphql" | "archive",
   reason: "chain-mismatch" | "incompatible" | "schema" | "abi",
 ): WalletReadCapabilities {
   return Object.freeze({
@@ -153,127 +151,6 @@ function nativeEndpoint(
             ]
           : [];
       }),
-    ),
-  };
-}
-function account(
-  value: WalletAccountHistoryCapabilities,
-): WalletAccountCapabilitiesView {
-  literal(
-    value.state,
-    [
-      "unconfigured",
-      "coverage-window-verified",
-      "scoped-window-verified",
-      "syncing",
-      "incomplete",
-      "unavailable",
-    ],
-    "accountHistory",
-  );
-  if (
-    value.scope !== "declared-fixed-window-union" ||
-    value.allAccountHistoryVerified !== false ||
-    value.protocol !== "rtd-account-history-two-root" ||
-    value.snapshotVerification !== "service-binding-only" ||
-    value.cursorVerification !== "service-authenticated-opaque"
-  )
-    throw new NetworkIdentityError("accountHistory", "incompatible");
-  const base = {
-    state: value.state,
-    scope: "declared-fixed-window-union",
-    allAccountHistoryVerified: false,
-  } as const;
-  if (
-    value.state === "coverage-window-verified" ||
-    value.state === "scoped-window-verified"
-  ) {
-    const window = value.window;
-    if (
-      !Number.isSafeInteger(window.checkpointLo) ||
-      window.checkpointLo < 0 ||
-      !Number.isSafeInteger(window.checkpointHi) ||
-      window.checkpointHi < window.checkpointLo ||
-      typeof window.allAccountActivityCertified !== "boolean"
-    )
-      throw new NetworkIdentityError("accountHistory", "incompatible");
-    try {
-      assertGenesisDigest(window.checkpointDigest);
-    } catch {
-      throw new NetworkIdentityError("accountHistory", "incompatible");
-    }
-  }
-  if (value.state === "scoped-window-verified") {
-    for (const key of [
-      "registrationComplete",
-      "completeForRegisteredKiosks",
-      "allAccountActivityCertified",
-    ] as const)
-      if (typeof value.coverage[key] !== "boolean")
-        throw new NetworkIdentityError("accountHistory", "incompatible");
-    for (const key of [
-      "completeForDiscoveredOwnerTokens",
-      "completeForDiscoveredCapabilities",
-      "allAccountTransfersCertified",
-    ] as const)
-      if (
-        value.coverage[key] !== null &&
-        typeof value.coverage[key] !== "boolean"
-      )
-        throw new NetworkIdentityError("accountHistory", "incompatible");
-  }
-  if (value.state === "coverage-window-verified")
-    return {
-      ...base,
-      accountScope: "not-probed",
-      window: {
-        checkpointLo: value.window.checkpointLo,
-        checkpointHi: value.window.checkpointHi,
-        checkpointDigest: value.window.checkpointDigest,
-        allAccountActivityCertified: value.window.allAccountActivityCertified,
-      },
-    };
-  if (value.state === "scoped-window-verified")
-    return {
-      ...base,
-      accountScope: "scoped-window-verified",
-      window: {
-        checkpointLo: value.window.checkpointLo,
-        checkpointHi: value.window.checkpointHi,
-        checkpointDigest: value.window.checkpointDigest,
-        allAccountActivityCertified: value.window.allAccountActivityCertified,
-      },
-      coverage: {
-        registrationComplete: value.coverage.registrationComplete,
-        completeForRegisteredKiosks: value.coverage.completeForRegisteredKiosks,
-        completeForDiscoveredOwnerTokens:
-          value.coverage.completeForDiscoveredOwnerTokens,
-        completeForDiscoveredCapabilities:
-          value.coverage.completeForDiscoveredCapabilities,
-        allAccountActivityCertified: value.coverage.allAccountActivityCertified,
-        allAccountTransfersCertified:
-          value.coverage.allAccountTransfersCertified,
-      },
-    };
-  return {
-    ...base,
-    accountScope: "not-probed",
-    reason: literal(
-      value.reason,
-      [
-        "account-endpoint",
-        "native-endpoint",
-        "coverage",
-        "response",
-        "changed",
-        "partial",
-        "budget",
-        "transport",
-        "busy",
-        "dependency",
-        "upstream",
-      ],
-      "accountHistory",
     ),
   };
 }
@@ -391,12 +268,7 @@ export function projectReadCapabilities(
     report.observedAt < 0
   )
     throw new NetworkIdentityError("fullnode", "incompatible");
-  for (const name of [
-    "graphql",
-    "native",
-    "deployment",
-    "accountHistory",
-  ] as const) {
+  for (const name of ["graphql", "native", "deployment"] as const) {
     const value = report[name];
     if (
       value.state === "observed" &&
@@ -611,11 +483,6 @@ export function projectReadCapabilities(
           : null,
       }),
       "fullnode",
-    ),
-    accountHistory: assessment(
-      report.accountHistory,
-      account,
-      "accountHistory",
     ),
   };
   session.assertActive();

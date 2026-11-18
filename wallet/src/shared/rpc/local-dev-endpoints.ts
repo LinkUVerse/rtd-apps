@@ -20,14 +20,12 @@ export const LOCAL_DEV_ENDPOINTS = Object.freeze({
   fullnodeGrpcWeb: "http://127.0.0.1:43350",
   graphqlUrl: "http://127.0.0.1:43412/graphql",
   archiveGrpcWeb: "http://127.0.0.1:43404/archive",
-  accountHistoryUrl: "http://127.0.0.1:43413/account/graphql",
 });
 
 export interface LocalDevEndpoints {
   fullnodeGrpcWeb: string;
   graphqlUrl?: string;
   archiveGrpcWeb?: string;
-  accountHistoryUrl?: string;
 }
 
 /** The fixed dev-stack ports, widened to the profile endpoint shape. */

@@ -22,7 +22,6 @@ export function profileFixture() {
   const p = baseProfile();
   delete p.endpoints.graphqlUrl;
   delete p.endpoints.archiveGrpcWeb;
-  delete p.endpoints.accountHistoryUrl;
   delete p.packages.name;
   delete p.packages.personalKiosk;
   return p;

@@ -184,7 +184,7 @@ async function boundedResponse(response: Response): Promise<Response> {
   }
 }
 
-/** Schema declarations only: does not authorize signing, publish clients, or claim coverage/packages/accountHistory readiness. */
+/** Schema declarations only: does not authorize signing, publish clients, or claim coverage/packages readiness. */
 export async function probeGraphQLSchemaCapabilities(
   session: WalletReadSession,
   options: {

@@ -70,9 +70,6 @@ function areas(session: WalletReadSession): NetworkAdmissionArea[] {
     ...(endpoints.archiveGrpcWeb
       ? [{ kind: "identity", role: "archive" } as const]
       : []),
-    ...(endpoints.accountHistoryUrl
-      ? [{ kind: "identity", role: "accountHistory" } as const]
-      : []),
     ...(endpoints.graphqlUrl
       ? Object.keys(domains).map((domain) => ({
           kind: "graphql-domain" as const,

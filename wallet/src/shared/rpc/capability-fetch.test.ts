@@ -3,7 +3,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { GrpcTypes } from "rtd-typescript/grpc";
 import { createCapabilityFetch } from "./capability-fetch";
-import { HISTORY_COVERAGE_QUERY } from "./account-history-protocol";
 import { grpcPacket } from "./move-package-fixture";
 import { profileFixture } from "./profile-fixture";
 import { validateNetworkProfile } from "./profile";
@@ -146,15 +145,11 @@ describe("能力聚合精确入口、有界body与真实cleanup", () => {
     ).rejects.toMatchObject({ reason: "policy" });
     expect(fetch).not.toHaveBeenCalled();
   });
-  it("account只两个固定根，Archive不能访问Fullnode方法或额外origin", async () => {
+  it("未配置origin与跨服务native方法在IO前拒绝", async () => {
     const f = setup(),
       fetch = vi.fn<typeof globalThis.fetch>(),
       bounded = createCapabilityFetch(f.session, f.signal.signal, fetch);
     for (const [url, body] of [
-      [
-        f.session.profile.endpoints.accountHistoryUrl!,
-        JSON.stringify({ query: "query { __typename }" }),
-      ],
       [
         "https://unconfigured.test/graphql",
         JSON.stringify({ query: "query { __typename }" }),
@@ -179,24 +174,6 @@ describe("能力聚合精确入口、有界body与真实cleanup", () => {
         f.signal.signal,
         fetch,
       )(f.url, { ...post, body: size < 0 ? "invalid" : new Uint8Array(size) }),
-    ).rejects.toMatchObject({ reason: "budget" });
-    expect(fetch).not.toHaveBeenCalled();
-  });
-  it("account请求16KiB界限按UTF8字节，不能用字符数绕过", async () => {
-    const f = setup(),
-      fetch = vi.fn<typeof globalThis.fetch>();
-    await expect(
-      createCapabilityFetch(
-        f.session,
-        f.signal.signal,
-        fetch,
-      )(f.session.profile.endpoints.accountHistoryUrl!, {
-        method: "POST",
-        body: JSON.stringify({
-          query: HISTORY_COVERAGE_QUERY,
-          padding: "中".repeat(5500),
-        }),
-      }),
     ).rejects.toMatchObject({ reason: "budget" });
     expect(fetch).not.toHaveBeenCalled();
   });

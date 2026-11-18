@@ -11,7 +11,7 @@ import { RpcError, RtdGrpcClient } from "rtd-typescript/grpc";
 import { assertGenesisDigest, type EndpointRole } from "./profile";
 import { WalletReadSession } from "./session";
 
-type IdentityRole = Exclude<EndpointRole, "accountHistory">;
+type IdentityRole = EndpointRole;
 
 export class NetworkIdentityError extends Error {
   constructor(

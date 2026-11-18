@@ -73,7 +73,7 @@ export async function assertTransactionNetworkIdentity(
     ...(session.profile.endpoints.archiveGrpcWeb ? ["archive"] : []),
   ]);
   try {
-    // Any persisted identity fault/pending applies, including accountHistory.
+    // Any persisted identity fault/pending applies regardless of entry role.
     // This probe still observes only its own three native identity roles.
     // A marked lost read owner is adopted atomically by beginRecoverable.
     // An early generic clear check would reject that original reservation first.

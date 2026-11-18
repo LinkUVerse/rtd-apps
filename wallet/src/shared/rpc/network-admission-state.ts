@@ -14,7 +14,6 @@ const roles = {
   fullnode: true,
   graphql: true,
   archive: true,
-  accountHistory: true,
 } as const satisfies Record<EndpointRole, true>;
 const domains = {
   balances: true,

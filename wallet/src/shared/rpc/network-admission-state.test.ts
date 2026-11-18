@@ -63,7 +63,7 @@ describe("负面与观察占位精确状态合同", () => {
       ),
     ).toThrow(expect.objectContaining({ reason: "reviewing" }));
   });
-  it.each(["fullnode", "graphql", "archive", "accountHistory"] as const)(
+  it.each(["fullnode", "graphql", "archive"] as const)(
     "任何身份角色占位及负面影响整个绑定：%s",
     (role) => {
       const p = profile(),
@@ -296,8 +296,8 @@ describe("负面与观察占位精确状态合同", () => {
       expect.objectContaining({ reason: "corrupt" }),
     );
   });
-  it("所有24个area／28种Fault可规范合并，unknown／payload不进入记录", () => {
-    const roles = ["fullnode", "graphql", "archive", "accountHistory"] as const,
+  it("所有23个area／26种Fault可规范合并，unknown／payload不进入记录", () => {
+    const roles = ["fullnode", "graphql", "archive"] as const,
       domains = [
         "balances",
         "coinMetadata",
@@ -351,7 +351,7 @@ describe("负面与观察占位精确状态合同", () => {
         t,
         fs,
       );
-    expect(r.faults).toHaveLength(28);
+    expect(r.faults).toHaveLength(26);
     expect(validateNetworkAdmissionRecord(p, r)).toEqual(r);
     expect(() =>
       validateNetworkAdmissionArea({ ...assets, reason: "schema" }),

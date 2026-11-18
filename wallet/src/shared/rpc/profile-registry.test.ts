@@ -44,17 +44,36 @@ describe("内置 NetworkProfile 显式配置", () => {
   });
 });
 
-it.each(['graphqlUrl', 'archiveGrpcWeb', 'accountHistoryUrl'] as const)(
-  'built-in profile missing %s cannot silently become Fullnode-only', (field) => {
+it.each(["graphqlUrl", "archiveGrpcWeb"] as const)(
+  "built-in profile missing %s cannot silently become Fullnode-only",
+  (field) => {
     const profile = profileFixture();
     delete profile.endpoints[field];
-    expect(selectBuiltinProfile(API_ENV.local, JSON.stringify({ local: profile })).state).toBe('invalid');
+    expect(
+      selectBuiltinProfile(API_ENV.local, JSON.stringify({ local: profile }))
+        .state,
+    ).toBe("invalid");
   },
 );
 
-it('custom profile selection reads the saved v2 and legacy URL stays unconfigured', () => {
-  expect(selectNetworkProfile({ env: API_ENV.customRPC, customRpcUrl: 'http://legacy' }, undefined).state).toBe('unconfigured');
-  const selected = selectNetworkProfile({ env: API_ENV.customRPC, customRpcUrl: 'http://legacy', profile: profileFixture() }, undefined);
-  expect(selected.state).toBe('configured');
-  if (selected.state === 'configured') expect(selected.profile.endpoints.fullnodeGrpcWeb).toBe('http://127.0.0.1:9000/fullnode');
+it("custom profile selection reads the saved v2 and legacy URL stays unconfigured", () => {
+  expect(
+    selectNetworkProfile(
+      { env: API_ENV.customRPC, customRpcUrl: "http://legacy" },
+      undefined,
+    ).state,
+  ).toBe("unconfigured");
+  const selected = selectNetworkProfile(
+    {
+      env: API_ENV.customRPC,
+      customRpcUrl: "http://legacy",
+      profile: profileFixture(),
+    },
+    undefined,
+  );
+  expect(selected.state).toBe("configured");
+  if (selected.state === "configured")
+    expect(selected.profile.endpoints.fullnodeGrpcWeb).toBe(
+      "http://127.0.0.1:9000/fullnode",
+    );
 });

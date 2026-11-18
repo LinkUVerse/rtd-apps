@@ -5,7 +5,7 @@ import { NetworkIdentityError } from "./identity";
 import { TransactionNetworkResetError } from "./transaction-network-identity";
 import { WalletNetworkObservationError } from "./network-observation-state";
 import { SnapshotReadError } from "./graphql-snapshot";
-import { WalletHistoryError } from "./history-facts";
+import { WalletHistoryError } from "./history-error";
 import { WalletSchemaCapabilityError } from "./graphql-schema-capabilities";
 import {
   WalletNetworkAdmissionBlockedError,

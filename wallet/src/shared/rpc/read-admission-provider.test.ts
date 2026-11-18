@@ -187,7 +187,7 @@ const wait = (run: () => void) =>
     await vi.waitFor(run);
   });
 describe("actual Provider durable negative consumption and current UI values", () => {
-  it.each(["fullnode", "graphql", "archive", "accountHistory"] as const)(
+  it.each(["fullnode", "graphql", "archive"] as const)(
     "preexisting %s fault disables all new reads with zero SDK calls",
     async (role) => {
       const f = source();
@@ -225,7 +225,7 @@ describe("actual Provider durable negative consumption and current UI values", (
     view.client.setQueryData(catalog, "unrelated");
     await add(f.profile, {
       kind: "identity",
-      role: "accountHistory",
+      role: "archive",
       reason: "incompatible",
     });
     await wait(() => expect(view.rpc.hasFullnodeSession).toBe(false));
