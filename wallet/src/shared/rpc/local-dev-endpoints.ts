@@ -19,7 +19,7 @@
 export const LOCAL_DEV_ENDPOINTS = Object.freeze({
   fullnodeGrpcWeb: "http://127.0.0.1:43350",
   graphqlUrl: "http://127.0.0.1:43412/graphql",
-  archiveGrpcWeb: "http://127.0.0.1:43404/archive",
+  archiveGrpcWeb: "http://127.0.0.1:43404",
 });
 
 export interface LocalDevEndpoints {
