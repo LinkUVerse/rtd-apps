@@ -1,11 +1,11 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import ExplorerLink from '_src/ui/app/components/explorer-link';
-import { ExplorerLinkType } from '_src/ui/app/components/explorer-link/ExplorerLinkType';
+import { ReceiptIdentifier } from '_components/receipt-card/ReceiptIdentifier';
+import { ExplorerLinkType } from '_components/explorer-link/ExplorerLinkType';
 import { useActiveAddress } from '_src/ui/app/hooks';
 import { useI18n } from '_src/ui/app/i18n';
-import { formatAddress, isValidRtdAddress } from 'rtd-typescript/utils';
+import { isValidRtdAddress } from 'rtd-typescript/utils';
 
 import { Text } from '../text';
 import { SummaryCardFooter } from './Card';
@@ -16,34 +16,25 @@ export function OwnerFooter({ owner, ownerType }: { owner?: string; ownerType?: 
 	const isOwner = address === owner;
 
 	if (!owner) return null;
-	const display =
-		ownerType === 'Shared'
-			? t('transaction.shared')
-			: isValidRtdAddress(owner)
-				? isOwner
-					? t('transaction.you')
-					: formatAddress(owner)
-				: owner;
+	const isAddress = isValidRtdAddress(owner);
 
 	return (
 		<SummaryCardFooter>
 			<Text variant="pBody" weight="medium" color="steel-dark">
 				{t('transaction.owner')}
 			</Text>
-			<div className="flex justify-end">
-				{isOwner ? (
+			<div className="flex min-w-0 justify-end">
+				{ownerType === 'Shared' || !isAddress ? (
 					<Text variant="body" weight="medium" color="hero-dark">
-						{display}
+						{ownerType === 'Shared' ? t('transaction.shared') : owner}
 					</Text>
 				) : (
-					<ExplorerLink
-						type={ExplorerLinkType.address}
-						title={owner}
-						address={owner}
-						className="text-hero-dark text-body font-medium no-underline font-mono"
-					>
-						{display}
-					</ExplorerLink>
+					<ReceiptIdentifier
+						value={owner}
+						type="address"
+						prefix={isOwner ? t('transaction.you') : undefined}
+						explorerLink={{ type: ExplorerLinkType.address, address: owner }}
+					/>
 				)}
 			</div>
 		</SummaryCardFooter>

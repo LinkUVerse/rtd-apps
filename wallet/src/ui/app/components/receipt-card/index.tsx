@@ -15,7 +15,6 @@ import { useRecognizedPackages } from "../../hooks/useRecognizedPackages";
 import { useI18n } from "../../i18n";
 import { DateCard } from "../../shared/date-card";
 import { BalanceChanges } from "../../shared/transaction-summary/cards/BalanceChanges";
-import { ExplorerLinkCard } from "../../shared/transaction-summary/cards/ExplorerLink";
 import { GasSummary } from "../../shared/transaction-summary/cards/GasSummary";
 import { ObjectEffects } from "./ObjectEffects";
 import { StakeTxnCard } from "./StakeTxnCard";
@@ -71,12 +70,6 @@ export function ReceiptCard({
             {t("receipt.checkpointPending")}
           </ReceiptNotice>
         )}
-        <ExplorerLinkCard
-          digest={txn.digest}
-          timestamp={
-            txn.timestampMs === null ? undefined : String(txn.timestampMs)
-          }
-        />
       </section>
     </div>
   );

@@ -690,6 +690,11 @@ const en = {
   "receipt.packageChanged": "Package updated",
   "receipt.balanceWritten": "Account balance updated",
   "receipt.objectVersion": "Object version: {version}",
+  "receipt.transactionId": "Transaction ID",
+  "receipt.transactionIdCopied": "Transaction ID copied",
+  "receipt.idCopied": "ID copied",
+  "receipt.expandId": "Show full ID",
+  "receipt.collapseId": "Abbreviate ID",
 } as const;
 
 export default en;

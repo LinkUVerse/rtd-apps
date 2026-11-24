@@ -8,6 +8,7 @@
   },
   "permissions": [
     "storage",
+    "clipboardWrite",
     "tabs",
     "alarms",
     "unlimitedStorage",

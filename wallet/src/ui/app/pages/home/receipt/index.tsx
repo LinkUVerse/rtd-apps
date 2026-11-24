@@ -14,6 +14,8 @@ import { useStoredTransactionReceipt } from "_src/ui/app/hooks/useStoredTransact
 import { useReceiptIndexing } from "_src/ui/app/hooks/useReceiptIndexing";
 import { useLocalActivityEntry } from "_src/ui/app/hooks/usePendingActivity";
 import { ActivityStatusTag } from "_components/transactions-card/ActivityStatusTag";
+import { ReceiptIdentifier } from "_components/receipt-card/ReceiptIdentifier";
+import { ExplorerLinkType } from "_components/explorer-link/ExplorerLinkType";
 import { GAS_SYMBOL } from "_src/ui/app/redux/slices/rtd-objects/Coin";
 import type { LocalActivitySummary } from "_src/shared/rpc/activity-pending";
 import { selectReceiptFacts } from "_src/shared/rpc/stored-receipt";
@@ -21,8 +23,7 @@ import { WalletLedgerReadError } from "_src/shared/rpc/ledger-reader";
 import { useWalletTransactionDetails } from "rtd-apps-core/src/rpc/receipt-hooks";
 import { useWalletRpc } from "rtd-apps-core/src/rpc/WalletRpcContext";
 import { Check32 } from "rtd-apps-icons";
-import { formatAddress } from "rtd-typescript/utils";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState, type ReactNode } from "react";
 import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 
 function ReceiptPage() {
@@ -118,6 +119,19 @@ function ReceiptPage() {
         }
       >
         <div className={styles.page}>
+          <div data-testid="transaction-id" className={styles.transactionId}>
+            <span className="mb-2 block text-xs font-semibold text-steel-dark">
+              {t("receipt.transactionId")}
+            </span>
+            <ReceiptIdentifier
+              value={transactionId}
+              type="transaction"
+              explorerLink={{
+                type: ExplorerLinkType.transaction,
+                transactionID: transactionId,
+              }}
+            />
+          </div>
           {nativeOnly ? (
             <ReceiptNotice
               tone={nativeStatus === "SUCCESS" ? "success" : "issue"}
@@ -129,10 +143,11 @@ function ReceiptPage() {
                     : t("receipt.failed")}
                 </p>
                 <ActivityStatusTag
-                  status={nativeStatus === "SUCCESS" ? "complete" : "confirming"}
+                  status={
+                    nativeStatus === "SUCCESS" ? "complete" : "confirming"
+                  }
                 />
               </div>
-              <p className={styles.identifier}>{transactionId}</p>
               <p>
                 {t("receipt.confirmedCheckpoint", {
                   checkpoint: nativeCheckpoint,
@@ -141,9 +156,7 @@ function ReceiptPage() {
               <DateCard timestamp={nativeTimestamp} size="sm" />
             </ReceiptNotice>
           ) : unsupported ? (
-            <ReceiptNotice>
-              {t("receipt.detailsUnsupported")}
-            </ReceiptNotice>
+            <ReceiptNotice>{t("receipt.detailsUnsupported")}</ReceiptNotice>
           ) : isError ||
             rpc.state === "unconfigured" ||
             rpc.state === "invalid" ? (
@@ -173,7 +186,6 @@ function ReceiptPage() {
                   status={facts.receipt.success ? "complete" : "confirming"}
                 />
               </div>
-              <p className={styles.identifier}>{facts.receipt.digest}</p>
               {facts.receipt.checkpoint !== null && (
                 <p>
                   {t("receipt.confirmedCheckpoint", {
@@ -214,22 +226,25 @@ function ReceiptPage() {
   );
 }
 
-function LocalSummaryRow({ label, value }: { label: string; value: string }) {
+function LocalSummaryRow({
+  label,
+  value,
+}: {
+  label: string;
+  value: ReactNode;
+}) {
   return (
     <div className="flex items-start justify-between gap-3 text-xs leading-5">
       <span className="shrink-0 text-steel-dark">{label}</span>
-      <span className="min-w-0 break-all text-right font-medium tabular-nums text-gray-90">
+      <div className="flex min-w-0 flex-col items-end gap-1 text-right font-medium tabular-nums text-gray-90">
         {value}
-      </span>
+      </div>
     </div>
   );
 }
 
 function LocalSummary({ summary }: { summary: LocalActivitySummary }) {
   const { t } = useI18n();
-  const recipient = summary.recipientName
-    ? `${summary.recipientName} · ${formatAddress(summary.recipient)}`
-    : formatAddress(summary.recipient);
   return (
     <div
       data-testid="receipt-local-summary"
@@ -244,7 +259,19 @@ function LocalSummary({ summary }: { summary: LocalActivitySummary }) {
       <div className="mt-2 flex flex-col gap-1.5">
         <LocalSummaryRow
           label={t("receipt.localRecipient")}
-          value={recipient}
+          value={
+            <>
+              {summary.recipientName && <span>{summary.recipientName}</span>}
+              <ReceiptIdentifier
+                value={summary.recipient}
+                type="address"
+                explorerLink={{
+                  type: ExplorerLinkType.address,
+                  address: summary.recipient,
+                }}
+              />
+            </>
+          }
         />
         {summary.amount ? (
           <LocalSummaryRow
@@ -263,7 +290,16 @@ function LocalSummary({ summary }: { summary: LocalActivitySummary }) {
         {summary.objectId ? (
           <LocalSummaryRow
             label={t("receipt.localObject")}
-            value={formatAddress(summary.objectId)}
+            value={
+              <ReceiptIdentifier
+                value={summary.objectId}
+                type="object"
+                explorerLink={{
+                  type: ExplorerLinkType.object,
+                  objectID: summary.objectId,
+                }}
+              />
+            }
           />
         ) : null}
       </div>

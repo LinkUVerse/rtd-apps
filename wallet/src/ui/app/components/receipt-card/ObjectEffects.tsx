@@ -2,14 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import type { WalletObjectEffect } from "rtd-apps-core/src/rpc/transaction-view";
-import { formatAddress } from "rtd-typescript/utils";
 import { useI18n } from "../../i18n";
-import ExplorerLink from "../explorer-link";
 import { ExplorerLinkType } from "../explorer-link/ExplorerLinkType";
 import { Card } from "../../shared/transaction-summary/Card";
 import { OwnerFooter } from "../../shared/transaction-summary/OwnerFooter";
 import { Text } from "../../shared/text";
 import { HistoricalObject } from "./HistoricalObject";
+import { ReceiptIdentifier } from "./ReceiptIdentifier";
 import { ReceiptNotice } from "./ReceiptNotice";
 import * as styles from "./Receipt.module.scss";
 
@@ -39,14 +38,14 @@ export function ObjectEffects({
           }
         >
           <div className={styles.object}>
-            <ExplorerLink
-              type={ExplorerLinkType.object}
-              objectID={change.objectId}
-              title={change.objectId}
-              className="text-hero-dark no-underline"
-            >
-              {formatAddress(change.objectId)}
-            </ExplorerLink>
+            <ReceiptIdentifier
+              value={change.objectId}
+              type="object"
+              explorerLink={{
+                type: ExplorerLinkType.object,
+                objectID: change.objectId,
+              }}
+            />
             {change.objectType && (
               <code className={styles.identifier}>{change.objectType}</code>
             )}

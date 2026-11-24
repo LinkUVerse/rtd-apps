@@ -611,8 +611,7 @@ const zhCN: Record<keyof typeof en, string> = {
   "moreOptions.logoutTitle": "确定要退出钱包吗？",
   "moreOptions.logoutHint": "退出后需要重新设置所有账户。",
   "receipt.detailsUnavailable": "暂时无法读取交易详情，这不代表交易执行失败。",
-  "receipt.detailsUnsupported":
-    "该交易是系统交易，没有可解析的调用数据。",
+  "receipt.detailsUnsupported": "该交易是系统交易，没有可解析的调用数据。",
   "receipt.awaitingConfirmation":
     "当前节点尚未确认此交易，请保留原摘要，不要再次发送。",
   "receipt.factMismatch": "交易详情与已确认记录不一致，请刷新核验详情。",
@@ -640,6 +639,11 @@ const zhCN: Record<keyof typeof en, string> = {
   "receipt.packageChanged": "合约包已更新",
   "receipt.balanceWritten": "账户余额已更新",
   "receipt.objectVersion": "对象版本：{version}",
+  "receipt.transactionId": "交易 ID",
+  "receipt.transactionIdCopied": "交易 ID 已复制",
+  "receipt.idCopied": "ID 已复制",
+  "receipt.expandId": "展开完整 ID",
+  "receipt.collapseId": "恢复缩写",
 };
 
 export default zhCN;

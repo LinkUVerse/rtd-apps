@@ -24,6 +24,7 @@ vi.mock('_src/ui/app/hooks/useReceiptIndexing',()=>({useReceiptIndexing:()=>m.in
 vi.mock('_src/ui/app/hooks/usePendingActivity',()=>({useLocalActivityEntry:()=>m.local}));
 vi.mock('_src/ui/app/hooks/useActiveAddress',()=>({useActiveAddress:()=>m.activeAddress}));
 vi.mock('_src/ui/app/hooks/useUnlockedGuard',()=>({useUnlockedGuard:()=>m.guardLoading}));
+vi.mock('_src/ui/app/hooks/useExplorerLink',()=>({useExplorerLink:()=>'https://explorer.test/transaction'}));
 vi.mock('_src/ui/app/i18n',()=>({useI18n:()=>({t:(key:string)=>key})}));
 vi.mock('_components/alert',()=>({default:({children}:{children:ReactNode})=>h('div',{role:'alert'},children)}));
 vi.mock('_components/loading',()=>({default:({children,loading}:{children:ReactNode;loading:boolean})=>loading?h('div',null,'loading'):children}));
@@ -50,6 +51,16 @@ it.each([true,false])('详情服务失败时保留已确认终态%s，不改成�
   m.details.isError=true;
   await render(async node=>{
     expect(node.textContent).toContain(success?'receipt.confirmedSuccess':'receipt.confirmedFailure');
+    const transactionId=node.querySelector('[data-testid="transaction-id"]');
+    expect(transactionId).not.toBeNull();
+    expect(transactionId!.textContent).toContain('receipt.transactionId');
+    expect(transactionId!.textContent).not.toContain(tx.digest);
+    expect(node.querySelectorAll(`[data-value="${tx.digest}"]`)).toHaveLength(1);
+    const toggle=transactionId!.querySelector('button') as HTMLButtonElement;
+    await act(async()=>toggle.click());
+    expect(transactionId!.textContent).toContain(tx.digest);
+    await act(async()=>toggle.click());
+    expect(transactionId!.textContent).not.toContain(tx.digest);
     expect(node.textContent).toContain('receipt.detailsUnavailable');
     expect(node.textContent).toContain('receipt.indexingPending');
     expect(node.textContent).not.toContain('receipt.awaitingConfirmation');

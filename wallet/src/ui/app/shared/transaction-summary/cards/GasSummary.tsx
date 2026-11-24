@@ -1,13 +1,12 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
-import ExplorerLink from "_src/ui/app/components/explorer-link";
-import { ExplorerLinkType } from "_src/ui/app/components/explorer-link/ExplorerLinkType";
+import { ReceiptIdentifier } from "_components/receipt-card/ReceiptIdentifier";
+import { ExplorerLinkType } from "_components/explorer-link/ExplorerLinkType";
 import { useActiveAddress } from "_src/ui/app/hooks";
 import { useI18n } from "_src/ui/app/i18n";
 import { GAS_TYPE_ARG } from "_src/ui/app/redux/slices/rtd-objects/Coin";
 import { type WalletGasSummary } from "rtd-apps-core/src/rpc/transaction-view";
 import { useFormatCoin } from "rtd-apps-core/src/rpc/coin";
-import { formatAddress } from "rtd-typescript/utils";
 
 import { Text } from "../../text";
 
@@ -53,19 +52,18 @@ export function GasSummary({
                 {gas} {symbol}
               </Text>
             </div>
-            <div className="flex w-full justify-between">
+            <div className="flex w-full items-start justify-between gap-3">
               <Text color="steel-dark" variant="pBody" weight="medium">
                 {t("approval.sponsor")}
               </Text>
-              <ExplorerLink
-                type={ExplorerLinkType.address}
-                address={gasSummary.owner}
-                className="text-hero-dark no-underline"
-              >
-                <Text variant="pBodySmall" truncate mono>
-                  {formatAddress(gasSummary.owner)}
-                </Text>
-              </ExplorerLink>
+              <ReceiptIdentifier
+                value={gasSummary.owner}
+                type="address"
+                explorerLink={{
+                  type: ExplorerLinkType.address,
+                  address: gasSummary.owner,
+                }}
+              />
             </div>
           </>
         )}

@@ -141,6 +141,106 @@
   user-select: text;
 }
 
+.transactionId {
+  padding: 16px;
+  border: 1px solid var(--rtd-border-color);
+  border-radius: 16px;
+  background: rgb(var(--rtd-primary-subtle-rgb) / 55%);
+}
+
+.identifierField {
+  display: flex;
+  min-width: 0;
+  width: 100%;
+}
+
+.identifierRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  min-width: 0;
+  width: 100%;
+}
+
+.identifierValue {
+  display: flex;
+  flex: 1;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+  min-height: 44px;
+  padding: 10px 0;
+  border: 0;
+  background: transparent;
+  color: rgb(var(--rtd-steel-darker-rgb));
+  text-align: left;
+  cursor: pointer;
+
+  code {
+    min-width: 0;
+    font-family: "Red Hat Mono Variable", monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, currentColor 35%, transparent);
+    text-decoration-style: dotted;
+    text-underline-offset: 4px;
+  }
+
+  &:hover code {
+    text-decoration-color: currentColor;
+  }
+}
+
+.identifierPrefix {
+  flex-shrink: 0;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+.identifierActions {
+  display: flex;
+  flex-shrink: 0;
+  gap: 8px;
+}
+
+.identifierAction {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--rtd-border-color);
+  border-radius: 10px;
+  background: transparent;
+  color: rgb(var(--rtd-control-secondary-foreground-rgb));
+  cursor: pointer;
+  transition:
+    background 180ms ease,
+    border-color 180ms ease;
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  &:hover {
+    border-color: var(--rtd-border-strong);
+    background: rgb(var(--rtd-control-secondary-rgb));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .identifierAction {
+    transition: none;
+  }
+}
+
 .notice {
   display: flex;
   align-items: flex-start;

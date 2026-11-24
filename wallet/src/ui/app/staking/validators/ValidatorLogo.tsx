@@ -1,6 +1,8 @@
 // Copyright (c) LinkU Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 import { Heading } from "_app/shared/heading";
+import { ReceiptIdentifier } from "_components/receipt-card/ReceiptIdentifier";
+import { ExplorerLinkType } from "_components/explorer-link/ExplorerLinkType";
 import { ImageIcon } from "_app/shared/image-icon";
 import { Text } from "_app/shared/text";
 import { Badge } from "_src/ui/app/shared/Badge";
@@ -130,9 +132,14 @@ export function ValidatorLogo({
           )}
         </div>
         {showAddress && (
-          <Text variant="body" color="steel-dark" mono>
-            {formatAddress(validatorAddress)}
-          </Text>
+          <ReceiptIdentifier
+            value={validatorAddress}
+            type="validator"
+            explorerLink={{
+              type: ExplorerLinkType.validator,
+              validator: validatorAddress,
+            }}
+          />
         )}
       </div>
     </div>
