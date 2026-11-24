@@ -45,7 +45,7 @@ describe("dApp后台请求绑定", () => {
   it.each([undefined, null, 7])("拒绝未提供或非法chain %s", async (chain) => {
     await expect(bindDappRequest("r", origin, { ...source(), chain, justSign: true } as any, profile)).rejects.toThrow("链");
   });
-  it.each(["rtd:mainnet", "", "sui:localnet"])(
+  it.each(["rtd:mainnet", "", "rtd:localnet"])(
     "拒绝显式错链 %s",
     async (chain) => {
       await expect(

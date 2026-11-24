@@ -38,7 +38,7 @@ export async function reviewedDeploymentFixture(
     ),
     nameRegistry: profile.packages.name
       ? {
-          layout: "suins-v1",
+          layout: "rtdns-v1",
           rootId: normalizeRtdAddress("0x8"),
           initialSharedVersion: "1",
           registryFieldId: nameRegistryFieldId(

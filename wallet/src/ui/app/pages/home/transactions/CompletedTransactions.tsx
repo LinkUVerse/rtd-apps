@@ -16,7 +16,7 @@ import { useWalletRpc } from "rtd-apps-core/src/rpc/WalletRpcContext";
 import { walletReadAllowed } from "rtd-apps-core/src/rpc/read-admission";
 import { Refresh16, Spinner16 } from "rtd-apps-icons";
 import cl from "clsx";
-import { useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export function CompletedTransactions() {
   const { t } = useI18n();
@@ -35,6 +35,7 @@ export function CompletedTransactions() {
     cached,
   } = useQueryTransactionsByAddress(activeAddress);
   const allowed = walletReadAllowed(rpc, "history");
+  const [manualRefreshing, setManualRefreshing] = useState(false);
   // Returning to the tab is the moment a just-sent transfer is expected. The
   // previous page stays on screen (the query keeps it as placeholder data) and
   // the reader returns whole windows newest-first, so the new row appears at the
@@ -58,6 +59,25 @@ export function CompletedTransactions() {
     activeAddress,
     error ? undefined : (history ?? cached)?.transactions,
   );
+  // Every hook stays above the early returns: the page can start unconfigured,
+  // address-less, blocked or failed and then recover, and a hook that only some
+  // renders reach makes React fail with "rendered more hooks than before".
+  const refreshActivity = useCallback(async () => {
+    if (manualRefreshing) return;
+    setManualRefreshing(true);
+    const started = Date.now();
+    try {
+      await refetch({ cancelRefetch: false });
+    } finally {
+      // Keep the spinner perceptible on a fast archive read without delaying
+      // the data or locking the control longer than one interaction cycle.
+      const remaining = 450 - (Date.now() - started);
+      window.setTimeout(
+        () => setManualRefreshing(false),
+        Math.max(0, remaining),
+      );
+    }
+  }, [manualRefreshing, refetch]);
   if (rpc.state === "unconfigured" || rpc.state === "invalid")
     return <Alert>{rpc.message}</Alert>;
   if (!activeAddress) return null;
@@ -73,9 +93,10 @@ export function CompletedTransactions() {
   const showingCached = !history && !!cached;
   const rows = shown ? [...pendingRows, ...shown.transactions] : pendingRows;
   const refreshLabel = t("activity.refresh");
+  const updating = manualRefreshing || isFetching;
   return (
     <Loading loading={isPending && !shown && pendingRows.length === 0}>
-      <div className="flex min-h-8 items-center justify-between gap-3 px-4">
+      <div className="flex min-h-8 items-center justify-between gap-3 px-4 pb-2">
         {shown ? (
           <span
             role="status"
@@ -108,25 +129,38 @@ export function CompletedTransactions() {
           type="button"
           data-testid="refresh-activity"
           aria-label={refreshLabel}
-          aria-busy={isFetching}
-          disabled={isFetching}
-          onClick={() => void refetch({ cancelRefetch: false })}
+          aria-busy={updating}
+          disabled={updating}
+          onClick={() => void refreshActivity()}
           className={cl(
-            "inline-flex h-8 shrink-0 items-center justify-center gap-1.5 rounded-full border px-3 text-xs font-semibold shadow-xs transition-colors disabled:cursor-default",
-            isFetching
+            "relative inline-flex h-8 min-w-[7.5rem] shrink-0 items-center justify-center gap-1.5 overflow-hidden rounded-full border px-3 text-xs font-semibold shadow-xs transition-colors duration-200 disabled:cursor-default",
+            updating
               ? "border-rtd/40 bg-rtd/5 text-rtd"
               : "border-gray-45 bg-white text-steel-darker hover:bg-gray-40 active:bg-gray-45",
           )}
         >
-          {isFetching ? (
-            <Spinner16 className="h-3.5 w-3.5 shrink-0 animate-spin motion-reduce:animate-none" />
-          ) : (
-            <Refresh16 className="h-3.5 w-3.5 shrink-0" />
-          )}
-          <span>{refreshLabel}</span>
+          {/* A slow brand-tinted sheen says "still updating" without turning
+              the control into a progress indicator or moving its bounds. */}
+          <span
+            aria-hidden
+            className={cl(
+              "pointer-events-none absolute inset-0 transition-opacity duration-200",
+              updating ? "opacity-100" : "opacity-0",
+            )}
+          >
+            <span className="absolute inset-y-0 -left-1/3 w-1/3 bg-gradient-to-r from-transparent via-rtd/20 to-transparent animate-activity-sheen motion-reduce:hidden" />
+          </span>
+          <span className="relative inline-flex items-center gap-1.5">
+            {updating ? (
+              <Spinner16 className="h-3.5 w-3.5 shrink-0 animate-spin motion-reduce:animate-none" />
+            ) : (
+              <Refresh16 className="h-3.5 w-3.5 shrink-0" />
+            )}
+            <span>{refreshLabel}</span>
+          </span>
         </button>
         <span className="sr-only" aria-live="polite">
-          {isFetching ? t("activity.refreshing") : ""}
+          {updating ? t("activity.refreshing") : ""}
         </span>
       </div>
       {showingCached ? (
@@ -154,21 +188,23 @@ export function CompletedTransactions() {
           </p>
         )}
       {rows.length > 0 && activeAddress ? (
-        rows.map((txn) => (
-          <ErrorBoundary key={txn.digest}>
-            <TransactionCard
-              txn={txn}
-              address={activeAddress}
-              activityStatus={
-                pendingDigests.has(txn.digest)
-                  ? "confirming"
-                  : confirmedDigests.has(txn.digest)
-                    ? "complete"
-                    : undefined
-              }
-            />
-          </ErrorBoundary>
-        ))
+        <div className="divide-y divide-x-0 divide-solid divide-gray-45">
+          {rows.map((txn) => (
+            <ErrorBoundary key={txn.digest}>
+              <TransactionCard
+                txn={txn}
+                address={activeAddress}
+                activityStatus={
+                  pendingDigests.has(txn.digest)
+                    ? "confirming"
+                    : confirmedDigests.has(txn.digest)
+                      ? "complete"
+                      : undefined
+                }
+              />
+            </ErrorBoundary>
+          ))}
+        </div>
       ) : (
         <NoActivityCard message={t("activity.windowEmpty")} />
       )}

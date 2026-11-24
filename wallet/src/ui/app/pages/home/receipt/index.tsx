@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ReceiptNotice } from "_components/receipt-card/ReceiptNotice";
+import { DateCard } from "_app/shared/date-card";
 import * as styles from "_components/receipt-card/Receipt.module.scss";
 import Loading from "_components/loading";
 import Overlay from "_components/overlay";
@@ -33,6 +34,16 @@ function ReceiptPage() {
   // get tx results from url params
   const transactionId = searchParams.get("txdigest");
   const fromParam = searchParams.get("from");
+  const nativeCheckpoint = Number(searchParams.get("checkpoint"));
+  const nativeTimestamp = Number(searchParams.get("timestamp"));
+  const nativeStatus = searchParams.get("status");
+  const nativeFacts =
+    searchParams.get("native") === "1" &&
+    Number.isSafeInteger(nativeCheckpoint) &&
+    nativeCheckpoint >= 0 &&
+    Number.isSafeInteger(nativeTimestamp) &&
+    nativeTimestamp >= 0 &&
+    (nativeStatus === "SUCCESS" || nativeStatus === "FAILURE");
   const rpc = useWalletRpc();
   const {
     data: details,
@@ -45,6 +56,7 @@ function ReceiptPage() {
   // decode; saying "unreadable" and offering a refresh would mislead.
   const unsupported =
     error instanceof WalletLedgerReadError && error.reason === "unsupported";
+  const nativeOnly = nativeFacts && !details;
   const stored = useStoredTransactionReceipt(transactionId);
   const facts = selectReceiptFacts(details, stored.data);
   const data = facts.transaction;
@@ -106,7 +118,29 @@ function ReceiptPage() {
         }
       >
         <div className={styles.page}>
-          {unsupported ? (
+          {nativeOnly ? (
+            <ReceiptNotice
+              tone={nativeStatus === "SUCCESS" ? "success" : "issue"}
+            >
+              <div className="flex items-start justify-between gap-3">
+                <p>
+                  {nativeStatus === "SUCCESS"
+                    ? t("receipt.success")
+                    : t("receipt.failed")}
+                </p>
+                <ActivityStatusTag
+                  status={nativeStatus === "SUCCESS" ? "complete" : "confirming"}
+                />
+              </div>
+              <p className={styles.identifier}>{transactionId}</p>
+              <p>
+                {t("receipt.confirmedCheckpoint", {
+                  checkpoint: nativeCheckpoint,
+                })}
+              </p>
+              <DateCard timestamp={nativeTimestamp} size="sm" />
+            </ReceiptNotice>
+          ) : unsupported ? (
             <ReceiptNotice>
               {t("receipt.detailsUnsupported")}
             </ReceiptNotice>
@@ -124,7 +158,7 @@ function ReceiptPage() {
           )}
           {facts.confirmed !== undefined &&
             !facts.conflict &&
-            indexing.data !== true && (
+            indexing.data === false && (
               <ReceiptNotice>{t("receipt.indexingPending")}</ReceiptNotice>
             )}
           {facts.receipt && !data && (
@@ -157,12 +191,14 @@ function ReceiptPage() {
               {t("receipt.awaitingConfirmation")}
             </ReceiptNotice>
           )}
-          {(isError && !unsupported) || details === null || facts.conflict ? (
+          {!nativeOnly && !unsupported ? (
             <button
               type="button"
+              data-testid="refresh-receipt"
               className={styles.action}
               onClick={() => {
                 void refetch();
+                void indexing.refetch();
                 void stored.refetch();
               }}
             >
@@ -197,7 +233,7 @@ function LocalSummary({ summary }: { summary: LocalActivitySummary }) {
   return (
     <div
       data-testid="receipt-local-summary"
-      className="mt-3 rounded-xl border border-solid border-gray-45 bg-white/70 px-3 py-2.5"
+      className="mt-3 rounded-xl border border-solid border-gray-45 bg-gray-40 px-3 py-2.5"
     >
       <p className="m-0 text-xs font-semibold text-gray-90">
         {t("receipt.localSummaryTitle")}

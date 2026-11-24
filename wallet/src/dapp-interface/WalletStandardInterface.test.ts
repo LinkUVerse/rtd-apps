@@ -153,7 +153,7 @@ it('PersonalMessage rejects missing or malformed account before messaging',async
 it.each(['rtd:signTransaction','rtd:signAndExecuteTransaction'] as const)('%s requires explicit transaction chain before serialization',async feature=>{
  const wallet=new RtdWallet();const method=feature==='rtd:signTransaction'?wallet.features[feature].signTransaction:wallet.features[feature].signAndExecuteTransaction;
  m.send.mockImplementation(message=>queueMicrotask(()=>m.stream.next({id:message.id,payload:{error:true,code:-1,message:'unexpected background'}})));
- for(const chain of [undefined,null,7,'','sui:localnet','rtd:bad chain']){
+ for(const chain of [undefined,null,7,'','rtd:localnet','rtd:bad chain']){
   const toJSON=vi.fn(async()=> 'source');
   await expect(method({transaction:{toJSON},account:{address:'0x7'},chain} as any)).rejects.toThrow('交易链');
   expect(toJSON).not.toHaveBeenCalled();expect(m.send).not.toHaveBeenCalled();

@@ -428,6 +428,8 @@ const zhCN: Record<keyof typeof en, string> = {
     "交易活动读取尚未通过网络校验，请核对网络状态。暂时无法确认历史记录。",
   "activity.title": "交易活动",
   "activity.complete": "已完成",
+  "activity.failed": "失败",
+  "activity.genesisTransaction": "创世交易",
   "activity.pending": "待处理交易",
   "activity.empty": "RTD 网络交易将在这里显示。",
   "activity.pendingEmpty": "待处理的 Qredo 交易将在这里显示。",

@@ -48,7 +48,7 @@ export interface ReviewedWalletDeployment {
     modules: readonly Readonly<{ name: string; bytecodeSha256: string }>[];
   }>[];
   readonly nameRegistry: Readonly<{
-    layout: "suins-v1";
+    layout: "rtdns-v1";
     rootId: string;
     initialSharedVersion: string;
     registryFieldId: string;
@@ -211,9 +211,9 @@ export async function verifyReviewedDeployment(
       "initialSharedVersion",
       "registryFieldId",
     ]);
-    if (anchor.layout !== "suins-v1") reject();
+    if (anchor.layout !== "rtdns-v1") reject();
     nameRegistry = Object.freeze({
-      layout: "suins-v1",
+      layout: "rtdns-v1",
       rootId: address(anchor.rootId),
       initialSharedVersion: version(anchor.initialSharedVersion),
       registryFieldId: address(anchor.registryFieldId),
@@ -297,7 +297,7 @@ export function nameRegistryMoveContract(
       ),
       struct(
         id,
-        "suins",
+        "rtdns",
         "RegistryKey",
         [A.COPY, A.DROP, A.STORE],
         [["dummy_field", primitive(T.BOOL)]],
@@ -309,7 +309,7 @@ export function nameRegistryMoveContract(
 export function nameRegistryFieldId(packageId: string, rootId: string): string {
   return deriveDynamicFieldID(
     rootId,
-    `${packageId}::suins::RegistryKey<${packageId}::registry::Registry>`,
+    `${packageId}::rtdns::RegistryKey<${packageId}::registry::Registry>`,
     new Uint8Array([0]),
   );
 }
@@ -327,7 +327,7 @@ export function verifyNameRegistryRoot(
   if (
     object.objectId !== anchor.rootId ||
     object.type !==
-      normalizeStructTag(`${profile.packages.name!.packageId}::suins::SuiNS`) ||
+      normalizeStructTag(`${profile.packages.name!.packageId}::rtdns::RtdNS`) ||
     object.owner.$kind !== "Shared" ||
     object.owner.Shared.initialSharedVersion !== anchor.initialSharedVersion
   )
@@ -340,7 +340,7 @@ export function verifyNameRegistryField(
 ): Readonly<{ forwardSize: string; reverseSize: string }> {
   try {
     const cfg = profile.packages.name!;
-    const key = `${cfg.packageId}::suins::RegistryKey<${cfg.packageId}::registry::Registry>`;
+    const key = `${cfg.packageId}::rtdns::RegistryKey<${cfg.packageId}::registry::Registry>`;
     const type = normalizeStructTag(
       `0x2::dynamic_field::Field<${key},${cfg.packageId}::registry::Registry>`,
     );

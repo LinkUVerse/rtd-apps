@@ -18,7 +18,7 @@ import { WalletReadSession } from "../../../src/shared/rpc/session";
 
 // Resolve the parser from the installed SDK so frozen-install checks exercise its lockfile.
 // RTD extensions are validated against the server's exported SDL, while the upstream
-// projection is independently validated against the SDK and the saved official Sui SDL.
+// projection is independently validated against the SDK and the saved official Rtd SDL.
 const sdkRoot = resolve(process.cwd(), "../../rtd-ts-sdk/packages/typescript");
 const walletRequire = createRequire(resolve(process.cwd(), "package.json"));
 export const graphql = createRequire(
@@ -39,11 +39,11 @@ const schema = graphql.buildSchema(
     "utf8",
   ),
 );
-const suiSchema = graphql.buildSchema(
+const rtdSchema = graphql.buildSchema(
   readFileSync(
     resolve(
       process.cwd(),
-      "tests/fixtures/graphql/sui-c8601468.graphql",
+      "tests/fixtures/graphql/rtd-c8601468.graphql",
     ),
     "utf8",
   ),
@@ -119,18 +119,18 @@ export function snapshotFixture(
       },
     };
     const upstream = graphql.visit(document, projection);
-    const upstreamSui = graphql.visit(
+    const upstreamRtd = graphql.visit(
       graphql.parse(request.query.replace(/\bRtdAddress\b/g, "SuiAddress")),
       projection,
     );
     const errors = [
       ...graphql.validate(schema, document),
       ...graphql.validate(sdkSchema, upstream),
-      ...graphql.validate(suiSchema, upstreamSui),
+      ...graphql.validate(rtdSchema, upstreamRtd),
     ];
     if (errors.length)
       throw new Error(
-        `查询不符合 RTD SDL 或 SDK/Sui 公共投影: ${errors.map((error) => error.message).join("; ")}`,
+        `查询不符合 RTD SDL 或 SDK/Rtd 公共投影: ${errors.map((error) => error.message).join("; ")}`,
       );
     // Validate the actual combined document above, then exercise the same
     // per-domain fixture hooks with each operation's original variables. This

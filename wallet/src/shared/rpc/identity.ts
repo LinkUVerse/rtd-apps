@@ -137,7 +137,7 @@ export async function probeNetworkIdentity(
           baseUrl,
           format: "binary",
           fetch: guardedFetch,
-          // Empty URL overrides the SDK network defaults; named packages must not hit Sui MVR.
+          // Empty URL overrides the SDK network defaults; named packages must not hit Rtd MVR.
           mvr: { url: "" },
         });
         const { response } = await session.request(signal, () =>

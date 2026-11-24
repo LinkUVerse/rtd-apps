@@ -78,7 +78,7 @@ function descriptorFixture(pkg: string): GrpcTypes.DatatypeDescriptor[] {
       ],
     ),
     datatype(
-      "suins",
+      "rtdns",
       "RegistryKey",
       [A.COPY, A.DROP, A.STORE],
       [["dummy_field", { type: T.BOOL, typeParameterInstantiation: [] }]],
@@ -171,7 +171,7 @@ async function fixture(
       rootId,
       moveObject(
         rootId,
-        `${pkgId}::suins::SuiNS`,
+        `${pkgId}::rtdns::RtdNS`,
         bcs
           .struct("Root", { id: bcs.Address, balance: bcs.u64() })
           .serialize({ id: rootId, balance: "0" })
@@ -183,7 +183,7 @@ async function fixture(
       fieldId,
       moveObject(
         fieldId,
-        `0x2::dynamic_field::Field<${pkgId}::suins::RegistryKey<${pkgId}::registry::Registry>,${pkgId}::registry::Registry>`,
+        `0x2::dynamic_field::Field<${pkgId}::rtdns::RegistryKey<${pkgId}::registry::Registry>,${pkgId}::registry::Registry>`,
         NAME_REGISTRY_FIELD_BCS.serialize({
           id: fieldId,
           name: { dummy_field: false },
@@ -222,7 +222,7 @@ async function fixture(
     ),
     nameRegistry: profile.packages.name
       ? {
-          layout: "suins-v1",
+          layout: "rtdns-v1",
           rootId,
           initialSharedVersion: "1",
           registryFieldId: fieldId,
@@ -418,7 +418,7 @@ describe("独立发布pin与嵌入名称Registry", () => {
         f.rootId,
         moveObject(
           f.rootId,
-          `${id("0x4")}::suins::Other`,
+          `${id("0x4")}::rtdns::Other`,
           root.contents!.value!,
           { Shared: { initialSharedVersion: "1" } },
         ),

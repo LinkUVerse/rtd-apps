@@ -202,7 +202,7 @@ it("rejects chain changed in stored request while signing", async () => {
   });
   await expect(run()).rejects.toThrow("消息批准请求已失效");
 });
-it.each([null, "", 1, "sui:localnet", "rtd:bad chain"])(
+it.each([null, "", 1, "rtd:localnet", "rtd:bad chain"])(
   "rejects malformed explicit message chain %s before signing",
   async (chain) => {
     request.tx.chain = chain;

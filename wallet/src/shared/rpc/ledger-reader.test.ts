@@ -192,11 +192,13 @@ describe("同摘要的近期／裁剪归档读取", () => {
     },
   );
   it.each([undefined, 0n])(
-    "普通NotFound且无已观察裁剪不查询归档 %s",
+    "普通NotFound回退归档并采用其校验结果 %s",
     async (fullLow) => {
       const f = await fixture({ fullLow, archiveLow: 0n });
-      expect(await f.reader.lookup(f.tx.digest)).toBeNull();
-      expect(f.requests.every((call) => call.role === "fullnode")).toBe(true);
+      expect(await f.reader.lookup(f.tx.digest)).toMatchObject({
+        source: "archive",
+      });
+      expect(f.requests.some((call) => call.role === "archive")).toBe(true);
     },
   );
   it("近期完整回执直接使用Fullnode，不因已裁剪其它历史而访问归档", async () => {

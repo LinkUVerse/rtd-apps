@@ -35,7 +35,9 @@ export function useReceiptIndexing(
     },
     retry: false,
     gcTime: 0,
-    refetchInterval: (query) => (query.state.data === true ? false : 3_000),
+    // The receipt page refreshes progress only on explicit user action; an
+    // unbounded 3s poll kept an unrelated asset snapshot alive forever.
+    refetchInterval: false,
     meta: { skipPersistedCache: true, walletReadOperation: "assets" },
   });
   return {

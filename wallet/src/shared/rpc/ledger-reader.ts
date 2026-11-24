@@ -266,13 +266,11 @@ export class WalletLedgerReader {
       signal.throwIfAborted();
       const recent = await this.#role("fullnode", digest, paths, signal);
       let found = recent.value;
-      // NotFound alone is not evidence of pruning. No fallback for errors, malformed data or a mismatched chain.
-      if (
-        !found &&
-        recent.pruned &&
-        this.session.profile.endpoints.archiveGrpcWeb
-      ) {
-        // Digest height is unknown: do not invent min-checkpoint or forward a trusted visible/identity header.
+      // A fullnode only guarantees the current epoch and some builds do not
+      // expose a pruning watermark. NotFound is therefore reconciled against
+      // the configured archive, which revalidates the chain identity and its
+      // own coverage and returns null for a digest absent everywhere.
+      if (!found && this.session.profile.endpoints.archiveGrpcWeb) {
         found = (await this.#role("archive", digest, paths, signal)).value;
       }
       if (!found) return null;
@@ -286,15 +284,20 @@ export class WalletLedgerReader {
     digest: string,
     signal?: AbortSignal,
   ): Promise<WalletExecutionReceipt | null> {
-    return this.#read(digest, RECEIPT_READ_MASK, signal, async (found) =>
-      validateTransactionReceipt(
+    return this.#read(digest, RECEIPT_READ_MASK, signal, async (found) => {
+      if (
+        found.raw.transaction?.kind?.kind !==
+        GrpcTypes.TransactionKind_Kind.PROGRAMMABLE_TRANSACTION
+      )
+        throw new WalletLedgerReadError(found.source, "unsupported");
+      return validateTransactionReceipt(
         found.raw,
         digest,
         undefined,
         undefined,
         found.source,
-      ),
-    );
+      );
+    });
   }
   /** Historical Ledger page. Only the archive reader can serve account history. */
   async historyPage(
@@ -414,13 +417,20 @@ export class WalletLedgerReader {
         )
           throw new WalletLedgerReadError("archive", "coverage");
         try {
-          await validateTransactionReceipt(
-            raw,
-            digest,
-            undefined,
-            undefined,
-            "archive",
-          );
+          // System transactions (genesis, epoch change) have no programmable
+          // payload; the row model renders them from effects alone, so only
+          // programmable history gets the full receipt proof.
+          if (
+            raw.transaction?.kind?.kind ===
+            GrpcTypes.TransactionKind_Kind.PROGRAMMABLE_TRANSACTION
+          )
+            await validateTransactionReceipt(
+              raw,
+              digest,
+              undefined,
+              undefined,
+              "archive",
+            );
         } catch {
           throw new WalletLedgerReadError("archive", "incompatible");
         }

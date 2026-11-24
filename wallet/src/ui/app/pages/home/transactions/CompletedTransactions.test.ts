@@ -137,6 +137,74 @@ it("展示经reader准入的窗口与覆盖限制，交易卡保留真实sender�
     expect(node.textContent).not.toContain("activity.windowEmpty");
   });
 });
+it("从无地址与错误状态恢复时 hook 顺序保持稳定", async () => {
+  const node = document.createElement("div");
+  const root = createRoot(node);
+  const view = () => h(MemoryRouter, { children: h(CompletedTransactions) });
+  try {
+    m.address = "";
+    await act(async () => root.render(view()));
+    expect(node.textContent).toBe("");
+    const fixture = await historyFixture({ lowestAvailableCheckpoint: 10 });
+    m.address = sender;
+    m.history = await fixture.reader.read(sender);
+    await act(async () => root.render(view()));
+    expect(node.textContent).toContain("activity.window");
+    m.error = new Error("coverage unavailable");
+    await act(async () => root.render(view()));
+    expect(node.textContent).toBe("查询失败，请稍后重新查询");
+    m.error = null;
+    await act(async () => root.render(view()));
+    expect(node.textContent).toContain("activity.window");
+  } finally {
+    await act(async () => root.unmount());
+  }
+});
+it("创世系统交易显示创世交易Tag而不是已完成", async () => {
+  const fixture = await historyFixture();
+  const history = await fixture.reader.read(sender);
+  m.history = {
+    ...history,
+    transactions: [
+      {
+        ...pendingRow("genesis"),
+        checkpoint: 0,
+        sender: null,
+        kind: "SystemTransaction",
+        transaction: null,
+        nativeTransaction: {},
+      },
+    ],
+  };
+  await render((node) => {
+    expect(
+      node.querySelector('[data-testid="activity-genesis-tag"]')?.textContent,
+    ).toContain("activity.genesisTransaction");
+    expect(
+      node.querySelector('[data-testid="activity-complete-tag"]'),
+    ).toBeNull();
+  });
+});
+it("非创世的系统交易不显示创世交易Tag", async () => {
+  const fixture = await historyFixture();
+  const history = await fixture.reader.read(sender);
+  m.history = {
+    ...history,
+    transactions: [
+      {
+        ...pendingRow("system-later"),
+        checkpoint: 42,
+        sender: null,
+        kind: "SystemTransaction",
+        transaction: null,
+        nativeTransaction: {},
+      },
+    ],
+  };
+  await render((node) => {
+    expect(node.querySelector('[data-testid="activity-genesis-tag"]')).toBeNull();
+  });
+});
 it("刷新失败不展示缓存中的历史记录或空窗口结论", async () => {
   const fixture = await historyFixture();
   m.history = await fixture.reader.read(sender);

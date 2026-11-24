@@ -41,7 +41,7 @@ function TransactionBlocksPage() {
 			<PageTitle title={t('activity.title')} />
 			<div
 				className={cl(
-					'mt-5 flex-grow overflow-y-auto px-5 -mx-5 divide-y divide-solid divide-gray-45 divide-x-0',
+					'mt-5 flex-grow overflow-y-auto px-5 -mx-5',
 					{ 'mb-4': isQredoAccount },
 				)}
 			>

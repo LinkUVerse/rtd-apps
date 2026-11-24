@@ -22,7 +22,7 @@ describe("内置 NetworkProfile 显式配置", () => {
       expect(selectBuiltinProfile(API_ENV.local, source).state).toBe("invalid");
     },
   );
-  it("只绑定当前网络的显式 v2，冻结规范化，不使用 SDK 默认 Sui URL", () => {
+  it("只绑定当前网络的显式 v2，冻结规范化，不使用 SDK 默认 Rtd URL", () => {
     const selected = selectBuiltinProfile(
       API_ENV.local,
       JSON.stringify({ local: profileFixture() }),

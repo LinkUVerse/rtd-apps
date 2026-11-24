@@ -86,6 +86,15 @@ export default {
 			fontFamily: {
 				frankfurter: ['Frankfurter Normal', 'sans-serif'],
 			},
+			keyframes: {
+				'activity-sheen': {
+					'0%': { transform: 'translateX(-150%)' },
+					'100%': { transform: 'translateX(350%)' },
+				},
+			},
+			animation: {
+				'activity-sheen': 'activity-sheen 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite',
+			},
 			backgroundImage: {
 				google: 'url(_assets/images/google-background.png)',
 				'twitch-image': 'linear-gradient(165deg, #ECE5FA 5.6%, #C8BAE2 89.58%);',

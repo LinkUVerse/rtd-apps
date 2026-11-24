@@ -13,7 +13,7 @@ import { getUrlWithDeviceId } from '../analytics/amplitude';
 
 export const MAIN_UI_URL = Browser.runtime.getURL('ui.html');
 
-const MYSTEN_LABS_DAPPS = ['rtdfrens.com', 'rtdns.io'];
+const LINKU_DAPPS = ['rtdfrens.com', 'rtdns.io'];
 
 export function openInNewTab() {
 	return Browser.tabs.create({ url: MAIN_UI_URL });
@@ -44,7 +44,7 @@ export function isValidUrl(url: string | null) {
 
 export function getDAppUrl(appUrl: string) {
 	const url = new URL(appUrl);
-	const isLinkUVerseDApp = MYSTEN_LABS_DAPPS.includes(url.hostname);
+	const isLinkUVerseDApp = LINKU_DAPPS.includes(url.hostname);
 	return isLinkUVerseDApp ? getUrlWithDeviceId(url) : url;
 }
 

@@ -99,10 +99,6 @@ export function useCoinMetadata(
       !!type &&
       (rpc.state !== "initializing" || rpc.hasFullnodeSession),
     staleTime: 5_000,
-    refetchInterval: (query) =>
-      query.state.fetchStatus === "idle" ? 20_000 : false,
-    refetchOnWindowFocus: (query) => query.state.fetchStatus === "idle",
-    refetchOnReconnect: (query) => query.state.fetchStatus === "idle",
     gcTime: 5_000,
     meta: { skipPersistedCache: true, walletReadOperation: "coinMetadata" },
   });
@@ -133,18 +129,26 @@ export function useFormatCoin(
   const fallback = type ? getCoinSymbol(type) : "";
   const formatted = useMemo(() => {
     if (balance === undefined || balance === null) return "";
-    if (query.isError) return "—";
-    if (!query.isSuccess) return "…";
+    if (!query.data) {
+      // The native RTD scale is fixed and known; a missing metadata read must
+      // not turn a verified receipt amount into an ellipsis.
+      if (fallback === "RTD") {
+        try {
+          return formatBalance(balance, 9, format);
+        } catch {
+          return "—";
+        }
+      }
+      return query.isError ? "—" : "…";
+    }
     try {
-      return query.data
-        ? formatBalance(balance, query.data.decimals, format)
-        : atomicBalance(balance);
+      return formatBalance(balance, query.data.decimals, format);
     } catch {
       return "—";
     }
-  }, [balance, format, query.data, query.isError, query.isSuccess]);
-  const symbol = !query.isSuccess
-    ? ""
-    : (query.data?.symbol ?? `${fallback} (atomic units)`);
+  }, [balance, fallback, format, query.data, query.isError]);
+  const symbol = query.data
+    ? (query.data.symbol ?? `${fallback} (atomic units)`)
+    : fallback;
   return [formatted, symbol, query] as const;
 }

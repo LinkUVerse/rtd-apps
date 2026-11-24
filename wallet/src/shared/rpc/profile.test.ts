@@ -107,7 +107,7 @@ describe("钱包网络配置与身份作用域", () => {
     { ...profileFixture(), schemaVersion: 1 },
     { ...profileFixture(), revision: Number.MAX_SAFE_INTEGER + 1 },
     { ...profileFixture(), walletStandardChain: "rtd:unknown" },
-    { ...profileFixture(), packages: { kiosk: "@sui/kiosk" } },
+    { ...profileFixture(), packages: { kiosk: "@rtd/kiosk" } },
   ])("拒绝不合法 schema、未知链或公网包别名", (input) => {
     expect(() => validateNetworkProfile(input)).toThrow();
   });

@@ -218,7 +218,7 @@ export async function validateFinalSimulation(
   response: GrpcTypes.SimulateTransactionResponse,
   bytes: Uint8Array,
 ): Promise<WalletSimulationResult> {
-  // Sui and RTD simulation omit the outer ExecutedTransaction.digest.
+  // Rtd and RTD simulation omit the outer ExecutedTransaction.digest.
   // Derive that redundant field only here; effects proto + native BCS must still
   // bind to the exact input bytes. Committed-history validation stays strict.
   if (response.transaction && response.transaction.digest === undefined) {
@@ -249,7 +249,7 @@ export async function validateFinalSimulation(
   return result;
 }
 
-/** Empty priced payment means address-balance gas. On Sui/RTD, disabling gas
+/** Empty priced payment means address-balance gas. On Rtd/RTD, disabling gas
  * selection injects a mock coin for this shape and changes the effects digest.
  * Enable the native funded path, then require the returned bytes/effects to match
  * exactly. Any real gas reselection still fails validateFinalSimulation. */

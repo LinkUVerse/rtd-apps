@@ -8,7 +8,7 @@ import type { WalletHistoryTransaction } from "rtd-apps-core/src/rpc/WalletRpcCo
 import { receiptStakeEvents } from "rtd-apps-core/src/rpc/transaction-view";
 import { formatAddress } from "rtd-typescript/utils";
 import { Link } from "react-router-dom";
-import { ActivityStatusTag, type ActivityStatus } from "./ActivityStatusTag";
+import { ActivityStatusTag, GenesisTag, type ActivityStatus } from "./ActivityStatusTag";
 import { TxnIcon } from "./TxnIcon";
 
 export function TransactionCard({
@@ -37,10 +37,25 @@ export function TransactionCard({
         ? t("staking.unstakeRtd")
         : t("receipt.transaction");
   const error = txn.transaction?.status.error?.message;
+  // The first system transaction of a chain is its genesis record; existing
+  // history fields identify it without another read.
+  const genesis = txn.kind === "SystemTransaction" && txn.checkpoint === 0;
+  const verifiedStatus: ActivityStatus =
+    txn.status === "FAILURE" ? "failed" : "complete";
   return (
     <Link
       data-testid="link-to-txn"
-      to={`/receipt?${new URLSearchParams({ txdigest: txn.digest })}`}
+      to={`/receipt?${new URLSearchParams({
+        txdigest: txn.digest,
+        ...(txn.transaction || !txn.nativeTransaction
+          ? {}
+          : {
+              native: "1",
+              checkpoint: String(txn.checkpoint),
+              timestamp: String(txn.timestampMs),
+              status: txn.status,
+            }),
+      })}`}
       className="flex min-w-0 items-center w-full flex-col gap-2 py-4 no-underline"
     >
       <div className="flex items-start w-full justify-between gap-3">
@@ -54,14 +69,18 @@ export function TransactionCard({
             </Text>
             {activityStatus ? (
               <ActivityStatusTag status={activityStatus} />
-            ) : null}
+            ) : genesis ? (
+              <GenesisTag />
+            ) : (
+              <ActivityStatusTag status={verifiedStatus} />
+            )}
           </div>
           {error && (
             <Text variant="pSubtitle" color="issue-dark">
               {error}
             </Text>
           )}
-          {txn.sender && (
+          {txn.transaction && txn.sender && (
             <Text variant="subtitle" color="steel-darker">
               {t("activity.sender")}: {formatAddress(txn.sender)}
             </Text>

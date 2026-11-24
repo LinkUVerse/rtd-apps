@@ -350,7 +350,7 @@ describe("显式 registry 名称读取和原生传输", () => {
   });
   it.each([
     "Test.rtd",
-    "test.sui",
+    "test.rtd",
     "-test.rtd",
     "test-.rtd",
     "test..rtd",

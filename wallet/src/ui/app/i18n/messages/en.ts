@@ -457,6 +457,8 @@ const en = {
     "Activity reads have not passed network verification. Check the network status; transaction history cannot be confirmed yet.",
   "activity.title": "Your Activity",
   "activity.complete": "Complete",
+  "activity.failed": "Failed",
+  "activity.genesisTransaction": "Genesis transaction",
   "activity.pending": "Pending Transactions",
   "activity.empty":
     "When available, your RTD network transactions will show up here.",

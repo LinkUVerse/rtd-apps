@@ -39,10 +39,7 @@ export function useWalletStoredReceipt(
     retry: false,
     gcTime: 0,
     staleTime: 0,
-    refetchInterval: (query) =>
-      query.state.data === null && query.state.dataUpdateCount + query.state.errorUpdateCount < 10
-        ? 2_000
-        : false,
+    placeholderData: (previous) => previous,
     meta: { skipPersistedCache: true },
   });
 }

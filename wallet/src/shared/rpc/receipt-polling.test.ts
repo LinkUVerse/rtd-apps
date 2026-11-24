@@ -15,7 +15,7 @@ vi.mock('rtd-apps-core/src/rpc/WalletRpcContext',()=>({useWalletRpc:()=>({
 Object.assign(globalThis,{IS_REACT_ACT_ENVIRONMENT:true});
 afterEach(()=>{vi.useRealTimers();vi.resetAllMocks();});
 
-it.each(['details','stored'] as const)('%s先未知后持续失败最多自动读取十次，手动刷新仍可用',async kind=>{
+it.each(['details','stored'] as const)('%s不自动轮询，手动刷新仍可用',async kind=>{
   vi.useFakeTimers();
   const read=m[kind];
   read.mockResolvedValueOnce(null).mockRejectedValue(new Error('temporarily unavailable'));
@@ -35,12 +35,13 @@ it.each(['details','stored'] as const)('%s先未知后持续失败最多自动�
     await act(async()=>{await vi.advanceTimersByTimeAsync(1);});
     expect(read).toHaveBeenCalledTimes(1);
     expect(node.textContent).toBe('unknown');
-    for(let n=0;n<15;n++)await act(async()=>{await vi.advanceTimersByTimeAsync(2001);});
-    expect(read).toHaveBeenCalledTimes(10);
-    expect(node.textContent).toBe('unavailable');
+    await act(async()=>{await vi.advanceTimersByTimeAsync(60_000);});
+    expect(read).toHaveBeenCalledTimes(1);
     await act(async()=>{await refresh();});
-    expect(read).toHaveBeenCalledTimes(11);
+    await act(async()=>{await vi.advanceTimersByTimeAsync(1);});
+    expect(read).toHaveBeenCalledTimes(2);
+    expect(node.textContent).toBe('unavailable');
     await act(async()=>{await vi.advanceTimersByTimeAsync(20_000);});
-    expect(read).toHaveBeenCalledTimes(11);
+    expect(read).toHaveBeenCalledTimes(2);
   }finally{await act(async()=>root.unmount());client.clear();}
 });

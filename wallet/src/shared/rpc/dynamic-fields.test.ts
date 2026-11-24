@@ -37,7 +37,7 @@ function fieldNode(object = false) {
   };
 }
 
-describe("原生动态字段（SDK 与 Sui 固定 SDL）", () => {
+describe("原生动态字段（SDK 与 Rtd 固定 SDL）", () => {
   it("完整多页保留 name BCS，字段包装 ID 与子对象 ID 明确区分", async () => {
     const fixture = snapshotFixture({
       read: (request) => ({

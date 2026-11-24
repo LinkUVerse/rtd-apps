@@ -13,7 +13,7 @@ import ReceiptPage from './index';
 const m=vi.hoisted(()=>({
   details:{data:undefined as WalletTransactionDetails|null|undefined,isPending:false,isError:false,refetch:vi.fn()},
   stored:{data:null as WalletStoredReceipt|null,refetch:vi.fn()},
-  indexing:{data:false},
+  indexing:{data:false,refetch:vi.fn()},
   activeAddress: '0xb' as string|null, guardLoading:false,
   local:undefined as any,
 }));
@@ -34,7 +34,7 @@ Object.assign(globalThis,{IS_REACT_ACT_ENVIRONMENT:true});
 beforeEach(()=>{
   m.details.data=undefined;m.details.isPending=false;m.details.isError=false;
   m.stored.data=null;m.indexing.data=false;m.activeAddress='0xb';m.guardLoading=false;m.local=undefined;
-  m.details.refetch.mockReset();m.stored.refetch.mockReset();
+  m.details.refetch.mockReset();m.stored.refetch.mockReset();m.indexing.refetch.mockReset();
 });
 async function render(check:(node:HTMLElement)=>Promise<void>|void){
   const tx=await executionFixture();
@@ -53,8 +53,9 @@ it.each([true,false])('详情服务失败时保留已确认终态%s，不改成�
     expect(node.textContent).toContain('receipt.detailsUnavailable');
     expect(node.textContent).toContain('receipt.indexingPending');
     expect(node.textContent).not.toContain('receipt.awaitingConfirmation');
-    await act(async()=>node.querySelector('button')!.click());
+    await act(async()=>(node.querySelector('[data-testid="refresh-receipt"]') as HTMLElement).click());
     expect(m.details.refetch).toHaveBeenCalledTimes(1);expect(m.stored.refetch).toHaveBeenCalledTimes(1);
+    expect(m.indexing.refetch).toHaveBeenCalledTimes(1);
   });
 });
 it('链上详情未同步时展示本地已签名摘要与已完成标签',async()=>{
@@ -69,7 +70,10 @@ it('链上详情未同步时展示本地已签名摘要与已完成标签',async
   },
  };
  await render(node=>{
-  expect(node.querySelector('[data-testid="receipt-local-summary"]')).not.toBeNull();
+  const summary=node.querySelector('[data-testid="receipt-local-summary"]');
+  expect(summary).not.toBeNull();
+  expect(summary!.className).toContain('bg-gray-40');
+  expect(summary!.className).not.toContain('bg-white/70');
   expect(node.textContent).toContain('receipt.localSummaryTitle');
   expect(node.textContent).toContain('receipt.localRecipient');
   expect(node.textContent).toContain('receipt.localAmount');
